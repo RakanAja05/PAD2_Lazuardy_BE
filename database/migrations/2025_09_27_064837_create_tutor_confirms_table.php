@@ -1,7 +1,5 @@
 <?php
 
-use App\Enums\Status;
-use App\Enums\TutorStatus;
 use App\Enums\TutorStatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,13 +13,15 @@ return new class extends Migration
     public function up(): void
     {
         $statuses = TutorStatusEnum::list();
-        
-        Schema::create('tutor_confirms', function (Blueprint $table) use ($statuses) 
+
+        Schema::create('tutor_confirms', function (Blueprint $table) use ($statuses)
         {
             $table->id();
-            $table->foreignId('student_user_id')->constrained('users', 'id')->onDelete('cascade');
-            $table->foreignId('tutor_user_id')->constrained('users', 'id')->onDelete('cascade');
+            $table->foreignId('student_id')->constrained('students', 'user_id')->cascadeOnDelete();
+            $table->foreignId('tutor_id')->constrained('tutors', 'user_id')->cascadeOnDelete();
+            $table->foreignId('schedule_tutor_id')->constrained('schedule_tutors', 'id')->cascadeOnDelete();
             $table->string('reason')->nullable();
+            $table->string('address');
             $table->enum('status', $statuses)->nullable();
             $table->timestamps();
         });

@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\GenderEnum;
-use App\Enums\PlatformEnum;
 use App\Enums\ReligionEnum;
 use App\Enums\RoleEnum;
 use Illuminate\Database\Migrations\Migration;
@@ -17,18 +16,17 @@ return new class extends Migration
         $roles = RoleEnum::list();
         $genders = GenderEnum::list();
         $religions = ReligionEnum::list();
-        $platforms = PlatformEnum::list();
 
-        Schema::create('users', function (Blueprint $table) use ($roles, $genders, $religions, $platforms) {
+        Schema::create('users', function (Blueprint $table) use ($roles, $genders, $religions) {
             $table->id();
             $table->string('name')->nullable();
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->enum('role', $roles)->nullable();
-            $table->string('telephone_number', 15)->nullable();
+            $table->string('telephone_number', 15)->unique()->nullable();
             $table->timestamp('telephone_verified_at')->nullable();
-            $table->string('profile_photo_url')->nullable();
+            $table->string('profile_photo_path')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->enum('gender', $genders)->nullable();
             $table->enum('religion', $religions)->nullable();
@@ -37,9 +35,7 @@ return new class extends Migration
             $table->string('facebook_id')->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
-            $table->enum('platform', $platforms)->default('flutter');
             $table->rememberToken();
-            $table->softDeletes();
             $table->timestamps();
         });
 

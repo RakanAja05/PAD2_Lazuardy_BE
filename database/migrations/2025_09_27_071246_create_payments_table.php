@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentStatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,17 +12,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $payment_methods = PaymentMethodEnum::list();
         $payment_status = PaymentStatusEnum::list();
 
-        Schema::create('payments', function (Blueprint $table) use ($payment_methods, $payment_status) {
+        Schema::create('payments', function (Blueprint $table) use ($payment_status) {
             $table->id();
             $table->foreignId('order_id')->constrained('orders');
+            $table->string('external_id')->nullable();
+            $table->string('xendit_id')->nullable();
+            $table->string('payment_method')->nullable();
+            $table->string('payment_channel')->nullable();
             $table->integer('amount')->nullable();
-            $table->string('proof_image_url')->nullable();
-            $table->date('paid_at')->nullable();
-            $table->enum('payment_method', $payment_methods)->nullable();
             $table->enum('status', $payment_status)->nullable();
+            $table->text('checkout_url')->nullable();
+            $table->timestamp('paid_at')->nullable();
+            $table->json('payload_raw')->nullable();
             $table->timestamps();
         });
     }
