@@ -1,0 +1,3378 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "PAD Lazuardy API",
+        "description": "API documentation for PAD Lazuardy backend.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api",
+            "description": "Local API Server"
+        }
+    ],
+    "paths": {
+        "/api/admin/analytic": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Admin analytics",
+                "operationId": "e520c0ab1cd221184869e3bb8afcf321",
+                "responses": {
+                    "200": {
+                        "description": "Analytics",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/tutor-salary/{userId}/payment-history": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Tutor salary payment history",
+                "operationId": "5ed17b08fb7796a432faeed482f1e391",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "History",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/student": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "List students",
+                "operationId": "26a1b870591a38bef4c0a147b7969bc1",
+                "responses": {
+                    "200": {
+                        "description": "Students",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/student/{id}": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Student detail",
+                "operationId": "b37d2c1082968a4a98b41aec1fd8e687",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/student/{id}/accept": {
+            "patch": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Accept student payment",
+                "operationId": "29357d7a2423e4521027eb0c155ac9a6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Accepted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/student/{id}/reject": {
+            "patch": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Reject student payment",
+                "operationId": "822f58a8e1b685ae8b7017678eb2685c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rejected",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/tutor-salary": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "List tutor salaries",
+                "operationId": "b3dab2fba01f587a809ce61a6d5a0a53",
+                "responses": {
+                    "200": {
+                        "description": "Salaries",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/tutor-salary/{userId}": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Tutor salary detail",
+                "operationId": "280d27b90051071905ec478f884f5495",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/tutor-salary/{userId}/confirm": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Confirm tutor salary payment",
+                "operationId": "01e0eee81223ecd87cef0ea408ec1f29",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Confirmed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/tutor-salary/confirm-batch": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Confirm batch salary payments",
+                "operationId": "32b4911c0ba1c3346ec708b920bc9ab9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Batch confirmed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/tutor-salary/{userId}/confirm-with-invoice": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Confirm salary payment with invoice",
+                "operationId": "774a3dec54f8247917133ce00cb6259a",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Confirmed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/tutor-salary/pending-payment": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "List pending salary payments",
+                "operationId": "b358d58bee5f5012ae5a1dc12fca4661",
+                "responses": {
+                    "200": {
+                        "description": "Pending",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/tutor/verification-pending": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "List tutor verification pending for salary",
+                "operationId": "6ea9d86742796eac98dc56ca4cfd4615",
+                "responses": {
+                    "200": {
+                        "description": "Pending verification",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/tutor-salary/{userId}/history": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Tutor salary history",
+                "operationId": "190fb5d9945907b7bb6e9763c8ea652e",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "History",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/verify/tutor": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "List tutors pending verification",
+                "operationId": "d3697ee83e20c2289d13aa294f7314a8",
+                "responses": {
+                    "200": {
+                        "description": "Pending tutors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/verify/tutor/approve": {
+            "patch": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Approve tutor verification",
+                "operationId": "daa00890d8e3f24722b2b2238ab54cd6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Approved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/verify/tutor/reject": {
+            "patch": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Reject tutor verification",
+                "operationId": "4988d58de3625eec4d1e11dddcb0b013",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    },
+                                    "reason": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rejected",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Send register OTP",
+                "operationId": "65e2d4a1d9c2b5b85f67b42ec486919c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OTP sent",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StandardSuccess"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "otp": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register/verify": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify register OTP",
+                "operationId": "e9e1fef1c091d14e50c75febe9c18dd6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "otp"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "otp": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "OTP invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register/resend-otp": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Resend register OTP",
+                "operationId": "9211e170c8d8d647a85cc7d7e09c6737",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP resent",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StandardSuccess"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "otp": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register/student": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register student",
+                "operationId": "b6ad5f72b32b750ecd9facbd5fcfe867",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "name",
+                                    "gender",
+                                    "date_of_birth",
+                                    "telephone_number",
+                                    "province",
+                                    "regency",
+                                    "district",
+                                    "subdistrict",
+                                    "street",
+                                    "latitude",
+                                    "longitude"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "example": "2005-01-15"
+                                    },
+                                    "telephone_number": {
+                                        "type": "string"
+                                    },
+                                    "province": {
+                                        "type": "string"
+                                    },
+                                    "regency": {
+                                        "type": "string"
+                                    },
+                                    "district": {
+                                        "type": "string"
+                                    },
+                                    "subdistrict": {
+                                        "type": "string"
+                                    },
+                                    "street": {
+                                        "type": "string"
+                                    },
+                                    "religion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "islam",
+                                            "kristen",
+                                            "katolik",
+                                            "hindu",
+                                            "buddha",
+                                            "konghucu"
+                                        ]
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "class_id": {
+                                        "type": "integer"
+                                    },
+                                    "curriculum_id": {
+                                        "type": "integer"
+                                    },
+                                    "school": {
+                                        "type": "string"
+                                    },
+                                    "parent": {
+                                        "type": "string"
+                                    },
+                                    "parent_telephone_number": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "name",
+                                    "gender",
+                                    "date_of_birth",
+                                    "telephone_number",
+                                    "province",
+                                    "regency",
+                                    "district",
+                                    "subdistrict",
+                                    "street",
+                                    "latitude",
+                                    "longitude"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string"
+                                    },
+                                    "telephone_number": {
+                                        "type": "string"
+                                    },
+                                    "profile_photo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "province": {
+                                        "type": "string"
+                                    },
+                                    "regency": {
+                                        "type": "string"
+                                    },
+                                    "district": {
+                                        "type": "string"
+                                    },
+                                    "subdistrict": {
+                                        "type": "string"
+                                    },
+                                    "street": {
+                                        "type": "string"
+                                    },
+                                    "religion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "islam",
+                                            "kristen",
+                                            "katolik",
+                                            "hindu",
+                                            "buddha",
+                                            "konghucu"
+                                        ]
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "class_id": {
+                                        "type": "integer"
+                                    },
+                                    "curriculum_id": {
+                                        "type": "integer"
+                                    },
+                                    "school": {
+                                        "type": "string"
+                                    },
+                                    "parent": {
+                                        "type": "string"
+                                    },
+                                    "parent_telephone_number": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Student registered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StandardSuccess"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "token": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register/tutor": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register tutor",
+                "operationId": "5fd5aeab4b9143d4f18533c8b57e6eaa",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "name",
+                                    "gender",
+                                    "date_of_birth",
+                                    "telephone_number",
+                                    "province",
+                                    "regency",
+                                    "district",
+                                    "subdistrict",
+                                    "street",
+                                    "latitude",
+                                    "longitude",
+                                    "bank",
+                                    "rekening"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string"
+                                    },
+                                    "telephone_number": {
+                                        "type": "string"
+                                    },
+                                    "province": {
+                                        "type": "string"
+                                    },
+                                    "regency": {
+                                        "type": "string"
+                                    },
+                                    "district": {
+                                        "type": "string"
+                                    },
+                                    "subdistrict": {
+                                        "type": "string"
+                                    },
+                                    "street": {
+                                        "type": "string"
+                                    },
+                                    "religion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "islam",
+                                            "kristen",
+                                            "katolik",
+                                            "hindu",
+                                            "buddha",
+                                            "konghucu"
+                                        ]
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "bank": {
+                                        "type": "string"
+                                    },
+                                    "rekening": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "name",
+                                    "gender",
+                                    "date_of_birth",
+                                    "telephone_number",
+                                    "province",
+                                    "regency",
+                                    "district",
+                                    "subdistrict",
+                                    "street",
+                                    "latitude",
+                                    "longitude",
+                                    "bank",
+                                    "rekening"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string"
+                                    },
+                                    "telephone_number": {
+                                        "type": "string"
+                                    },
+                                    "profile_photo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "province": {
+                                        "type": "string"
+                                    },
+                                    "regency": {
+                                        "type": "string"
+                                    },
+                                    "district": {
+                                        "type": "string"
+                                    },
+                                    "subdistrict": {
+                                        "type": "string"
+                                    },
+                                    "street": {
+                                        "type": "string"
+                                    },
+                                    "religion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "islam",
+                                            "kristen",
+                                            "katolik",
+                                            "hindu",
+                                            "buddha",
+                                            "konghucu"
+                                        ]
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "bank": {
+                                        "type": "string"
+                                    },
+                                    "rekening": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tutor registered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StandardSuccess"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "token": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/forgot-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Request forgot password OTP",
+                "operationId": "5329cdf94f8be3890847c6d96d32f8bd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP sent",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StandardSuccess"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "otp": {
+                                                            "type": "string"
+                                                        },
+                                                        "temp_token": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/forgot-password/verify": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify forgot password OTP",
+                "operationId": "a1685cbceab5f94bdf2a8bfabf3134be",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "otp_code",
+                                    "temp_token"
+                                ],
+                                "properties": {
+                                    "otp_code": {
+                                        "type": "string"
+                                    },
+                                    "temp_token": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StandardSuccess"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "token": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reset-password": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset password",
+                "operationId": "409566ceb84c5df1fb2002b38ed5d878",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/google/complete": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Complete Google registration",
+                "operationId": "23231aec5e4ba55fdc333346f4359110",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "google_id",
+                                    "name",
+                                    "email",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "google_id": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "student"
+                                    },
+                                    "telephone_number": {
+                                        "type": "string"
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string"
+                                    },
+                                    "profile_photo_url": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Google registration completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StandardSuccess"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "user": {
+                                                            "$ref": "#/components/schemas/UserPublic"
+                                                        },
+                                                        "token": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "operationId": "3673edffcdc18c06ac5aef5e2219d774",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "student@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StandardSuccess"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "token": {
+                                                            "type": "string"
+                                                        },
+                                                        "user": {
+                                                            "$ref": "#/components/schemas/UserPublic"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "operationId": "5e29d25372d83a1ff5c3165a43f3302d",
+                "responses": {
+                    "200": {
+                        "description": "Logout success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get current user",
+                "operationId": "b061496ee99b7229710086826df8b3ff",
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/StandardSuccess"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "user": {
+                                                            "$ref": "#/components/schemas/UserPublic"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/student": {
+            "get": {
+                "tags": [
+                    "Dashboards"
+                ],
+                "summary": "Student dashboard",
+                "operationId": "92f555ce87618862921c975732e1e1d1",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/student/recommended-tutors": {
+            "get": {
+                "tags": [
+                    "Dashboards"
+                ],
+                "summary": "Recommended tutors",
+                "operationId": "3a35e3a4ecf62534daa1b0c409b10564",
+                "responses": {
+                    "200": {
+                        "description": "Recommended tutors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/student/summary": {
+            "get": {
+                "tags": [
+                    "Dashboards"
+                ],
+                "summary": "Student dashboard summary",
+                "operationId": "eee4c51d083047ef1ac1bf2ad6ff8293",
+                "responses": {
+                    "200": {
+                        "description": "Summary data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/tutor": {
+            "get": {
+                "tags": [
+                    "Dashboards"
+                ],
+                "summary": "Tutor dashboard",
+                "operationId": "6491aa2fc932810942096c84c7227adf",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/tutor/summary": {
+            "get": {
+                "tags": [
+                    "Dashboards"
+                ],
+                "summary": "Tutor dashboard summary",
+                "operationId": "5c47727380ea0feb4a6b413dec5ae509",
+                "responses": {
+                    "200": {
+                        "description": "Summary data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "List notifications",
+                "operationId": "fb675704a79bbc3cd9f1bb28a9e9f519",
+                "responses": {
+                    "200": {
+                        "description": "Notifications",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications/unread-count": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Unread notifications count",
+                "operationId": "96ad168972b943fbe84b9e7c5cfbd84e",
+                "responses": {
+                    "200": {
+                        "description": "Unread count",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications/{id}/read": {
+            "patch": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Mark one as read",
+                "operationId": "22676b8565f5b1344d675d487bf3f7ea",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications/read-all": {
+            "delete": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Delete all read notifications",
+                "operationId": "ccc033674a89c0b6c8e0f16a7cfe6aa8",
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Mark all as read",
+                "operationId": "88f0454842c40aaa08d6164385ee0ee7",
+                "responses": {
+                    "200": {
+                        "description": "Updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications/{id}": {
+            "delete": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Delete notification",
+                "operationId": "194fef463e41e5584187c46af049f97c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/package/order/{id}": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Get package info for ordering",
+                "operationId": "def21f8b3da9f07e251daa036d621cd0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Package detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/package/order": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Create order",
+                "operationId": "1dc43851361ee9806bae55b7eeb3a225",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "package_id",
+                                    "total_amount",
+                                    "payment_method"
+                                ],
+                                "properties": {
+                                    "package_id": {
+                                        "type": "integer"
+                                    },
+                                    "total_amount": {
+                                        "type": "integer"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "enum": [
+                                            "mandiri",
+                                            "bni",
+                                            "bri",
+                                            "bpr",
+                                            "bpd",
+                                            "qris"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Order created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/package/payment": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Upload payment proof",
+                "operationId": "b9c820c65599138e51e8c7ac624fcb4b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file_upload",
+                                    "order_id"
+                                ],
+                                "properties": {
+                                    "file_upload": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "order_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment uploaded",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payment/history": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Payment history",
+                "operationId": "3fe0f16388217ef1ac749ab8c1e2491f",
+                "responses": {
+                    "200": {
+                        "description": "History",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payment/history/detail": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Payment detail",
+                "operationId": "7c83d0808d97da8ed8c5349acb0bbc94",
+                "parameters": [
+                    {
+                        "name": "payment_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/student/schedule": {
+            "get": {
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Student schedules",
+                "operationId": "46f03b99bdcbb79a698cbd41c9700d03",
+                "responses": {
+                    "200": {
+                        "description": "Schedules",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tutor/schedule": {
+            "get": {
+                "tags": [
+                    "Schedules"
+                ],
+                "summary": "Tutor schedules",
+                "operationId": "49344e773293d83dd732d2c0f229a52e",
+                "responses": {
+                    "200": {
+                        "description": "Schedules",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/{provider}/mobile": {
+            "post": {
+                "tags": [
+                    "SocialAuth"
+                ],
+                "summary": "Mobile social login",
+                "operationId": "7318c99a8e197d5352b5d5134e2e18ba",
+                "parameters": [
+                    {
+                        "name": "provider",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/student/profile/edit": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Student profile (edit)",
+                "operationId": "c73450095a991ff4f64928fd8d767c35",
+                "responses": {
+                    "200": {
+                        "description": "Profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tutor/profile/edit": {
+            "get": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Get tutor profile (edit)",
+                "operationId": "7995aef5668986e38e0d01eec1a3e8a4",
+                "responses": {
+                    "200": {
+                        "description": "Tutor profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/student/profile": {
+            "patch": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Update student profile",
+                "operationId": "dd6516189f78823d476630fdfac42d1e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "telephone_number",
+                                    "profile_photo_url",
+                                    "gender",
+                                    "date_of_birth",
+                                    "religion",
+                                    "province",
+                                    "regency",
+                                    "district",
+                                    "subdistrict",
+                                    "street",
+                                    "school"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "telephone_number": {
+                                        "type": "string"
+                                    },
+                                    "profile_photo_url": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string"
+                                    },
+                                    "religion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "islam",
+                                            "kristen",
+                                            "katolik",
+                                            "hindu",
+                                            "buddha",
+                                            "konghucu"
+                                        ]
+                                    },
+                                    "province": {
+                                        "type": "string"
+                                    },
+                                    "regency": {
+                                        "type": "string"
+                                    },
+                                    "district": {
+                                        "type": "string"
+                                    },
+                                    "subdistrict": {
+                                        "type": "string"
+                                    },
+                                    "street": {
+                                        "type": "string"
+                                    },
+                                    "school": {
+                                        "type": "string"
+                                    },
+                                    "class_id": {
+                                        "type": "integer"
+                                    },
+                                    "curriculum_id": {
+                                        "type": "integer"
+                                    },
+                                    "parent": {
+                                        "type": "string"
+                                    },
+                                    "parent_telephone_number": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tutor/profile": {
+            "patch": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Update tutor profile",
+                "operationId": "5f2cc535dd03d690a830cec80ec5981c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "gender",
+                                    "date_of_birth",
+                                    "religion",
+                                    "telephone_number",
+                                    "province",
+                                    "regency",
+                                    "district",
+                                    "subdistrict",
+                                    "street"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string"
+                                    },
+                                    "religion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "islam",
+                                            "kristen",
+                                            "katolik",
+                                            "hindu",
+                                            "buddha",
+                                            "konghucu"
+                                        ]
+                                    },
+                                    "telephone_number": {
+                                        "type": "string"
+                                    },
+                                    "province": {
+                                        "type": "string"
+                                    },
+                                    "regency": {
+                                        "type": "string"
+                                    },
+                                    "district": {
+                                        "type": "string"
+                                    },
+                                    "subdistrict": {
+                                        "type": "string"
+                                    },
+                                    "street": {
+                                        "type": "string"
+                                    },
+                                    "bank": {
+                                        "type": "string"
+                                    },
+                                    "rekening": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tutor/lesson-formulir": {
+            "patch": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Update tutor lesson method",
+                "operationId": "d27886bb9d63aeb4d34ea01366c41069",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "course_mode",
+                                    "description",
+                                    "qualification",
+                                    "learning_method",
+                                    "schedules"
+                                ],
+                                "properties": {
+                                    "course_mode": {
+                                        "type": "string",
+                                        "enum": [
+                                            "online",
+                                            "offline"
+                                        ]
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "qualification": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "learning_method": {
+                                        "type": "string"
+                                    },
+                                    "schedules": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "day": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "minggu",
+                                                        "senin",
+                                                        "selasa",
+                                                        "rabu",
+                                                        "kamis",
+                                                        "jumat",
+                                                        "sabtu"
+                                                    ]
+                                                },
+                                                "time": {
+                                                    "type": "string",
+                                                    "example": "08:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lesson method updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/student/review": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "List tutors to review",
+                "operationId": "8e8bc564da00a56c186367d0d8b9de78",
+                "responses": {
+                    "200": {
+                        "description": "Review list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Update review",
+                "operationId": "5ac0da24eafa38a19f01c6c908079574",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tutor_id",
+                                    "quality",
+                                    "delivery",
+                                    "attitude",
+                                    "benefit",
+                                    "rate"
+                                ],
+                                "properties": {
+                                    "tutor_id": {
+                                        "type": "integer"
+                                    },
+                                    "quality": {
+                                        "type": "string",
+                                        "enum": [
+                                            "sangat baik",
+                                            "baik",
+                                            "cukup",
+                                            "buruk",
+                                            "sangat buruk"
+                                        ]
+                                    },
+                                    "delivery": {
+                                        "type": "string",
+                                        "enum": [
+                                            "sangat baik",
+                                            "baik",
+                                            "cukup",
+                                            "buruk",
+                                            "sangat buruk"
+                                        ]
+                                    },
+                                    "attitude": {
+                                        "type": "string",
+                                        "enum": [
+                                            "sangat baik",
+                                            "baik",
+                                            "cukup",
+                                            "buruk",
+                                            "sangat buruk"
+                                        ]
+                                    },
+                                    "benefit": {
+                                        "type": "string",
+                                        "enum": [
+                                            "sangat baik",
+                                            "baik",
+                                            "cukup",
+                                            "buruk",
+                                            "sangat buruk"
+                                        ]
+                                    },
+                                    "rate": {
+                                        "type": "integer"
+                                    },
+                                    "review": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Review saved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/student/review/{tutor_id}": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Get review detail",
+                "operationId": "f42cb8de09c2dc7759d9b4fec53796d5",
+                "parameters": [
+                    {
+                        "name": "tutor_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/my-packages": {
+            "get": {
+                "tags": [
+                    "StudyPackages"
+                ],
+                "summary": "Get student's purchased packages",
+                "operationId": "f4f07338d4b66caef5a77c6f630a9908",
+                "responses": {
+                    "200": {
+                        "description": "Packages",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/study-packages": {
+            "get": {
+                "tags": [
+                    "StudyPackages"
+                ],
+                "summary": "Get study packages",
+                "operationId": "3c965fa48521616d31663b511a2aa3fb",
+                "responses": {
+                    "200": {
+                        "description": "Packages",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/study-packages/{id}": {
+            "get": {
+                "tags": [
+                    "StudyPackages"
+                ],
+                "summary": "Get study package detail",
+                "operationId": "8ff1720f3e37a51af60f87e859e1f7f9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Package detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/find-tutor": {
+            "get": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Find tutors",
+                "operationId": "2faf0df016d5dd92f4e56425c9b5ac84",
+                "parameters": [
+                    {
+                        "name": "radius",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "subject_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "class_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "min_rating",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "gender",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "weight_rating",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "weight_distance",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tutors list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/find-tutor/{id}": {
+            "get": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Find tutor detail",
+                "operationId": "b28c72922c4e4660b6e5e031afd3796c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tutor detail",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tutor/presence": {
+            "get": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Get tutor presence list",
+                "operationId": "cd22b86150ea34031f118f313c98261b",
+                "responses": {
+                    "200": {
+                        "description": "Presence list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Create presence",
+                "operationId": "76a0d2553569d74ba0435c9de10917b3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "taken_schedule_id",
+                                    "student_user_id",
+                                    "material",
+                                    "evaluation",
+                                    "grade",
+                                    "photo"
+                                ],
+                                "properties": {
+                                    "taken_schedule_id": {
+                                        "type": "integer"
+                                    },
+                                    "student_user_id": {
+                                        "type": "integer"
+                                    },
+                                    "material": {
+                                        "type": "string"
+                                    },
+                                    "evaluation": {
+                                        "type": "string"
+                                    },
+                                    "grade": {
+                                        "type": "integer"
+                                    },
+                                    "photo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Presence created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tutor/apply": {
+            "post": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Submit tutor application",
+                "operationId": "9e31e7846c42c0902b2a50f687a66a81",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "experience",
+                                    "organization"
+                                ],
+                                "properties": {
+                                    "experience": {
+                                        "type": "string"
+                                    },
+                                    "organization": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "cv": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "path_url": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "ktp": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "path_url": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "ijazah": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "path_url": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "certificate": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "path_url": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "portofolio": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "path_url": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Application submitted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tutor-profile/{id}": {
+            "get": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Tutor profile",
+                "operationId": "99cf9530a928ff5bbe7ad60cdd186b78",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tutor profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tutor-profile/{id}/available-slots": {
+            "get": {
+                "tags": [
+                    "Tutors"
+                ],
+                "summary": "Tutor available slots",
+                "operationId": "d1229abd4f1d60d3d7d53963f0f5d5bb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "2026-03-06"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Available slots",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StandardSuccess"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "StandardSuccess": {
+                "required": [
+                    "status",
+                    "message",
+                    "data"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "success"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "OK"
+                    },
+                    "data": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "StandardError": {
+                "required": [
+                    "status",
+                    "message",
+                    "errors"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "error"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Validation error"
+                    },
+                    "errors": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "UserPublic": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "john@example.com"
+                    },
+                    "role": {
+                        "type": "string",
+                        "example": "student"
+                    },
+                    "telephone_number": {
+                        "type": "string",
+                        "example": "081234567890"
+                    },
+                    "profile_photo_url": {
+                        "type": "string",
+                        "example": "uploads/photo.jpg"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "example": "male"
+                    },
+                    "date_of_birth": {
+                        "type": "string",
+                        "example": "2005-01-15"
+                    },
+                    "religion": {
+                        "type": "string",
+                        "example": "islam"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Use Bearer token from login/register responses",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Authentication and account flows"
+        },
+        {
+            "name": "Dashboards",
+            "description": "Student and tutor dashboards"
+        },
+        {
+            "name": "Tutors",
+            "description": "Tutor discovery and profile"
+        },
+        {
+            "name": "StudyPackages",
+            "description": "Student study packages"
+        },
+        {
+            "name": "Notifications",
+            "description": "Notifications"
+        },
+        {
+            "name": "Payments",
+            "description": "Student payments"
+        },
+        {
+            "name": "Schedules",
+            "description": "Schedules"
+        },
+        {
+            "name": "Students",
+            "description": "Student profile and reviews"
+        },
+        {
+            "name": "Admin",
+            "description": "Admin endpoints"
+        },
+        {
+            "name": "SocialAuth",
+            "description": "Social authentication"
+        }
+    ]
+}
