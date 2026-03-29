@@ -4,6 +4,7 @@ namespace App\Services\Dashboards;
 
 use App\DTOs\ResponseDTO;
 use App\Enums\ScheduleStatusEnum;
+use App\Enums\TutorStatusEnum;
 use App\Models\StudentPackage;
 use App\Models\TakenSchedule;
 use App\Models\User;
@@ -32,7 +33,7 @@ class StudentDashboardService
             'name' => $user->name,
             'email' => $user->email,
             'telephone_number' => $user->telephone_number,
-            'profile_photo_url' => $user->profile_photo_url,
+            'profile_photo_path' => $user->profile_photo_path,
             'date_of_birth' => $user->date_of_birth,
             'gender' => $user->gender,
             'religion' => $user->religion,
@@ -57,7 +58,7 @@ class StudentDashboardService
                     'used_session' => ($sp->package?->session ?? 0) - $sp->remaining_session,
                     'subject_name' => $sp->subject?->name ?? null,
                     'tutor_name' => $sp->tutor?->name ?? null,
-                    'tutor_photo' => $sp->tutor?->profile_photo_url ?? null,
+                    'tutor_photo' => $sp->tutor?->profile_photo_path ?? null,
                 ];
             });
 
@@ -78,7 +79,7 @@ class StudentDashboardService
                     'status' => $ts->status,
                     'subject_name' => $ts->subject?->name ?? null,
                     'tutor_name' => $ts->scheduleTutor?->user?->name ?? null,
-                    'tutor_photo' => $ts->scheduleTutor?->user?->profile_photo_url ?? null,
+                    'tutor_photo' => $ts->scheduleTutor?->user?->profile_photo_path ?? null,
                     'schedule_day' => $ts->scheduleTutor?->day ?? null,
                     'schedule_time' => $ts->scheduleTutor?->time ?? null,
                 ];
@@ -117,7 +118,7 @@ class StudentDashboardService
                 return [
                     'tutor_id' => $sp->tutor_user_id,
                     'tutor_name' => $sp->tutor?->name ?? null,
-                    'tutor_photo' => $sp->tutor?->profile_photo_url ?? null,
+                    'tutor_photo' => $sp->tutor?->profile_photo_path ?? null,
                     'tutor_education' => $sp->tutor?->tutor?->education ?? null,
                     'tutor_experience' => $sp->tutor?->tutor?->experience ?? null,
                 ];
@@ -171,7 +172,7 @@ class StudentDashboardService
 
         $tutorsQuery = User::where('role', 'tutor')
             ->whereHas('tutor', function ($query) {
-                $query->where('status', 'active');
+                $query->where('status', TutorStatusEnum::VERIFIED->value);
             })
             ->with(['tutor', 'subjects']);
 
@@ -193,7 +194,7 @@ class StudentDashboardService
                     return [
                         'tutor_id' => $tutor->id,
                         'tutor_name' => $tutor->name,
-                        'tutor_photo' => $tutor->profile_photo_url,
+                        'tutor_photo' => $tutor->profile_photo_path,
                         'gender' => $tutor->gender,
                         'address' => $tutor->home_address,
                         'education' => $tutor->tutor?->education ?? null,

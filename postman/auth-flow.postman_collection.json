@@ -97,7 +97,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{student_email}}\",\n  \"password\": \"{{student_password}}\",\n  \"password_confirmation\": \"{{student_password}}\",\n  \"name\": \"John Doe\",\n  \"telephone_number\": \"081234567890\",\n  \"date_of_birth\": \"2005-01-15\",\n  \"gender\": \"male\",\n  \"religion\": \"islam\",\n  \"province\": \"Jawa Timur\",\n  \"regency\": \"Surabaya\",\n  \"district\": \"Gubeng\",\n  \"subdistrict\": \"Airlangga\",\n  \"street\": \"Jl. Airlangga No. 10\",\n  \"latitude\": -7.2699803,\n  \"longitude\": 112.7520883,\n  \"school\": \"SMA Negeri 1 Surabaya\",\n  \"parent\": \"Ibu Siti Aisyah\",\n  \"parent_telephone_number\": \"082345678901\",\n  \"class_id\": 1,\n  \"curriculum_id\": 1\n}"
+              "raw": "{\n  \"email\": \"{{student_email}}\",\n  \"password\": \"{{student_password}}\",\n  \"password_confirmation\": \"{{student_password}}\",\n  \"name\": \"John Doe\",\n  \"telephone_number\": \"081234567890\",\n  \"date_of_birth\": \"2005-01-15\",\n  \"gender\": \"male\",\n  \"religion\": \"islam\",\n  \"province\": \"Jawa Timur\",\n  \"regency\": \"Surabaya\",\n  \"district\": \"Gubeng\",\n  \"subdistrict\": \"Airlangga\",\n  \"street\": \"Jl. Airlangga No. 10\",\n  \"latitude\": -7.2699803,\n  \"longitude\": 112.7520883,\n  \"class_id\": 1\n}"
             }
           },
           "event": [
@@ -399,7 +399,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{tutor_email}}\",\n  \"password\": \"{{tutor_password}}\",\n  \"password_confirmation\": \"{{tutor_password}}\",\n  \"name\": \"John Doe\",\n  \"telephone_number\": \"081234567890\",\n  \"date_of_birth\": \"2005-01-15\",\n  \"gender\": \"male\",\n  \"religion\": \"islam\",\n  \"province\": \"Jawa Timur\",\n  \"regency\": \"Surabaya\",\n  \"district\": \"Gubeng\",\n  \"subdistrict\": \"Airlangga\",\n  \"street\": \"Jl. Airlangga No. 10\",\n  \"latitude\": -7.2699803,\n  \"longitude\": 112.7520883,\n  \"bank\": \"BCA\",\n  \"rekening\": \"1234567890\"\n}"
+              "raw": "{\n  \"email\": \"{{tutor_email}}\",\n  \"password\": \"{{tutor_password}}\",\n  \"password_confirmation\": \"{{tutor_password}}\",\n  \"name\": \"John Doe\",\n  \"telephone_number\": \"081234567890\",\n  \"date_of_birth\": \"2005-01-15\",\n  \"gender\": \"male\",\n  \"religion\": \"islam\",\n  \"province\": \"Jawa Timur\",\n  \"regency\": \"Surabaya\",\n  \"district\": \"Gubeng\",\n  \"subdistrict\": \"Airlangga\",\n  \"street\": \"Jl. Airlangga No. 10\",\n  \"latitude\": -7.2699803,\n  \"longitude\": 112.7520883,\n  \"bank_code\": \"BCA\",\n  \"account_number\": \"1234567890\"\n}"
             }
           },
           "event": [

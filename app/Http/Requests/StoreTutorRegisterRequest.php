@@ -2,9 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\CourseMode;
-use App\Enums\CourseModeEnum;
-use App\Enums\Gender;
 use App\Enums\GenderEnum;
 use App\Enums\ReligionEnum;
 use Illuminate\Foundation\Http\FormRequest;
@@ -12,6 +9,17 @@ use Illuminate\Validation\Rules\Enum;
 
 class StoreTutorRegisterRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $bankCode = $this->input('bank_code') ?? $this->input('bank');
+        $accountNumber = $this->input('account_number') ?? $this->input('rekening');
+
+        $this->merge([
+            'bank_code' => $bankCode,
+            'account_number' => $accountNumber,
+        ]);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -36,54 +44,47 @@ class StoreTutorRegisterRequest extends FormRequest
             'religion' => ['nullable', new Enum(ReligionEnum::class)],
 
             'date_of_birth' => [
-                'required', 
-                'date', 
-                'date_format:Y-m-d', 
+                'required',
+                'date',
+                'date_format:Y-m-d',
                 'before_or_equal:today'
             ],
-            
+
             'telephone_number' => [
-                'required', 
-                'string', 
+                'required',
+                'string',
                 'max:15',
             ],
-            
+
             'profile_photo' => [
                 'nullable',
                 'file',
-                'mimes:png,jpg, pdf, svg, webp',
+                'mimes:png,jpg,pdf,svg,webp',
             ],
 
-            'religion' => [
-                'required',
-                'string',
-                'min:2',
-                'max:30'
-            ],
-            
             'province' => ['required', 'string', 'min:2', 'max:255'],
             'regency' => ['required', 'string', 'min:2', 'max:255'],
             'district' => ['required', 'string', 'min:2', 'max:255'],
             'subdistrict' => ['required', 'string', 'min:2', 'max:255'],
             'street' => ['required', 'string', 'min:2', 'max:255'],
-            
+
             'latitude' => [
-                'required', 
-                'numeric', 
-                'between:-90,90', 
+                'required',
+                'numeric',
+                'between:-90,90',
             ],
 
             'longitude' => [
-                'required', 
-                'numeric', 
-                'between:-180,180', 
+                'required',
+                'numeric',
+                'between:-180,180',
             ],
 
-            'bank' => [
+            'bank_code' => [
                 'required',
                 'string'
             ],
-            'rekening' => [
+            'account_number' => [
                 'required',
                 'string'
             ],

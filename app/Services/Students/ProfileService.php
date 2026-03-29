@@ -63,7 +63,7 @@ class ProfileService
         $userData = $request->only([
             'name',
             'telephone_number',
-            'profile_photo_url',
+            'profile_photo_path',
             'gender',
             'date_of_birth',
             'religion',

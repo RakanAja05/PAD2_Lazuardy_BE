@@ -18,7 +18,7 @@ class ReportAndAnalyticService
         $totalStudent = Student::all()->count();
         $totalStudentVerif = Payment::where('status', PaymentStatusEnum::UPLOADED)->count();
         $totalTutor = Tutor::all()->count();
-        $totalTutorVerif = Tutor::where('status', TutorStatusEnum::VERIFY)->count();
+        $totalTutorVerif = Tutor::where('status', TutorStatusEnum::PENDING->value)->count();
 
         $startDate = Carbon::now()->startOfMonth();
 

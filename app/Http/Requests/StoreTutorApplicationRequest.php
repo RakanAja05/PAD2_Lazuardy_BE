@@ -36,21 +36,21 @@ class StoreTutorApplicationRequest extends FormRequest
             'cv.*.name' => ['required', 'string', 'max:255'],
             'cv.*.path_url' => ['required', 'string', 'url'],
             
-            'ktp' => ['nullable', 'array'],
-            'ktp.*.name' => ['required', 'string', 'max:255'],
-            'ktp.*.path_url' => ['required', 'string', 'url'],
+            'id_card' => ['nullable', 'array'],
+            'id_card.*.name' => ['required', 'string', 'max:255'],
+            'id_card.*.path_url' => ['required', 'string', 'url'],
             
-            'ijazah' => ['nullable', 'array'],
-            'ijazah.*.name' => ['required', 'string', 'max:255'],
-            'ijazah.*.path_url' => ['required', 'string', 'url'],
+            'diploma' => ['nullable', 'array'],
+            'diploma.*.name' => ['required', 'string', 'max:255'],
+            'diploma.*.path_url' => ['required', 'string', 'url'],
             
             'certificate' => ['nullable', 'array'],
             'certificate.*.name' => ['required', 'string', 'max:255'],
             'certificate.*.path_url' => ['required', 'string', 'url'],
             
-            'portofolio' => ['nullable', 'array'],
-            'portofolio.*.name' => ['required', 'string', 'max:255'],
-            'portofolio.*.path_url' => ['required', 'string', 'url'],
+            'portfolio' => ['nullable', 'array'],
+            'portfolio.*.name' => ['required', 'string', 'max:255'],
+            'portfolio.*.path_url' => ['required', 'string', 'url'],
         ];
     }
 }

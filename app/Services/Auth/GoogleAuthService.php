@@ -83,7 +83,7 @@ class GoogleAuthService
             'telephone_number' => 'nullable|string|max:15',
             'date_of_birth' => 'nullable|date',
             'gender' => 'nullable|in:male,female',
-            'profile_photo_url' => 'nullable|url',
+            'profile_photo_path' => 'nullable|string',
         ]);
 
         try {
@@ -95,7 +95,7 @@ class GoogleAuthService
                 'telephone_number' => $validated['telephone_number'] ?? null,
                 'date_of_birth' => $validated['date_of_birth'] ?? null,
                 'gender' => $validated['gender'] ?? null,
-                'profile_photo_url' => $validated['profile_photo_url'] ?? null,
+                'profile_photo_path' => $validated['profile_photo_path'] ?? null,
                 'email_verified_at' => now(),
                 'password' => Hash::make(uniqid()),
             ]);

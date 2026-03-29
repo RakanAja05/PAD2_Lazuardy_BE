@@ -4,11 +4,11 @@ namespace App\Enums;
 
 enum FileTypeEnum: string
 {
-    case IJAZAH = 'ijazah';
-    case KTP = 'ktp';
+    case IJAZAH = 'diploma';
+    case KTP = 'id_card';
     case CV = 'cv';
-    case PORTOFOLIO = 'portofolio';
-    case CERTIFICATE = 'sertifikat';
+    case PORTOFOLIO = 'portfolio';
+    case CERTIFICATE = 'certificate';
 
     public function displayName() : string 
     {

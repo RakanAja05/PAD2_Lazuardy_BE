@@ -11,17 +11,24 @@ class Student extends Model
     /** @use HasFactory<\Database\Factories\StudentFactory> */
     use HasFactory;
 
+    protected $table = 'students';
     protected $primaryKey = 'user_id';
+    public $incrementing = false;
+    protected $keyType = 'int';
 
-    protected $fillable = 
-    [
+    protected $fillable = [
         'user_id',
         'class_id',
-        'curriculum_id',
-        'school',
-        'parent',
-        'parent_telephone_number',
+        'session',
+        'sanction',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'sanction' => 'date',
+        ];
+    }
 
     public function user(): BelongsTo
     {
@@ -33,18 +40,8 @@ class Student extends Model
         return $this->belongsTo(ClassModel::class, 'class_id');
     }
 
-    public function curriculum(): BelongsTo
-    {
-        return $this->belongsTo(Curriculum::class, 'curriculum_id');
-    }
-
-    public function studentPackages()
-    {
-        return $this->hasMany(StudentPackage::class, 'student_user_id', 'user_id');
-    }
-
     public function takenSchedules()
     {
-        return $this->hasMany(TakenSchedule::class, 'user_id', 'user_id');
+        return $this->hasMany(TakenSchedule::class, 'student_id', 'user_id');
     }
 }

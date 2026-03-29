@@ -6,19 +6,20 @@ use App\Enums\OrderStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Arr;
 
 class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
     use HasFactory;
 
-    protected $fillable = 
+    protected $fillable =
     [
         'user_id',
+        'order_number',
         'total_amount',
-        'package_id',
         'status',
     ];
 
@@ -28,7 +29,7 @@ class Order extends Model
             'status' => OrderStatusEnum::class,
         ];
     }
-    
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -39,8 +40,15 @@ class Order extends Model
         return $this->hasOne(Payment::class);
     }
 
-    public function package(): BelongsTo
+    public function items(): HasMany
     {
-        return $this->belongsTo(Package::class);
+        return $this->hasMany(OrderItem::class, 'order_id');
+    }
+
+    public function packages(): BelongsToMany
+    {
+        return $this->belongsToMany(Package::class, 'orders_items', 'order_id', 'package_id')
+            ->withPivot(['qty', 'price', 'subtotal'])
+            ->withTimestamps();
     }
 }

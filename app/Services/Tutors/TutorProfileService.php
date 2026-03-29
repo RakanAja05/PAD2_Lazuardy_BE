@@ -70,7 +70,7 @@ class TutorProfileService
             'data' => [
                 'user_id' => $tutor->id,
                 'name' => $tutor->name,
-                'profile_photo_url' => $tutor->profile_photo_url,
+                'profile_photo_path' => $tutor->profile_photo_path,
                 'telephone_number' => $tutor->telephone_number,
                 'gender' => $tutor->gender,
                 'rating' => [
@@ -211,7 +211,7 @@ class TutorProfileService
                     'id' => $review->id,
                     'reviewer' => [
                         'name' => $review->fromUser->name ?? 'Rakan',
-                        'photo_url' => $review->fromUser->profile_photo_url ?? null,
+                        'photo_path' => $review->fromUser->profile_photo_path ?? null,
                     ],
                     'rating' => [
                         'stars' => $review->rate,

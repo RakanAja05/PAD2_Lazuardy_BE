@@ -27,22 +27,22 @@ class UpdateStudentProfileRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'min:2', 'max:255'],
             'telephone_number' => ['required','string','max:15'],
-            'profile_photo_url' => ['required', 'string'],
+            'profile_photo_path' => ['required', 'string'],
             'gender' => ['required', new Enum(GenderEnum::class)],
             'date_of_birth' => [
-                'required', 
-                'date', 
-                'date_format:Y-m-d', 
+                'required',
+                'date',
+                'date_format:Y-m-d',
                 'before_or_equal:today'
             ],
             'religion' => ['required', new Enum(ReligionEnum::class)],
-            
+
             'province' => ['required', 'string', 'min:2', 'max:255'],
             'regency' => ['required', 'string', 'min:2', 'max:255'],
             'district' => ['required', 'string', 'min:2', 'max:255'],
             'subdistrict' => ['required', 'string', 'min:2', 'max:255'],
             'street' => ['required', 'string', 'min:2', 'max:255'],
-            
+
             'school' =>  ['required', 'string', 'min:2', 'max:255'],
             'class_id' =>  ['nullable', 'integer', 'exists:classes,id'],
             'curriculum_id' =>  ['nullable', 'integer', 'exists:curriculums,id'],

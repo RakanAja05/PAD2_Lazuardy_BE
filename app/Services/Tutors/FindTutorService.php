@@ -56,7 +56,7 @@ class FindTutorService
             ->join('tutors', 'users.id', '=', 'tutors.user_id')
             ->leftJoin('reviews', 'users.id', '=', 'reviews.to_user_id')
             ->where('users.role', 'tutor')
-            ->where('tutors.status', TutorStatusEnum::ACTIVE->value)
+            ->where('tutors.status', TutorStatusEnum::VERIFIED->value)
             ->whereNotNull('users.latitude')
             ->whereNotNull('users.longitude')
             ->groupBy('users.id');
@@ -129,7 +129,7 @@ class FindTutorService
                 ],
                 'user_id' => $tutor->id,
                 'name' => $tutor->name,
-                'profile_photo_url' => $tutor->profile_photo_url,
+                'profile_photo_path' => $tutor->profile_photo_path,
                 'gender' => $tutor->gender,
                 'distance' => round($tutor->distance, 2),
                 'distance_text' => round($tutor->distance, 2) . ' km',
@@ -246,7 +246,7 @@ class FindTutorService
                 'name' => $tutor->name,
                 'email' => $tutor->email,
                 'telephone_number' => $tutor->telephone_number,
-                'profile_photo_url' => $tutor->profile_photo_url,
+                'profile_photo_path' => $tutor->profile_photo_path,
                 'gender' => $tutor->gender,
                 'date_of_birth' => $tutor->date_of_birth,
                 'religion' => $tutor->religion,

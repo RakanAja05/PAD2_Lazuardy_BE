@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\DTOs\ResponseDTO;
+use App\Enums\TutorStatusEnum;
 use App\Models\SalaryPayment;
 use App\Models\Tutor;
 use App\Services\SalaryPaymentService;
@@ -14,7 +15,7 @@ class TutorSalaryService
     public function index(Request $request): ResponseDTO
     {
         $query = Tutor::with('user:id,name,email')
-            ->where('status', 'active');
+            ->where('status', TutorStatusEnum::VERIFIED->value);
 
         if ($request->has('search')) {
             $search = $request->search;
@@ -370,7 +371,7 @@ class TutorSalaryService
     public function getVerificationPending(Request $request): ResponseDTO
     {
         $query = Tutor::with('user:id,name,email,telephone_number')
-            ->where('status', 'verify');
+            ->where('status', TutorStatusEnum::PENDING->value);
 
         if ($request->has('search')) {
             $search = $request->search;

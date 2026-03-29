@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,38 +12,37 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // 1. Master data & users
-            AdminSeeder::class,
-            ClassSeeder::class,
-            CurriculumSeeder::class,
-            SubjectSeeder::class,
+            ClassesSeeder::class,
+            UsersSeeder::class,
+            StudentsSeeder::class,
+            TutorsSeeder::class,
+            ParentsSeeder::class,
 
-            // 2. Tutors & Students
-            TutorSeeder::class,         // Buat tutors + attach subjects
-            StudentSeeder::class,        // Buat students (untuk reviewer)
+            SubjectsSeeder::class,
+            TutorSubjectsSeeder::class,
 
-            // 3. Tutor schedules & files (needs tutors)
-            ScheduleTutorSeeder::class,  // Buat jadwal tersedia untuk tutor
-            FileSeeder::class,           // Buat file dokumen untuk tutor pending
+            ScheduleTutorsSeeder::class,
+            TakenSchedulesSeeder::class,
+            PresencesSeeder::class,
+            ReviewsSeeder::class,
+            TutorConfirmsSeeder::class,
 
-            // 4. Reviews & confirmations (needs tutors & students)
-            ReviewSeeder::class,         // Buat reviews untuk tutors (PENTING untuk scoring!)
-            TutorConfirmSeeder::class,   // Buat konfirmasi tutor oleh student
+            PackagesSeeder::class,
+            OrdersSeeder::class,
+            OrdersItemsSeeder::class,
+            PaymentsSeeder::class,
 
-            // 5. Packages & orders (needs students & tutors)
-            PackageSeeder::class,
-            StudentPackageSeeder::class,
-            OrderSeeder::class,          // Buat order paket oleh student
-
-            // 6. Payments (needs orders)
-            PaymentSeeder::class,        // Buat payment untuk order
-
-            // 7. Pending Payment Data (untuk testing salary management)
-            PendingPaymentSeeder::class, // Buat tutor dengan salary > 0, students aktif
-
-            // 8. Schedules & presence (needs student packages & schedules)
-            TakenScheduleSeeder::class,  // Buat jadwal yang diambil student
-            PresenceSeeder::class,       // Buat catatan kehadiran & evaluasi
+            OtpsSeeder::class,
+            NotificationsSeeder::class,
+            SalaryPaymentsSeeder::class,
+            PersonalAccessTokensSeeder::class,
+            CacheSeeder::class,
+            CacheLocksSeeder::class,
+            FailedJobsSeeder::class,
+            JobBatchesSeeder::class,
+            JobsSeeder::class,
+            PasswordResetTokensSeeder::class,
+            SessionsSeeder::class,
         ]);
     }
 }

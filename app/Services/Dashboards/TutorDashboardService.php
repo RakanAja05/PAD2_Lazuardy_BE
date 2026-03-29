@@ -33,7 +33,7 @@ class TutorDashboardService
             'name' => $user->name,
             'email' => $user->email,
             'telephone_number' => $user->telephone_number,
-            'profile_photo_url' => $user->profile_photo_url,
+            'profile_photo_path' => $user->profile_photo_path,
             'date_of_birth' => $user->date_of_birth,
             'gender' => $user->gender,
             'religion' => $user->religion,
@@ -70,7 +70,7 @@ class TutorDashboardService
                     'student_package_id' => $sp->id,
                     'student_user_id' => $sp->student_user_id,
                     'student_name' => $sp->student->name ?? null,
-                    'student_photo' => $sp->student->profile_photo_url ?? null,
+                    'student_photo' => $sp->student->profile_photo_path ?? null,
                     'student_email' => $sp->student->email ?? null,
                     'student_phone' => $sp->student->telephone_number ?? null,
                     'student_class' => $sp->student->student->class->name ?? null,
@@ -118,7 +118,7 @@ class TutorDashboardService
                     'date' => $ts->date,
                     'status' => $ts->status,
                     'student_name' => $ts->user->name ?? null,
-                    'student_photo' => $ts->user->profile_photo_url ?? null,
+                    'student_photo' => $ts->user->profile_photo_path ?? null,
                     'subject_name' => $ts->subject->name ?? null,
                     'schedule_time' => $ts->scheduleTutor->time ?? null,
                 ];
@@ -177,7 +177,7 @@ class TutorDashboardService
                     'benefit' => $review->benefit,
                     'review' => $review->review,
                     'from_user_name' => $review->fromUser->name ?? null,
-                    'from_user_photo' => $review->fromUser->profile_photo_url ?? null,
+                    'from_user_photo' => $review->fromUser->profile_photo_path ?? null,
                     'created_at' => $review->created_at,
                 ];
             });

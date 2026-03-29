@@ -74,13 +74,13 @@ class ProfileController extends Controller
     *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name","telephone_number","profile_photo_url","gender","date_of_birth","religion","province","regency","district","subdistrict","street","school"},
+    *             required={"name","telephone_number","profile_photo_path","gender","date_of_birth","religion","province","regency","district","subdistrict","street","school"},
      *             @OA\Property(property="name", type="string"),
      *             @OA\Property(property="telephone_number", type="string"),
-     *             @OA\Property(property="profile_photo_url", type="string"),
+    *             @OA\Property(property="profile_photo_path", type="string"),
     *             @OA\Property(property="gender", type="string", enum={"male","female"}),
      *             @OA\Property(property="date_of_birth", type="string"),
-    *             @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *             @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
      *             @OA\Property(property="province", type="string"),
      *             @OA\Property(property="regency", type="string"),
      *             @OA\Property(property="district", type="string"),
@@ -116,7 +116,7 @@ class ProfileController extends Controller
      *             @OA\Property(property="name", type="string"),
     *             @OA\Property(property="gender", type="string", enum={"male","female"}),
      *             @OA\Property(property="date_of_birth", type="string"),
-    *             @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *             @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
      *             @OA\Property(property="telephone_number", type="string"),
      *             @OA\Property(property="province", type="string"),
      *             @OA\Property(property="regency", type="string"),
@@ -159,7 +159,7 @@ class ProfileController extends Controller
      *             @OA\Property(property="qualification", type="array", @OA\Items(type="string")),
      *             @OA\Property(property="learning_method", type="string"),
      *             @OA\Property(property="schedules", type="array", @OA\Items(type="object",
-    *                 @OA\Property(property="day", type="string", enum={"minggu","senin","selasa","rabu","kamis","jumat","sabtu"}),
+    *                 @OA\Property(property="day", type="string", enum={"sunday","monday","tuesday","wednesday","thursday","friday","saturday"}),
      *                 @OA\Property(property="time", type="string", example="08:00")
      *             ))
      *         )

@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\BadgeEnum;
-use App\Enums\CourseModeEnum;
 use App\Enums\TutorStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,29 +17,23 @@ class Tutor extends Model
     protected $primaryKey = 'user_id';
     public $incrementing = false;
 
-    protected $fillable = 
+    protected $fillable =
     [
         'user_id',
         'education',
         'salary',
-        'price',
         'description',
-        'experience',
-        'organization',
         'learning_method',
-        'qualification',
-        'course_mode',
+        'bank_code',
+        'account_number',
+        'sanction',
         'status',
-        'badge',
-        'sanction_amount',
     ];
-    
+
     protected $casts = [
-        'qualification' => 'array',
-        'organization' => 'array',
         'education' => 'array',
-        'badge' => BadgeEnum::class,
-        'course_mode' => CourseModeEnum::class,
+        'learning_method' => 'array',
+        'sanction' => 'date',
         'status' => TutorStatusEnum::class,
     ];
 
@@ -52,7 +44,14 @@ class Tutor extends Model
 
     public function subjects(): BelongsToMany
     {
-        return $this->belongsToMany(Subject::class, 'tutor_subjects', 'user_id', 'subject_id');
+        return $this->belongsToMany(
+            Subject::class,
+            'tutor_subjects',
+            'tutor_id',
+            'subject_id',
+            'user_id',
+            'id'
+        );
     }
-    
+
 }

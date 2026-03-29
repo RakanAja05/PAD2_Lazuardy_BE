@@ -131,7 +131,7 @@ class AuthController extends Controller
     *             @OA\MediaType(
     *                 mediaType="application/json",
     *                 @OA\Schema(
-    *                     required={"email","password","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude"},
+    *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","class_id"},
     *                     @OA\Property(property="email", type="string"),
     *                     @OA\Property(property="password", type="string"),
     *                     @OA\Property(property="password_confirmation", type="string"),
@@ -144,20 +144,16 @@ class AuthController extends Controller
     *                     @OA\Property(property="district", type="string"),
     *                     @OA\Property(property="subdistrict", type="string"),
     *                     @OA\Property(property="street", type="string"),
-    *                     @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *                     @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
     *                     @OA\Property(property="latitude", type="number"),
     *                     @OA\Property(property="longitude", type="number"),
-    *                     @OA\Property(property="class_id", type="integer"),
-    *                     @OA\Property(property="curriculum_id", type="integer"),
-    *                     @OA\Property(property="school", type="string"),
-    *                     @OA\Property(property="parent", type="string"),
-    *                     @OA\Property(property="parent_telephone_number", type="string")
+    *                     @OA\Property(property="class_id", type="integer")
     *                 )
     *             ),
     *             @OA\MediaType(
     *                 mediaType="multipart/form-data",
     *                 @OA\Schema(
-    *                     required={"email","password","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude"},
+    *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","class_id"},
     *                     @OA\Property(property="email", type="string"),
     *                     @OA\Property(property="password", type="string"),
     *                     @OA\Property(property="password_confirmation", type="string"),
@@ -171,14 +167,10 @@ class AuthController extends Controller
     *                     @OA\Property(property="district", type="string"),
     *                     @OA\Property(property="subdistrict", type="string"),
     *                     @OA\Property(property="street", type="string"),
-    *                     @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *                     @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
     *                     @OA\Property(property="latitude", type="number"),
     *                     @OA\Property(property="longitude", type="number"),
-    *                     @OA\Property(property="class_id", type="integer"),
-    *                     @OA\Property(property="curriculum_id", type="integer"),
-    *                     @OA\Property(property="school", type="string"),
-    *                     @OA\Property(property="parent", type="string"),
-    *                     @OA\Property(property="parent_telephone_number", type="string")
+    *                     @OA\Property(property="class_id", type="integer")
     *                 )
     *             )
     *         }
@@ -217,7 +209,7 @@ class AuthController extends Controller
      *             @OA\MediaType(
      *                 mediaType="application/json",
      *                 @OA\Schema(
-     *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","bank","rekening"},
+    *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","bank_code","account_number"},
      *                     @OA\Property(property="email", type="string"),
      *                     @OA\Property(property="password", type="string"),
      *                     @OA\Property(property="password_confirmation", type="string"),
@@ -230,17 +222,19 @@ class AuthController extends Controller
      *                     @OA\Property(property="district", type="string"),
      *                     @OA\Property(property="subdistrict", type="string"),
      *                     @OA\Property(property="street", type="string"),
-    *                     @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *                     @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
      *                     @OA\Property(property="latitude", type="number"),
      *                     @OA\Property(property="longitude", type="number"),
-     *                     @OA\Property(property="bank", type="string"),
-     *                     @OA\Property(property="rekening", type="string")
+    *                     @OA\Property(property="bank_code", type="string"),
+    *                     @OA\Property(property="account_number", type="string"),
+    *                     @OA\Property(property="bank", type="string", deprecated=true, description="Legacy alias of bank_code"),
+    *                     @OA\Property(property="rekening", type="string", deprecated=true, description="Legacy alias of account_number")
      *                 )
      *             ),
      *             @OA\MediaType(
      *                 mediaType="multipart/form-data",
      *                 @OA\Schema(
-     *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","bank","rekening"},
+    *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","bank_code","account_number"},
      *                     @OA\Property(property="email", type="string"),
      *                     @OA\Property(property="password", type="string"),
      *                     @OA\Property(property="password_confirmation", type="string"),
@@ -254,11 +248,13 @@ class AuthController extends Controller
      *                     @OA\Property(property="district", type="string"),
      *                     @OA\Property(property="subdistrict", type="string"),
      *                     @OA\Property(property="street", type="string"),
-    *                     @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *                     @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
      *                     @OA\Property(property="latitude", type="number"),
      *                     @OA\Property(property="longitude", type="number"),
-     *                     @OA\Property(property="bank", type="string"),
-     *                     @OA\Property(property="rekening", type="string")
+    *                     @OA\Property(property="bank_code", type="string"),
+    *                     @OA\Property(property="account_number", type="string"),
+    *                     @OA\Property(property="bank", type="string", deprecated=true, description="Legacy alias of bank_code"),
+    *                     @OA\Property(property="rekening", type="string", deprecated=true, description="Legacy alias of account_number")
      *                 )
      *             )
      *         }

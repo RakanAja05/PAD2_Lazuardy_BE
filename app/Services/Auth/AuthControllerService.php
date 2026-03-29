@@ -3,17 +3,14 @@
 namespace App\Services\Auth;
 
 use App\DTOs\ResponseDTO;
-use App\Enums\BadgeEnum;
-use App\Enums\GenderEnum;
 use App\Enums\OtpIdentifierEnum;
 use App\Enums\OtpTypeEnum;
+use App\Enums\ReligionEnum;
 use App\Enums\RoleEnum;
 use App\Http\Requests\StoreStudentRegisterRequest;
 use App\Http\Requests\StoreTutorRegisterRequest;
 use App\Http\Requests\UpdateAuthRequest;
 use App\Http\Requests\VerifyOtpRequest;
-use App\Models\ClassModel;
-use App\Models\Curriculum;
 use App\Models\Student;
 use App\Models\Tutor;
 use App\Models\User;
@@ -130,22 +127,23 @@ class AuthControllerService
         if ($request->hasFile('profile_photo')) {
             $file = $request->file('profile_photo');
             $path = $file->store('uploads', 'public');
-            $userData['profile_photo_url'] = $path;
+            $userData['profile_photo_path'] = $path;
         }
 
-        $userData['gender'] = GenderEnum::tryFromDisplayName($request->gender);
         $userData['password'] = Hash::make($userData['password']);
         $userData['role'] = RoleEnum::STUDENT;
+        if (empty($userData['religion'])) {
+            $userData['religion'] = ReligionEnum::NOT_SET;
+        }
         $userData['home_address'] = $userService->convertAddressToArray(
             $request->only(['province', 'regency', 'district', 'subdistrict', 'street'])
         );
 
-        $studentData = $request->only([
-            'class_id', 'curriculum_id',
-            'school', 'parent',
-            'parent_telephone_number',
-        ]);
-        $studentData = $this->resolveStudentRefs($studentData);
+        $studentData = [
+            'class_id' => $request->integer('class_id'),
+            // `students.session` is required by the current migration; initialize at 0.
+            'session' => 0,
+        ];
 
         DB::beginTransaction();
         try {
@@ -192,17 +190,19 @@ class AuthControllerService
         if ($request->hasFile('profile_photo')) {
             $file = $request->file('profile_photo');
             $path = $file->store('uploads', 'public');
-            $userData['profile_photo_url'] = $path;
+            $userData['profile_photo_path'] = $path;
         }
 
         $userData['password'] = Hash::make($userData['password']);
         $userData['role'] = RoleEnum::TUTOR;
+        if (empty($userData['religion'])) {
+            $userData['religion'] = ReligionEnum::NOT_SET;
+        }
         $userData['home_address'] = $userService->convertAddressToArray(
             $request->only(['province', 'regency', 'district', 'subdistrict', 'street'])
         );
 
-        $tutorData = $request->only(['bank', 'rekening']);
-        $tutorData['badge'] = BadgeEnum::BRONZE;
+        $tutorData = $request->only(['bank_code', 'account_number']);
 
         DB::beginTransaction();
         try {
@@ -349,24 +349,4 @@ class AuthControllerService
         ], 200);
     }
 
-    private function resolveStudentRefs(array $studentData): array
-    {
-        if (!empty($studentData['class_id']) && !ClassModel::whereKey($studentData['class_id'])->exists()) {
-            $classId = ClassModel::whereRaw('LOWER(name) = ?', [strtolower((string) $studentData['class_id'])])
-                ->value('id');
-            if ($classId) {
-                $studentData['class_id'] = $classId;
-            }
-        }
-
-        if (!empty($studentData['curriculum_id']) && !Curriculum::whereKey($studentData['curriculum_id'])->exists()) {
-            $curriculumId = Curriculum::whereRaw('LOWER(name) = ?', [strtolower((string) $studentData['curriculum_id'])])
-                ->value('id');
-            if ($curriculumId) {
-                $studentData['curriculum_id'] = $curriculumId;
-            }
-        }
-
-        return $studentData;
-    }
 }

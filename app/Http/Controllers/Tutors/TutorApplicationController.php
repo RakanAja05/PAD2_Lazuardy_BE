@@ -28,11 +28,11 @@ class TutorApplicationController extends Controller
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             )),
-     *             @OA\Property(property="ktp", type="array", @OA\Items(type="object",
+    *             @OA\Property(property="id_card", type="array", @OA\Items(type="object",
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             )),
-     *             @OA\Property(property="ijazah", type="array", @OA\Items(type="object",
+    *             @OA\Property(property="diploma", type="array", @OA\Items(type="object",
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             )),
@@ -40,7 +40,7 @@ class TutorApplicationController extends Controller
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             )),
-     *             @OA\Property(property="portofolio", type="array", @OA\Items(type="object",
+    *             @OA\Property(property="portfolio", type="array", @OA\Items(type="object",
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             ))

@@ -13,7 +13,7 @@ class TutorVerifyService
     public function index(): ResponseDTO
     {
         $tutorsPaginator = Tutor::with(['user.files', 'subjects'])
-            ->where('status', TutorStatusEnum::VERIFY->value)
+            ->where('status', TutorStatusEnum::PENDING->value)
             ->paginate(9);
 
         $tutorsCollection = $tutorsPaginator->getCollection()->map(function ($t) {
@@ -58,10 +58,10 @@ class TutorVerifyService
         DB::beginTransaction();
         try {
             $tutor = Tutor::where('user_id', $validated['user_id'])
-                ->where('status', TutorStatusEnum::VERIFY->value)
+                ->where('status', TutorStatusEnum::PENDING->value)
                 ->firstOrFail();
 
-            $tutor->status = TutorStatusEnum::ACTIVE;
+            $tutor->status = TutorStatusEnum::VERIFIED;
             $tutor->save();
 
             DB::commit();
@@ -94,7 +94,7 @@ class TutorVerifyService
         DB::beginTransaction();
         try {
             $tutor = Tutor::where('user_id', $validated['user_id'])
-                ->where('status', TutorStatusEnum::VERIFY->value)
+                ->where('status', TutorStatusEnum::PENDING->value)
                 ->firstOrFail();
 
             $tutor->status = TutorStatusEnum::REJECTED;

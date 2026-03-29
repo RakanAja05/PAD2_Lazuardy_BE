@@ -42,7 +42,7 @@ class GoogleController extends Controller
      *             @OA\Property(property="telephone_number", type="string"),
      *             @OA\Property(property="date_of_birth", type="string"),
      *             @OA\Property(property="gender", type="string"),
-     *             @OA\Property(property="profile_photo_url", type="string")
+    *             @OA\Property(property="profile_photo_path", type="string")
      *         )
      *     ),
      *     @OA\Response(

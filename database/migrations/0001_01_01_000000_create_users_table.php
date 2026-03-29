@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('profile_photo_path')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->enum('gender', $genders)->nullable();
-            $table->enum('religion', $religions)->nullable();
+            $table->enum('religion', $religions)->default(ReligionEnum::NOT_SET->value);
             $table->json('home_address')->nullable();
             $table->string('google_id')->nullable();
             $table->string('facebook_id')->nullable();

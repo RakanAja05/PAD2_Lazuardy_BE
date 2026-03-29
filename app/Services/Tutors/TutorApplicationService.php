@@ -21,8 +21,8 @@ class TutorApplicationService
         ]);
 
         $fileData = $request->only([
-            'cv', 'ktp', 'ijazah',
-            'certificate', 'portofolio',
+            'cv', 'id_card', 'diploma',
+            'certificate', 'portfolio',
         ]);
 
         $tutorService = new TutorService();

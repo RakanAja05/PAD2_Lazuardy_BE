@@ -10,23 +10,25 @@ class Subject extends Model
 {
     /** @use HasFactory<\Database\Factories\SubjectFactory> */
     use HasFactory;
-    public $timestamps = false; 
+    public $timestamps = false;
 
-    protected $fillable = 
+    protected $fillable =
     [
         'name',
-        'curriculum_id',
         'class_id',
-        'icon_image_url',
+        'icon_image_path',
     ];
 
-    public function tutors(): BelongsToMany {
-        return $this->belongsToMany(User::class, 'tutor_subjects', 'subject_id', 'user_id');
-    }
-
-    public function curriculum()
+    public function tutors(): BelongsToMany
     {
-        return $this->belongsTo(Curriculum::class, 'curriculum_id');
+        return $this->belongsToMany(
+            Tutor::class,
+            'tutor_subjects',
+            'subject_id',
+            'tutor_id',
+            'id',
+            'user_id'
+        );
     }
 
     public function class()

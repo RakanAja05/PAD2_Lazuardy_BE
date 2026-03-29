@@ -86,7 +86,7 @@ class StudyPackageService
             ->with([
                 'package',
                 'subject',
-                'tutor:id,name,email,profile_photo_url',
+                'tutor:id,name,email,profile_photo_path',
             ])
             ->get();
 
@@ -104,7 +104,7 @@ class StudyPackageService
                         'id' => $sp->tutor->id,
                         'name' => $sp->tutor->name,
                         'email' => $sp->tutor->email,
-                        'profile_photo_url' => $sp->tutor->profile_photo_url,
+                        'profile_photo_path' => $sp->tutor->profile_photo_path,
                     ] : null,
                     'remaining_session' => $sp->remaining_session,
                     'used_session' => $package->session - $sp->remaining_session,
@@ -161,7 +161,7 @@ class StudyPackageService
             ->with([
                 'package',
                 'subject',
-                'tutor:id,name,email,profile_photo_url',
+                'tutor:id,name,email,profile_photo_path',
             ])
             ->get();
 
@@ -186,7 +186,7 @@ class StudyPackageService
                     'id' => $sp->tutor->id,
                     'name' => $sp->tutor->name,
                     'email' => $sp->tutor->email,
-                    'profile_photo_url' => $sp->tutor->profile_photo_url,
+                    'profile_photo_path' => $sp->tutor->profile_photo_path,
                 ] : null,
                 'remaining_session' => $sp->remaining_session,
                 'used_session' => $package->session - $sp->remaining_session,
