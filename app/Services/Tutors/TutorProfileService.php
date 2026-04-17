@@ -127,7 +127,7 @@ class TutorProfileService
         $date = $request->input('date');
         $dayOfWeek = date('N', strtotime($date));
 
-        $schedules = ScheduleTutor::where('user_id', $id)
+        $schedules = ScheduleTutor::where('tutor_id', $id)
             ->where('day', $dayOfWeek)
             ->get();
 
@@ -157,7 +157,7 @@ class TutorProfileService
 
     private function getAvailableSchedules($tutorId): array
     {
-        $schedules = ScheduleTutor::where('user_id', $tutorId)
+        $schedules = ScheduleTutor::where('tutor_id', $tutorId)
             ->orderBy('day')
             ->orderBy('time')
             ->get();
