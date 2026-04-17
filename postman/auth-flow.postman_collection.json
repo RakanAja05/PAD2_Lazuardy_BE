@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "6b7f5f0a-7c2d-4d9f-9e0b-4efc1d2b9a10",
-    "name": "PAD Lazuardy - Auth Flow",
+    "name": "PAD2 Lazuardy - Auth Flow",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -429,7 +429,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{tutor_email}}\",\n  \"password\": \"{{tutor_password}}\",\n  \"password_confirmation\": \"{{tutor_password}}\",\n  \"name\": \"John Doe\",\n  \"telephone_number\": \"081234567890\",\n  \"date_of_birth\": \"2005-01-15\",\n  \"gender\": \"male\",\n  \"religion\": \"islam\",\n  \"province\": \"Jawa Timur\",\n  \"regency\": \"Surabaya\",\n  \"district\": \"Gubeng\",\n  \"subdistrict\": \"Airlangga\",\n  \"street\": \"Jl. Airlangga No. 10\",\n  \"latitude\": -7.2699803,\n  \"longitude\": 112.7520883,\n  \"bank_code\": \"BCA\",\n  \"account_number\": \"1234567890\"\n}"
+              "raw": "{\n  \"email\": \"{{tutor_email}}\",\n  \"password\": \"{{tutor_password}}\",\n  \"password_confirmation\": \"{{tutor_password}}\",\n  \"name\": \"John Doe\",\n  \"telephone_number\": \"0812345678990\",\n  \"date_of_birth\": \"2005-01-15\",\n  \"gender\": \"male\",\n  \"religion\": \"islam\",\n  \"province\": \"Jawa Timur\",\n  \"regency\": \"Surabaya\",\n  \"district\": \"Gubeng\",\n  \"subdistrict\": \"Airlangga\",\n  \"street\": \"Jl. Airlangga No. 10\",\n  \"latitude\": -7.2699803,\n  \"longitude\": 112.7520883,\n  \"bank_code\": \"BCA\",\n  \"account_number\": \"1234567890\"\n}"
             }
           },
           "event": [

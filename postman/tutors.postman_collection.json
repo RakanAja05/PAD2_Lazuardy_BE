@@ -199,61 +199,6 @@
       "name": "Tutor (Role: tutor)",
       "item": [
         {
-          "name": "GET /api/me",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "me"]
-            }
-          }
-        },
-        {
-          "name": "PATCH /api/me",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Tutor Updated\",\n  \"gender\": \"male\",\n  \"date_of_birth\": \"2000-01-01\",\n  \"religion\": \"islam\",\n  \"telephone_number\": \"081234567890\",\n  \"province\": \"Jawa Timur\",\n  \"regency\": \"Surabaya\",\n  \"district\": \"Gubeng\",\n  \"subdistrict\": \"Airlangga\",\n  \"street\": \"Jl. Airlangga No. 10\",\n  \"bank\": \"BCA\",\n  \"rekening\": \"1234567890\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "me"]
-            }
-          }
-        },
-        {
-          "name": "PATCH /api/tutor/lesson-formulir",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"course_mode\": \"online\",\n  \"description\": \"Tutor description\",\n  \"qualification\": [\"S1\"],\n  \"learning_method\": \"Metode A\",\n  \"schedules\": [\n    { \"day\": \"monday\", \"time\": \"08:00\" }\n  ]\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/tutor/lesson-formulir",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "tutor", "lesson-formulir"]
-            }
-          }
-        },
-        {
           "name": "GET /api/tutor/presence",
           "request": {
             "method": "GET",
@@ -269,32 +214,6 @@
           }
         },
         {
-          "name": "POST /api/tutor/presence (multipart)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                { "key": "taken_schedule_id", "value": "{{takenScheduleId}}", "type": "text" },
-                { "key": "student_user_id", "value": "{{studentUserId}}", "type": "text" },
-                { "key": "material", "value": "Materi hari ini", "type": "text" },
-                { "key": "evaluation", "value": "Evaluasi", "type": "text" },
-                { "key": "grade", "value": "90", "type": "text" },
-                { "key": "photo", "type": "file", "src": "{{photoPath}}" }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/tutor/presence",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "tutor", "presence"]
-            }
-          }
-        },
-        {
           "name": "GET /api/tutor/apply",
           "request": {
             "method": "GET",
@@ -302,26 +221,6 @@
               { "key": "Accept", "value": "application/json" },
               { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/tutor/apply",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "tutor", "apply"]
-            }
-          }
-        },
-        {
-          "name": "POST /api/tutor/apply",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"experience\": \"2 years\",\n  \"organization\": [\"Org A\"],\n  \"cv\": [{ \"name\": \"cv.pdf\", \"path_url\": \"https://example.com/cv.pdf\" }],\n  \"id_card\": [{ \"name\": \"ktp.jpg\", \"path_url\": \"https://example.com/ktp.jpg\" }],\n  \"diploma\": [{ \"name\": \"ijazah.pdf\", \"path_url\": \"https://example.com/ijazah.pdf\" }],\n  \"certificate\": [{ \"name\": \"sertifikat.pdf\", \"path_url\": \"https://example.com/sertifikat.pdf\" }],\n  \"portfolio\": [{ \"name\": \"portfolio.pdf\", \"path_url\": \"https://example.com/portfolio.pdf\" }]\n}"
-            },
             "url": {
               "raw": "{{baseUrl}}/api/tutor/apply",
               "host": ["{{baseUrl}}"],

@@ -12,19 +12,19 @@
     },
     {
       "key": "studentEmail",
-      "value": "student@example.com"
+      "value": "student@example.test"
     },
     {
       "key": "studentPassword",
-      "value": "password123"
+      "value": "password"
     },
     {
       "key": "tutorEmail",
-      "value": "tutor@example.com"
+      "value": "tutor@example.test"
     },
     {
       "key": "tutorPassword",
-      "value": "password123"
+      "value": "password"
     },
     {
       "key": "studentToken",
@@ -58,7 +58,14 @@
               "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/login"
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
             }
           },
           "event": [
@@ -97,7 +104,14 @@
               "raw": "{\n  \"email\": \"{{tutorEmail}}\",\n  \"password\": \"{{tutorPassword}}\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/login"
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
             }
           },
           "event": [
