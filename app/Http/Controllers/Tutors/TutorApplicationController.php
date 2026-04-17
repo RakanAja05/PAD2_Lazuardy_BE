@@ -5,11 +5,19 @@ namespace App\Http\Controllers\Tutors;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTutorApplicationRequest;
 use App\Services\Tutors\TutorApplicationService;
+use Illuminate\Http\Request;
 
 class TutorApplicationController extends Controller
 {
     public function __construct(private readonly TutorApplicationService $tutorApplicationService)
     {
+    }
+
+    public function index(Request $request)
+    {
+        $result = $this->tutorApplicationService->index($request);
+
+        return response()->json($result->payload, $result->code);
     }
 
     /**

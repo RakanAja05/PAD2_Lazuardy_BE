@@ -21,6 +21,7 @@ class StoreStudentRegisterRequest extends FormRequest
         [
             // tabel user
             'email' => ['required','string','email','max:255','unique:users'],
+            'social_temp_token' => ['nullable', 'string'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'name' => ['required', 'string', 'min:2', 'max:255'],
             'gender' => ['required', new Enum(GenderEnum::class)],
@@ -36,6 +37,7 @@ class StoreStudentRegisterRequest extends FormRequest
                 'required',
                 'string',
                 'max:15',
+                'unique:users,telephone_number',
             ],
 
             'profile_photo' => [

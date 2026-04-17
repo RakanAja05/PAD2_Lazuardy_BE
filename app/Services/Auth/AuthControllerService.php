@@ -124,6 +124,47 @@ class AuthControllerService
             'latitude', 'longitude'
         );
 
+        $socialCacheKey = null;
+        $socialTempToken = $request->input('social_temp_token');
+        if ($socialTempToken) {
+            $socialCacheKey = 'social:register:' . $socialTempToken;
+            $socialData = Cache::get($socialCacheKey);
+
+            if (!$socialData || empty($socialData['provider']) || empty($socialData['provider_id'])) {
+                return new ResponseDTO([
+                    'status' => 'error',
+                    'message' => 'Sesi registrasi social tidak ditemukan atau sudah kadaluarsa',
+                    'errors' => [
+                        'social_temp_token' => $socialTempToken,
+                    ],
+                ], 422);
+            }
+
+            $allowedProviders = ['google', 'facebook'];
+            $provider = (string) ($socialData['provider'] ?? '');
+            if (in_array($provider, $allowedProviders, true)) {
+                $providerIdColumn = $provider . '_id';
+                $userData[$providerIdColumn] = (string) $socialData['provider_id'];
+
+                $emailLocked = (bool) ($socialData['email_locked'] ?? false);
+                $cachedEmail = $socialData['email'] ?? null;
+
+                if ($emailLocked && $cachedEmail !== null && $userData['email'] !== $cachedEmail) {
+                    return new ResponseDTO([
+                        'status' => 'error',
+                        'message' => 'Email dari social login tidak boleh diubah',
+                        'errors' => [
+                            'email' => 'email_locked',
+                        ],
+                    ], 422);
+                }
+
+                if ($emailLocked && $cachedEmail !== null) {
+                    $userData['email'] = $cachedEmail;
+                }
+            }
+        }
+
         if ($request->hasFile('profile_photo')) {
             $file = $request->file('profile_photo');
             $path = $file->store('uploads', 'public');
@@ -152,6 +193,10 @@ class AuthControllerService
             Student::create($studentData);
 
             DB::commit();
+
+            if (!empty($socialCacheKey)) {
+                Cache::forget($socialCacheKey);
+            }
 
             return new ResponseDTO([
                 'status' => 'success',
@@ -187,6 +232,47 @@ class AuthControllerService
             'latitude', 'longitude'
         );
 
+        $socialCacheKey = null;
+        $socialTempToken = $request->input('social_temp_token');
+        if ($socialTempToken) {
+            $socialCacheKey = 'social:register:' . $socialTempToken;
+            $socialData = Cache::get($socialCacheKey);
+
+            if (!$socialData || empty($socialData['provider']) || empty($socialData['provider_id'])) {
+                return new ResponseDTO([
+                    'status' => 'error',
+                    'message' => 'Sesi registrasi social tidak ditemukan atau sudah kadaluarsa',
+                    'errors' => [
+                        'social_temp_token' => $socialTempToken,
+                    ],
+                ], 422);
+            }
+
+            $allowedProviders = ['google', 'facebook'];
+            $provider = (string) ($socialData['provider'] ?? '');
+            if (in_array($provider, $allowedProviders, true)) {
+                $providerIdColumn = $provider . '_id';
+                $userData[$providerIdColumn] = (string) $socialData['provider_id'];
+
+                $emailLocked = (bool) ($socialData['email_locked'] ?? false);
+                $cachedEmail = $socialData['email'] ?? null;
+
+                if ($emailLocked && $cachedEmail !== null && $userData['email'] !== $cachedEmail) {
+                    return new ResponseDTO([
+                        'status' => 'error',
+                        'message' => 'Email dari social login tidak boleh diubah',
+                        'errors' => [
+                            'email' => 'email_locked',
+                        ],
+                    ], 422);
+                }
+
+                if ($emailLocked && $cachedEmail !== null) {
+                    $userData['email'] = $cachedEmail;
+                }
+            }
+        }
+
         if ($request->hasFile('profile_photo')) {
             $file = $request->file('profile_photo');
             $path = $file->store('uploads', 'public');
@@ -211,6 +297,10 @@ class AuthControllerService
             Tutor::create($tutorData);
 
             DB::commit();
+
+            if (!empty($socialCacheKey)) {
+                Cache::forget($socialCacheKey);
+            }
 
             return new ResponseDTO([
                 'status' => 'success',

@@ -1,0 +1,335 @@
+{
+  "info": {
+    "name": "PAD2 Lazuardy - Tutors",
+    "description": "Collection untuk mengetes endpoint di routes/api/tutors.php.\n\nCara pakai cepat:\n- Set variable `baseUrl` (contoh: http://localhost:8000)\n- Login student untuk akses find tutor & tutor profile\n- Login tutor untuk akses endpoint tutor-only\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+
+    { "key": "studentEmail", "value": "student@example.test" },
+    { "key": "studentPassword", "value": "password" },
+    { "key": "studentToken", "value": "" },
+
+    { "key": "tutorEmail", "value": "tutor@example.test" },
+    { "key": "tutorPassword", "value": "password" },
+    { "key": "tutorToken", "value": "" },
+
+    { "key": "tutorId", "value": "" },
+    { "key": "date", "value": "2026-04-17" },
+
+    { "key": "takenScheduleId", "value": "" },
+    { "key": "studentUserId", "value": "" },
+    { "key": "photoPath", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /api/login (Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "if (body && body.data && body.data.token) {",
+                  "  pm.collectionVariables.set('studentToken', body.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/login (Tutor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{tutorEmail}}\",\n  \"password\": \"{{tutorPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "if (body && body.data && body.data.token) {",
+                  "  pm.collectionVariables.set('tutorToken', body.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Find Tutor",
+      "item": [
+        {
+          "name": "GET /api/tutor/find",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/find?radius=10&page=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "find"],
+              "query": [
+                { "key": "radius", "value": "10" },
+                { "key": "page", "value": "1" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "const tutors = body?.data?.tutors;",
+                  "if (Array.isArray(tutors) && tutors.length > 0 && tutors[0].user_id) {",
+                  "  pm.collectionVariables.set('tutorId', tutors[0].user_id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/tutor/find/{{tutorId}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/find/{{tutorId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "find", "{{tutorId}}"]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Tutor Profile (Public)",
+      "item": [
+        {
+          "name": "GET /api/tutor/profile/{{tutorId}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/profile/{{tutorId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "profile", "{{tutorId}}"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/tutor/{{tutorId}}/available-slots?date={{date}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{studentToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/{{tutorId}}/available-slots?date={{date}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "{{tutorId}}", "available-slots"],
+              "query": [
+                { "key": "date", "value": "{{date}}" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Tutor (Role: tutor)",
+      "item": [
+        {
+          "name": "GET /api/me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "me"]
+            }
+          }
+        },
+        {
+          "name": "PATCH /api/me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tutor Updated\",\n  \"gender\": \"male\",\n  \"date_of_birth\": \"2000-01-01\",\n  \"religion\": \"islam\",\n  \"telephone_number\": \"081234567890\",\n  \"province\": \"Jawa Timur\",\n  \"regency\": \"Surabaya\",\n  \"district\": \"Gubeng\",\n  \"subdistrict\": \"Airlangga\",\n  \"street\": \"Jl. Airlangga No. 10\",\n  \"bank\": \"BCA\",\n  \"rekening\": \"1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "me"]
+            }
+          }
+        },
+        {
+          "name": "PATCH /api/tutor/lesson-formulir",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course_mode\": \"online\",\n  \"description\": \"Tutor description\",\n  \"qualification\": [\"S1\"],\n  \"learning_method\": \"Metode A\",\n  \"schedules\": [\n    { \"day\": \"monday\", \"time\": \"08:00\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/lesson-formulir",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "lesson-formulir"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/tutor/presence",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/presence",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "presence"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/tutor/presence (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "taken_schedule_id", "value": "{{takenScheduleId}}", "type": "text" },
+                { "key": "student_user_id", "value": "{{studentUserId}}", "type": "text" },
+                { "key": "material", "value": "Materi hari ini", "type": "text" },
+                { "key": "evaluation", "value": "Evaluasi", "type": "text" },
+                { "key": "grade", "value": "90", "type": "text" },
+                { "key": "photo", "type": "file", "src": "{{photoPath}}" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/presence",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "presence"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/tutor/apply",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/apply",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "apply"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/tutor/apply",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tutorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"experience\": \"2 years\",\n  \"organization\": [\"Org A\"],\n  \"cv\": [{ \"name\": \"cv.pdf\", \"path_url\": \"https://example.com/cv.pdf\" }],\n  \"id_card\": [{ \"name\": \"ktp.jpg\", \"path_url\": \"https://example.com/ktp.jpg\" }],\n  \"diploma\": [{ \"name\": \"ijazah.pdf\", \"path_url\": \"https://example.com/ijazah.pdf\" }],\n  \"certificate\": [{ \"name\": \"sertifikat.pdf\", \"path_url\": \"https://example.com/sertifikat.pdf\" }],\n  \"portfolio\": [{ \"name\": \"portfolio.pdf\", \"path_url\": \"https://example.com/portfolio.pdf\" }]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/apply",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tutor", "apply"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -34,17 +34,13 @@ class ReviewController extends Controller
      *     tags={"Students"},
      *     summary="Create review",
      *     security={{"bearerAuth":{}}},
-    *     @OA\RequestBody(
+     *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"tutor_id","quality","delivery","attitude","benefit","rate"},
+     *             required={"tutor_id","rate"},
      *             @OA\Property(property="tutor_id", type="integer"),
-    *             @OA\Property(property="quality", type="string", enum={"sangat baik","baik","cukup","buruk","sangat buruk"}),
-    *             @OA\Property(property="delivery", type="string", enum={"sangat baik","baik","cukup","buruk","sangat buruk"}),
-    *             @OA\Property(property="attitude", type="string", enum={"sangat baik","baik","cukup","buruk","sangat buruk"}),
-    *             @OA\Property(property="benefit", type="string", enum={"sangat baik","baik","cukup","buruk","sangat buruk"}),
-     *             @OA\Property(property="rate", type="integer"),
-     *             @OA\Property(property="review", type="string")
+     *             @OA\Property(property="rate", type="number", format="float"),
+     *             @OA\Property(property="comment", type="string")
      *         )
      *     ),
      *     @OA\Response(response=201, description="Review saved", @OA\JsonContent(ref="#/components/schemas/StandardSuccess"))
@@ -56,17 +52,13 @@ class ReviewController extends Controller
      *     tags={"Students"},
      *     summary="Update review",
      *     security={{"bearerAuth":{}}},
-    *     @OA\RequestBody(
+     *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"tutor_id","quality","delivery","attitude","benefit","rate"},
+     *             required={"tutor_id","rate"},
      *             @OA\Property(property="tutor_id", type="integer"),
-    *             @OA\Property(property="quality", type="string", enum={"sangat baik","baik","cukup","buruk","sangat buruk"}),
-    *             @OA\Property(property="delivery", type="string", enum={"sangat baik","baik","cukup","buruk","sangat buruk"}),
-    *             @OA\Property(property="attitude", type="string", enum={"sangat baik","baik","cukup","buruk","sangat buruk"}),
-    *             @OA\Property(property="benefit", type="string", enum={"sangat baik","baik","cukup","buruk","sangat buruk"}),
-     *             @OA\Property(property="rate", type="integer"),
-     *             @OA\Property(property="review", type="string")
+     *             @OA\Property(property="rate", type="number", format="float"),
+     *             @OA\Property(property="comment", type="string")
      *         )
      *     ),
      *     @OA\Response(response=201, description="Review saved", @OA\JsonContent(ref="#/components/schemas/StandardSuccess"))
@@ -81,17 +73,24 @@ class ReviewController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/student/review/{tutor_id}",
+     *     path="/api/student/review/{tutorId}",
      *     tags={"Students"},
      *     summary="Get review detail",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(name="tutor_id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="tutorId", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(response=200, description="Review detail", @OA\JsonContent(ref="#/components/schemas/StandardSuccess"))
      * )
      */
-    public function show(Request $request)
+    public function show(Request $request, int $tutorId)
     {
-        $result = $this->reviewService->show($request);
+        $result = $this->reviewService->show($request, $tutorId);
+
+        return response()->json($result->payload, $result->code);
+    }
+
+    public function update(Request $request, int $id)
+    {
+        $result = $this->reviewService->update($request, $id);
 
         return response()->json($result->payload, $result->code);
     }

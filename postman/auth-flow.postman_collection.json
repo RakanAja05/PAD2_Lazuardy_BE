@@ -176,6 +176,36 @@
           }
         },
         {
+          "name": "Update Me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student Updated\",\n  \"gender\": \"male\",\n  \"date_of_birth\": \"2005-01-15\",\n  \"profile_photo_path\": \"uploads/dummy.jpg\",\n  \"address\": {\n    \"province\": \"Jawa Timur\",\n    \"regency\": \"Surabaya\",\n    \"district\": \"Gubeng\",\n    \"subdistrict\": \"Airlangga\",\n    \"street\": \"Jl. Airlangga No. 10\"\n  },\n  \"class_name\": \"Kelas 1\"\n}"
+            }
+          }
+        },
+        {
           "name": "Logout",
           "request": {
             "method": "POST",
@@ -474,6 +504,36 @@
                 "api",
                 "me"
               ]
+            }
+          }
+        },
+        {
+          "name": "Update Me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tutor_auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Tutor description updated\",\n  \"teaching_mode\": [\"online\"],\n  \"subjects\": [1, 2]\n}"
             }
           }
         },

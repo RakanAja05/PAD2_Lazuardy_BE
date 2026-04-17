@@ -1,0 +1,1738 @@
+openapi: 3.0.3
+info:
+  title: PAD2 Lazuardy API
+  version: 1.0.0
+  description: |
+    Dokumentasi API untuk backend Laravel PAD2 Lazuardy.
+
+    Semua response mengikuti format standar:
+
+    {
+      "status": "success" | "error",
+      "message": "string",
+      "data": object|null,
+      "errors": object|null
+    }
+servers:
+  - url: https://api.example.com
+
+tags:
+  - name: Auth
+    description: Authentication and account flows
+  - name: Social Auth
+    description: Social authentication (mobile)
+  - name: Dashboard
+    description: Student and tutor dashboards
+  - name: Schedule
+    description: Student/tutor schedules
+  - name: Review
+    description: Student reviews
+  - name: Tutor
+    description: Tutor discovery and profile
+
+paths:
+  /login:
+    post:
+      tags: [Auth]
+      summary: Login
+      description: Login menggunakan email dan password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/LoginResponseData'
+        '401':
+          description: Kredensial tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /register:
+    post:
+      tags: [Auth]
+      summary: Register (send OTP)
+      description: Mengirim OTP ke email untuk memulai flow registrasi.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterSendOtpRequest'
+      responses:
+        '201':
+          description: OTP terkirim
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/RegisterSendOtpResponseData'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /register/verify:
+    patch:
+      tags: [Auth]
+      summary: Verify register OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterVerifyOtpRequest'
+      responses:
+        '200':
+          description: OTP valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: OTP tidak valid / kadaluarsa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /register/resend-otp:
+    patch:
+      tags: [Auth]
+      summary: Resend register OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterResendOtpRequest'
+      responses:
+        '200':
+          description: OTP dikirim ulang
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/RegisterResendOtpResponseData'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /register/student:
+    patch:
+      tags: [Auth]
+      summary: Complete student registration
+      description: Lengkapi profil student setelah OTP diverifikasi.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterStudentRequest'
+      responses:
+        '201':
+          description: Registrasi student berhasil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/RegisterCompleteResponseData'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /register/tutor:
+    patch:
+      tags: [Auth]
+      summary: Complete tutor registration
+      description: Lengkapi profil tutor setelah OTP diverifikasi.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterTutorRequest'
+      responses:
+        '201':
+          description: Registrasi tutor berhasil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/RegisterCompleteResponseData'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /forgot-password:
+    post:
+      tags: [Auth]
+      summary: Forgot password (send OTP)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: OTP reset password terkirim
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ForgotPasswordResponseData'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /forgot-password/verify:
+    patch:
+      tags: [Auth]
+      summary: Verify forgot-password OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordVerifyRequest'
+      responses:
+        '200':
+          description: OTP valid, dapat melanjutkan reset password
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ForgotPasswordVerifyResponseData'
+        '400':
+          description: OTP tidak valid / kadaluarsa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /reset-password:
+    patch:
+      tags: [Auth]
+      summary: Reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password berhasil direset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout berhasil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /me:
+    get:
+      tags: [Auth]
+      summary: Get current user (role-based)
+      description: |
+        Response `data` bergantung pada role:
+
+        - role=student -> `data.student`
+        - role=tutor -> `data.tutor`
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profil user saat ini
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        oneOf:
+                          - $ref: '#/components/schemas/MeStudentData'
+                          - $ref: '#/components/schemas/MeTutorData'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    patch:
+      tags: [Auth]
+      summary: Update current user (partial)
+      description: Partial update. Kirim hanya field yang ingin diubah.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateMeRequest'
+      responses:
+        '200':
+          description: Profil berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/{provider}/mobile:
+    post:
+      tags: [Social Auth]
+      summary: Social auth mobile
+      description: |
+        - Jika user sudah ada -> login dan mengembalikan `token`.
+        - Jika user belum ada -> memulai register flow dan mengembalikan `temp_token`.
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, facebook]
+          example: google
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SocialAuthMobileRequest'
+      responses:
+        '200':
+          description: Berhasil (login atau register flow)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        oneOf:
+                          - $ref: '#/components/schemas/SocialAuthLoginData'
+                          - $ref: '#/components/schemas/SocialAuthRegisterData'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /dashboard/student:
+    get:
+      tags: [Dashboard]
+      summary: Student dashboard
+      description: |
+        Dashboard student berbasis session (jatah belajar), bukan study packages.
+        `upcoming_schedules` = jadwal minggu ini & minggu depan.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard student
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StudentDashboardData'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /dashboard/student/summary:
+    get:
+      tags: [Dashboard]
+      summary: Student dashboard summary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Ringkasan dashboard student
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StudentDashboardSummaryData'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /dashboard/student/recommended-tutors:
+    get:
+      tags: [Dashboard]
+      summary: Student recommended tutors
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daftar tutor rekomendasi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required: [tutors]
+                        properties:
+                          tutors:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/TutorPublic'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /dashboard/tutor:
+    get:
+      tags: [Dashboard]
+      summary: Tutor dashboard
+      description: |
+        `upcoming_schedules` = jadwal minggu ini & minggu depan.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard tutor
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TutorDashboardData'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /dashboard/tutor/summary:
+    get:
+      tags: [Dashboard]
+      summary: Tutor dashboard summary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Ringkasan dashboard tutor
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TutorDashboardSummaryData'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /tutor/schedule:
+    get:
+      tags: [Schedule]
+      summary: Tutor schedules
+      description: Hanya bisa diakses oleh user dengan role tutor.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Jadwal tutor
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ScheduleListData'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /student/schedule:
+    get:
+      tags: [Schedule]
+      summary: Student schedules
+      description: Hanya bisa diakses oleh user dengan role student.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Jadwal student
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ScheduleListData'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /student/review:
+    get:
+      tags: [Review]
+      summary: List student reviews
+      description: Hanya bisa diakses oleh student.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daftar review student
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required: [reviews]
+                        properties:
+                          reviews:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Review'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+    post:
+      tags: [Review]
+      summary: Create review (1 session = 1 review)
+      description: |
+        Rules:
+        - rate: number (1-5)
+        - 1 session = 1 review
+        - hanya student yang boleh akses
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpsertRequest'
+      responses:
+        '201':
+          description: Review tersimpan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required: [review]
+                        properties:
+                          review:
+                            $ref: '#/components/schemas/Review'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    patch:
+      tags: [Review]
+      summary: Update review (upsert)
+      description: Patch review by session+tutor context (implementation-specific).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpsertRequest'
+      responses:
+        '200':
+          description: Review tersimpan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required: [review]
+                        properties:
+                          review:
+                            $ref: '#/components/schemas/Review'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /student/review/{tutorId}:
+    get:
+      tags: [Review]
+      summary: Review detail by tutor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tutorId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 12
+      responses:
+        '200':
+          description: Review tutor oleh student
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required: [review]
+                        properties:
+                          review:
+                            $ref: '#/components/schemas/Review'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /reviews/{id}:
+    patch:
+      tags: [Review]
+      summary: Update review by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 100
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpdateRequest'
+      responses:
+        '200':
+          description: Review berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /tutor/find:
+    get:
+      tags: [Tutor]
+      summary: Find tutors
+      description: |
+        Endpoint pencarian tutor.
+
+        Catatan: spesifikasi menyebut endpoint ini public.
+      parameters:
+        - name: radius_km
+          in: query
+          required: false
+          schema:
+            type: number
+            minimum: 0
+          example: 5
+        - name: subject_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          example: 2
+        - name: class_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          example: 9
+        - name: gender
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [male, female]
+          example: female
+        - name: min_rating
+          in: query
+          required: false
+          schema:
+            type: number
+            minimum: 1
+            maximum: 5
+          example: 4.5
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          example: 10
+      responses:
+        '200':
+          description: Daftar tutor
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TutorFindListData'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /tutor/find/{tutorId}:
+    get:
+      tags: [Tutor]
+      summary: Tutor find detail
+      parameters:
+        - name: tutorId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 12
+      responses:
+        '200':
+          description: Detail tutor
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required: [tutor]
+                        properties:
+                          tutor:
+                            $ref: '#/components/schemas/TutorPublic'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /tutor/profile/{tutorId}:
+    get:
+      tags: [Tutor]
+      summary: Tutor public profile
+      parameters:
+        - name: tutorId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 12
+      responses:
+        '200':
+          description: Profil tutor
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required: [tutor]
+                        properties:
+                          tutor:
+                            $ref: '#/components/schemas/TutorPublic'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /tutor/{tutorId}/available-slots:
+    get:
+      tags: [Tutor]
+      summary: Tutor available slots
+      parameters:
+        - name: tutorId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 12
+      responses:
+        '200':
+          description: Slot tersedia
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required: [available_slots]
+                        properties:
+                          available_slots:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/AvailableSlot'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            unauthorized:
+              value:
+                status: error
+                message: Unauthorized
+                data: null
+                errors: null
+    ForbiddenError:
+      description: Forbidden (role-based access)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            forbidden:
+              value:
+                status: error
+                message: Forbidden
+                data: null
+                errors: null
+    NotFoundError:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            not_found:
+              value:
+                status: error
+                message: Not found
+                data: null
+                errors: null
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            validation:
+              value:
+                status: error
+                message: Validation error
+                data: null
+                errors:
+                  email:
+                    - The email field is required.
+
+  schemas:
+    SuccessResponse:
+      type: object
+      required: [status, message, data, errors]
+      properties:
+        status:
+          type: string
+          enum: [success]
+          example: success
+        message:
+          type: string
+          example: OK
+        data:
+          nullable: true
+          oneOf:
+            - type: object
+            - type: array
+              items: {}
+          example: null
+        errors:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/ValidationErrors'
+            - type: object
+          example: null
+
+    ErrorResponse:
+      type: object
+      required: [status, message, data, errors]
+      properties:
+        status:
+          type: string
+          enum: [error]
+          example: error
+        message:
+          type: string
+          example: Validation error
+        data:
+          nullable: true
+          oneOf:
+            - type: object
+            - type: array
+              items: {}
+          example: null
+        errors:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/ValidationErrors'
+            - type: object
+          example:
+            email:
+              - The email field is required.
+
+    # Backward-compatible aliases (used in existing @OA annotations)
+    StandardSuccess:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+    StandardError:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+
+    ValidationErrors:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+
+    Pagination:
+      type: object
+      required: [current_page, total, per_page, total_pages, has_more]
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        total:
+          type: integer
+          example: 120
+        per_page:
+          type: integer
+          example: 10
+        total_pages:
+          type: integer
+          example: 12
+        has_more:
+          type: boolean
+          example: true
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: student@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+
+    LoginResponseData:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+          example: 1|y0ur_sanctum_t0ken
+        user:
+          $ref: '#/components/schemas/User'
+
+    RegisterSendOtpRequest:
+      type: object
+      required: [email, password, password_confirmation]
+      properties:
+        email:
+          type: string
+          format: email
+          example: newuser@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+        password_confirmation:
+          type: string
+          format: password
+          example: password123
+
+    RegisterSendOtpResponseData:
+      type: object
+      required: [otp_sent]
+      properties:
+        otp_sent:
+          type: boolean
+          example: true
+
+    RegisterVerifyOtpRequest:
+      type: object
+      required: [email, otp]
+      properties:
+        email:
+          type: string
+          format: email
+          example: newuser@example.com
+        otp:
+          type: string
+          example: '123456'
+
+    RegisterResendOtpRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          example: newuser@example.com
+
+    RegisterResendOtpResponseData:
+      type: object
+      required: [otp_sent]
+      properties:
+        otp_sent:
+          type: boolean
+          example: true
+
+    RegisterStudentRequest:
+      type: object
+      required:
+        - email
+        - name
+        - gender
+        - date_of_birth
+        - telephone_number
+        - province
+        - regency
+        - district
+        - subdistrict
+        - street
+        - latitude
+        - longitude
+      properties:
+        email:
+          type: string
+          format: email
+          example: newstudent@example.com
+        name:
+          type: string
+          example: Siti Aisyah
+        gender:
+          type: string
+          enum: [male, female]
+          example: female
+        date_of_birth:
+          type: string
+          format: date
+          example: 2006-04-21
+        telephone_number:
+          type: string
+          example: '081234567890'
+        profile_photo:
+          type: string
+          format: binary
+        province:
+          type: string
+          example: Jawa Barat
+        regency:
+          type: string
+          example: Bandung
+        district:
+          type: string
+          example: Coblong
+        subdistrict:
+          type: string
+          example: Dago
+        street:
+          type: string
+          example: Jl. Ir. H. Djuanda No. 1
+        religion:
+          type: string
+          nullable: true
+          example: islam
+        latitude:
+          type: number
+          format: float
+          example: -6.886
+        longitude:
+          type: number
+          format: float
+          example: 107.613
+        class_id:
+          type: integer
+          nullable: true
+          example: 9
+        school:
+          type: string
+          nullable: true
+          example: SMA Negeri 1 Bandung
+        parent:
+          type: string
+          nullable: true
+          example: Budi
+        parent_telephone_number:
+          type: string
+          nullable: true
+          example: '081212121212'
+
+    RegisterTutorRequest:
+      type: object
+      required:
+        - email
+        - name
+        - gender
+        - date_of_birth
+        - telephone_number
+        - province
+        - regency
+        - district
+        - subdistrict
+        - street
+        - latitude
+        - longitude
+        - education
+        - teaching_mode
+        - description
+      properties:
+        email:
+          type: string
+          format: email
+          example: newtutor@example.com
+        name:
+          type: string
+          example: Ahmad Fauzi
+        gender:
+          type: string
+          enum: [male, female]
+          example: male
+        date_of_birth:
+          type: string
+          format: date
+          example: 2000-01-15
+        telephone_number:
+          type: string
+          example: '081299998888'
+        profile_photo:
+          type: string
+          format: binary
+        province:
+          type: string
+          example: DKI Jakarta
+        regency:
+          type: string
+          example: Jakarta Selatan
+        district:
+          type: string
+          example: Kebayoran Baru
+        subdistrict:
+          type: string
+          example: Gandaria
+        street:
+          type: string
+          example: Jl. Radio Dalam
+        religion:
+          type: string
+          nullable: true
+          example: islam
+        latitude:
+          type: number
+          format: float
+          example: -6.244
+        longitude:
+          type: number
+          format: float
+          example: 106.798
+        education:
+          type: string
+          example: S1 Pendidikan Matematika
+        teaching_mode:
+          type: string
+          enum: [online, offline]
+          example: offline
+        description:
+          type: string
+          example: Berpengalaman mengajar matematika SMP/SMA.
+
+    RegisterCompleteResponseData:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+          example: 1|y0ur_sanctum_t0ken
+
+    ForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          example: student@example.com
+
+    ForgotPasswordResponseData:
+      type: object
+      required: [temp_token]
+      properties:
+        temp_token:
+          type: string
+          example: temp_abc123
+
+    ForgotPasswordVerifyRequest:
+      type: object
+      required: [temp_token, otp_code]
+      properties:
+        temp_token:
+          type: string
+          example: temp_abc123
+        otp_code:
+          type: string
+          example: '123456'
+
+    ForgotPasswordVerifyResponseData:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+          description: Token untuk reset password
+          example: reset_token_xyz
+
+    ResetPasswordRequest:
+      type: object
+      required: [token, password, password_confirmation]
+      properties:
+        token:
+          type: string
+          example: reset_token_xyz
+        password:
+          type: string
+          format: password
+          example: NewPassword123!
+        password_confirmation:
+          type: string
+          format: password
+          example: NewPassword123!
+
+    UpdateMeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe
+        telephone_number:
+          type: string
+          example: '081234567890'
+        gender:
+          type: string
+          enum: [male, female]
+          example: male
+        date_of_birth:
+          type: string
+          format: date
+          example: 2005-01-15
+        profile_photo:
+          type: string
+          format: binary
+
+    SocialAuthMobileRequest:
+      type: object
+      required: [provider_token]
+      properties:
+        provider_token:
+          type: string
+          description: Access token/ID token dari provider
+          example: ya29.a0AfH6SM...
+
+    SocialAuthLoginData:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+          example: 1|y0ur_sanctum_t0ken
+        user:
+          $ref: '#/components/schemas/User'
+
+    SocialAuthRegisterData:
+      type: object
+      required: [temp_token]
+      properties:
+        temp_token:
+          type: string
+          example: temp_register_123
+
+    StudentDashboardData:
+      type: object
+      required: [profile, session_stats, upcoming_schedules]
+      properties:
+        profile:
+          $ref: '#/components/schemas/Student'
+        session_stats:
+          $ref: '#/components/schemas/StudentSessionStats'
+        upcoming_schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schedule'
+        my_tutors:
+          type: array
+          items:
+            $ref: '#/components/schemas/TutorPublic'
+
+    StudentDashboardSummaryData:
+      type: object
+      required: [session_stats, upcoming_count]
+      properties:
+        session_stats:
+          $ref: '#/components/schemas/StudentSessionStats'
+        upcoming_count:
+          type: integer
+          example: 2
+
+    StudentSessionStats:
+      type: object
+      required: [remaining_sessions, used_sessions, total_sessions]
+      properties:
+        remaining_sessions:
+          type: integer
+          example: 6
+        used_sessions:
+          type: integer
+          example: 4
+        total_sessions:
+          type: integer
+          example: 10
+
+    TutorDashboardData:
+      type: object
+      required: [profile, upcoming_schedules]
+      properties:
+        profile:
+          $ref: '#/components/schemas/Tutor'
+        upcoming_schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schedule'
+
+    TutorDashboardSummaryData:
+      type: object
+      required: [upcoming_count, total_students]
+      properties:
+        upcoming_count:
+          type: integer
+          example: 3
+        total_students:
+          type: integer
+          example: 12
+
+    ScheduleListData:
+      type: object
+      required: [schedules]
+      properties:
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schedule'
+
+    Review:
+      type: object
+      required: [id, tutor_id, student_id, rate, comment, created_at]
+      properties:
+        id:
+          type: integer
+          example: 101
+        tutor_id:
+          type: integer
+          example: 12
+        student_id:
+          type: integer
+          example: 55
+        rate:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Tutor sangat membantu dan jelas.
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-04-17T10:30:00Z'
+
+    ReviewUpsertRequest:
+      type: object
+      required: [tutor_id, schedule_id, rate, comment]
+      properties:
+        tutor_id:
+          type: integer
+          example: 12
+        schedule_id:
+          type: integer
+          description: ID sesi/jadwal yang direview
+          example: 900
+        rate:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 4
+        comment:
+          type: string
+          example: Penjelasan mudah dipahami.
+
+    ReviewUpdateRequest:
+      type: object
+      properties:
+        rate:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Update komentar setelah sesi kedua.
+
+    TutorFindListData:
+      type: object
+      required: [tutors, pagination]
+      properties:
+        tutors:
+          type: array
+          items:
+            $ref: '#/components/schemas/TutorPublic'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    AvailableSlot:
+      type: object
+      required: [start_at, end_at]
+      properties:
+        start_at:
+          type: string
+          format: date-time
+          example: '2026-04-20T08:00:00Z'
+        end_at:
+          type: string
+          format: date-time
+          example: '2026-04-20T09:00:00Z'
+
+    User:
+      type: object
+      required: [id, name, role]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        role:
+          type: string
+          enum: [admin, student, tutor, parent, undefined]
+          example: student
+        telephone_number:
+          type: string
+          nullable: true
+          example: '081234567890'
+        profile_photo_path:
+          type: string
+          nullable: true
+          example: uploads/photo.jpg
+        gender:
+          type: string
+          nullable: true
+          enum: [male, female]
+          example: male
+        date_of_birth:
+          type: string
+          nullable: true
+          format: date
+          example: 2005-01-15
+
+    Student:
+      type: object
+      required: [user_id, name, gender, address]
+      properties:
+        user_id:
+          type: integer
+          example: 55
+        name:
+          type: string
+          example: Siti Aisyah
+        gender:
+          type: string
+          enum: [male, female]
+          example: female
+        profile_photo_path:
+          type: string
+          nullable: true
+          example: uploads/student.jpg
+        address:
+          type: string
+          example: Bandung, Jawa Barat
+
+    Tutor:
+      type: object
+      required: [user_id, name, gender, address, tutor]
+      properties:
+        user_id:
+          type: integer
+          example: 12
+        name:
+          type: string
+          example: Ahmad Fauzi
+        gender:
+          type: string
+          enum: [male, female]
+          example: male
+        profile_photo_path:
+          type: string
+          nullable: true
+          example: uploads/tutor.jpg
+        address:
+          type: string
+          example: Jakarta Selatan, DKI Jakarta
+        tutor:
+          $ref: '#/components/schemas/TutorProfile'
+
+    TutorProfile:
+      type: object
+      required: [description, education, teaching_mode, status]
+      properties:
+        description:
+          type: string
+          example: Berpengalaman mengajar matematika SMP/SMA.
+        education:
+          type: string
+          example: S1 Pendidikan Matematika
+        teaching_mode:
+          type: string
+          enum: [online, offline]
+          example: offline
+        status:
+          type: string
+          enum: [pending, verified, rejected]
+          example: verified
+
+    Subject:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+          example: 2
+        name:
+          type: string
+          example: Matematika
+
+    TutorRating:
+      type: object
+      required: [average, total_reviews]
+      properties:
+        average:
+          type: number
+          example: 4.8
+        total_reviews:
+          type: integer
+          example: 120
+
+    TutorPublic:
+      type: object
+      required: [user_id, name, profile_photo_path, gender, distance_km, address, tutor, subjects, rating]
+      properties:
+        user_id:
+          type: integer
+          example: 12
+        name:
+          type: string
+          example: Ahmad Fauzi
+        profile_photo_path:
+          type: string
+          nullable: true
+          example: uploads/tutor.jpg
+        gender:
+          type: string
+          enum: [male, female]
+          example: male
+        distance_km:
+          type: number
+          format: float
+          example: 2.4
+        address:
+          type: string
+          example: Jakarta Selatan, DKI Jakarta
+        tutor:
+          $ref: '#/components/schemas/TutorProfile'
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+        rating:
+          $ref: '#/components/schemas/TutorRating'
+
+    Schedule:
+      type: object
+      required: [id, tutor_id, student_id, subject, start_at, end_at, status]
+      properties:
+        id:
+          type: integer
+          example: 900
+        tutor_id:
+          type: integer
+          example: 12
+        student_id:
+          type: integer
+          example: 55
+        subject:
+          $ref: '#/components/schemas/Subject'
+        start_at:
+          type: string
+          format: date-time
+          example: '2026-04-18T08:00:00Z'
+        end_at:
+          type: string
+          format: date-time
+          example: '2026-04-18T09:00:00Z'
+        status:
+          type: string
+          example: scheduled
+
+    MeStudentData:
+      type: object
+      required: [student]
+      properties:
+        student:
+          $ref: '#/components/schemas/Student'
+
+    MeTutorData:
+      type: object
+      required: [tutor]
+      properties:
+        tutor:
+          $ref: '#/components/schemas/Tutor'

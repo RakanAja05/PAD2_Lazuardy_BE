@@ -8,7 +8,7 @@ use App\Models\User;
 
 class SalaryPaymentHistoryService
 {
-    public function getPaymentHistory($userId): ResponseDTO
+    public function sagetPaymentHistory($userId): ResponseDTO
     {
         $user = User::findOrFail($userId);
 

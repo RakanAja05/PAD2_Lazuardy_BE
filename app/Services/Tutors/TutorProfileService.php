@@ -17,9 +17,9 @@ class TutorProfileService
         $user = Auth::user();
 
         $tutor = User::select('users.*')
-            ->selectRaw('COALESCE(AVG(reviews.rate), 0) as avg_rating')
+            ->selectRaw('AVG(reviews.rate) as avg_rating')
             ->selectRaw('COUNT(reviews.id) as review_count')
-            ->leftJoin('reviews', 'users.id', '=', 'reviews.to_user_id')
+            ->leftJoin('reviews', 'users.id', '=', 'reviews.tutor_id')
             ->with(['tutor', 'tutor.subjects', 'tutor.subjects.class'])
             ->where('users.id', $id)
             ->where('users.role', 'tutor')
@@ -192,14 +192,14 @@ class TutorProfileService
         $perPage = 10;
         $offset = ($page - 1) * $perPage;
 
-        $reviews = Review::where('to_user_id', $tutorId)
-            ->with('fromUser')
+        $reviews = Review::where('tutor_id', $tutorId)
+            ->with('student.user')
             ->orderBy('created_at', 'desc')
             ->skip($offset)
             ->take($perPage)
             ->get();
 
-        $totalReviews = Review::where('to_user_id', $tutorId)->count();
+        $totalReviews = Review::where('tutor_id', $tutorId)->count();
 
         return [
             'total' => $totalReviews,
@@ -207,21 +207,20 @@ class TutorProfileService
             'per_page' => $perPage,
             'has_more' => ($offset + $perPage) < $totalReviews,
             'data' => $reviews->map(function ($review) {
+                $reviewerUser = $review->student?->user;
+
                 return [
                     'id' => $review->id,
                     'reviewer' => [
-                        'name' => $review->fromUser->name ?? 'Rakan',
-                        'photo_path' => $review->fromUser->profile_photo_path ?? null,
+                        'user_id' => $review->student_id,
+                        'name' => $reviewerUser?->name,
+                        'photo_path' => $reviewerUser?->profile_photo_path,
                     ],
                     'rating' => [
                         'stars' => $review->rate,
-                        'quality' => $review->quality,
-                        'delivery' => $review->delivery,
-                        'attitude' => $review->attitude,
-                        'benefit' => $review->benefit,
                     ],
-                    'review_text' => $review->review,
-                    'date' => $review->created_at->format('d/m/Y'),
+                    'comment' => $review->comment,
+                    'date' => $review->created_at?->format('d/m/Y'),
                 ];
             }),
         ];

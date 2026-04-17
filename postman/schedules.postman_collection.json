@@ -1,0 +1,233 @@
+{
+  "info": {
+    "name": "PAD2 Lazuardy - Schedules",
+    "description": "Collection untuk mengetes endpoint Schedules.\n\nCara pakai:\n- Set variable `baseUrl` (contoh: http://localhost:8000)\n- Jalankan login untuk mengisi `studentToken` / `tutorToken`\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "studentEmail",
+      "value": "student@example.test"
+    },
+    {
+      "key": "studentPassword",
+      "value": "password"
+    },
+    {
+      "key": "tutorEmail",
+      "value": "tutor@example.test"
+    },
+    {
+      "key": "tutorPassword",
+      "value": "password"
+    },
+    {
+      "key": "studentToken",
+      "value": ""
+    },
+    {
+      "key": "tutorToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /api/login (Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "pm.test('status=success', function () { pm.expect(body.status).to.eql('success'); });",
+                  "pm.test('token exists', function () { pm.expect(body.data).to.have.property('token'); });",
+                  "pm.collectionVariables.set('studentToken', body.data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/login (Tutor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{tutorEmail}}\",\n  \"password\": \"{{tutorPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "pm.test('status=success', function () { pm.expect(body.status).to.eql('success'); });",
+                  "pm.test('token exists', function () { pm.expect(body.data).to.have.property('token'); });",
+                  "pm.collectionVariables.set('tutorToken', body.data.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Schedules",
+      "item": [
+        {
+          "name": "GET /api/student/schedule",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/student/schedule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "student",
+                "schedule"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "pm.test('status=success', function () { pm.expect(body.status).to.eql('success'); });",
+                  "pm.test('data.schedules array', function () {",
+                  "  pm.expect(body).to.have.property('data');",
+                  "  pm.expect(body.data).to.have.property('schedules');",
+                  "  pm.expect(body.data.schedules).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/tutor/schedule",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tutorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tutor/schedule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tutor",
+                "schedule"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "pm.test('status=success', function () { pm.expect(body.status).to.eql('success'); });",
+                  "pm.test('data.schedules array', function () {",
+                  "  pm.expect(body).to.have.property('data');",
+                  "  pm.expect(body.data).to.have.property('schedules');",
+                  "  pm.expect(body.data.schedules).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

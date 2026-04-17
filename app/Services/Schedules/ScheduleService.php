@@ -9,17 +9,22 @@ class ScheduleService
 {
     public function indexStudent(Request $request): ResponseDTO
     {
-        $user = $request->user()->load('takenSchedules.scheduleTutor.user');
+        $user = $request->user()->load([
+            'takenSchedules.scheduleTutor.user',
+        ]);
         $takenSchedules = $user->takenSchedules;
 
         $tsData = [];
         foreach ($takenSchedules as $takenSchedule) {
             $schedule = $takenSchedule->scheduleTutor;
+
             $tsData[] = [
-                'tutor_name' => $schedule->user->name,
-                'day' => $schedule->day,
-                'time' => $schedule->time,
-                'status' => $schedule->status,
+                'tutor_user_id' => $schedule?->tutor_id,
+                'student_user_id' => $takenSchedule->student_id,
+                'tutor_name' => $schedule?->user?->name,
+                'day' => $schedule?->day,
+                'time' => $schedule?->time,
+                'status' => $takenSchedule->status?->value ?? $takenSchedule->status,
             ];
         }
 
@@ -34,15 +39,17 @@ class ScheduleService
 
     public function indexTutor(Request $request): ResponseDTO
     {
-        $user = $request->user()->load('schedules.takenSchedules.user');
+        $user = $request->user()->load('schedules.takenSchedules.student');
 
         $data = $user->schedules->flatMap(function ($schedule) {
             return $schedule->takenSchedules->map(function ($ts) use ($schedule) {
                 return [
-                    'student_name' => $ts->user->name,
+                    'tutor_user_id' => $schedule->tutor_id,
+                    'student_user_id' => $ts->student_id,
+                    'student_name' => $ts->student?->name,
                     'day' => $schedule->day,
                     'time' => $schedule->time,
-                    'status' => $ts->status,
+                    'status' => $ts->status?->value ?? $ts->status,
                 ];
             });
         });

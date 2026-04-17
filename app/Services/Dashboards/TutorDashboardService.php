@@ -3,12 +3,12 @@
 namespace App\Services\Dashboards;
 
 use App\DTOs\ResponseDTO;
-use App\Enums\ScheduleStatusEnum;
+use App\Enums\TakenScheduleStatusEnum;
 use App\Models\Review;
 use App\Models\ScheduleTutor;
-use App\Models\StudentPackage;
 use App\Models\TakenSchedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class TutorDashboardService
 {
@@ -27,165 +27,130 @@ class TutorDashboardService
         }
 
         $tutor = $user->tutor;
+        $now = Carbon::now();
 
-        $profile = [
-            'user_id' => $user->id,
+        $profile = array_filter([
             'name' => $user->name,
-            'email' => $user->email,
-            'telephone_number' => $user->telephone_number,
             'profile_photo_path' => $user->profile_photo_path,
-            'date_of_birth' => $user->date_of_birth,
-            'gender' => $user->gender,
-            'religion' => $user->religion,
-            'home_address' => $user->home_address,
-            'education' => $tutor->education,
-            'salary' => $tutor->salary,
-            'price' => $tutor->price,
-            'description' => $tutor->description,
-            'experience' => $tutor->experience,
-            'organization' => $tutor->organization,
-            'learning_method' => $tutor->learning_method,
-            'qualification' => $tutor->qualification,
-            'course_mode' => $tutor->course_mode,
-            'status' => $tutor->status,
-            'badge' => $tutor->badge,
-            'sanction_amount' => $tutor->sanction_amount,
-        ];
+            'status' => $tutor->status?->value ?? $tutor->status,
+        ], static fn ($value) => $value !== null);
 
-        $subjects = $user->subjects->map(function ($subject) {
-            return [
-                'subject_id' => $subject->id,
-                'subject_name' => $subject->name,
-                'subject_icon' => $subject->icon_image_url,
-                'class_name' => $subject->class->name ?? null,
-                'curriculum_name' => $subject->curriculum->name ?? null,
-            ];
-        });
-
-        $students = StudentPackage::where('tutor_user_id', $user->id)
-            ->with(['student.student', 'subject', 'package'])
+        $subjects = $user->subjects()
+            ->with('class')
             ->get()
-            ->map(function ($sp) {
-                return [
-                    'student_package_id' => $sp->id,
-                    'student_user_id' => $sp->student_user_id,
-                    'student_name' => $sp->student->name ?? null,
-                    'student_photo' => $sp->student->profile_photo_path ?? null,
-                    'student_email' => $sp->student->email ?? null,
-                    'student_phone' => $sp->student->telephone_number ?? null,
-                    'student_class' => $sp->student->student->class->name ?? null,
-                    'subject_name' => $sp->subject->name ?? null,
-                    'package_name' => $sp->package->name ?? null,
-                    'remaining_session' => $sp->remaining_session,
-                    'total_session' => $sp->package->session ?? 0,
-                    'progress_percentage' => $sp->package && $sp->package->session > 0
-                        ? round((($sp->package->session - $sp->remaining_session) / $sp->package->session) * 100, 2)
-                        : 0,
-                ];
-            });
+            ->map(function ($subject) {
+                return array_filter([
+                    'id' => $subject->id,
+                    'name' => $subject->name,
+                    'icon' => $subject->icon_image_path,
+                    'class' => $subject->class?->name,
+                ], static fn ($value) => $value !== null);
+            })
+            ->values();
 
-        $studentStats = [
-            'total_students' => $students->unique('student_user_id')->count(),
-            'total_active_packages' => StudentPackage::where('tutor_user_id', $user->id)
-                ->where('remaining_session', '>', 0)
-                ->count(),
-            'total_sessions_given' => StudentPackage::where('tutor_user_id', $user->id)
-                ->get()
-                ->sum(function ($sp) {
-                    return ($sp->package->session ?? 0) - $sp->remaining_session;
-                }),
-        ];
-
-        $schedules = ScheduleTutor::where('user_id', $user->id)
+        $availabilitySchedules = ScheduleTutor::query()
+            ->where('tutor_id', $user->id)
+            ->orderBy('day')
+            ->orderBy('time')
             ->get()
-            ->map(function ($schedule) {
-                return [
-                    'schedule_id' => $schedule->id,
+            ->map(function (ScheduleTutor $schedule) {
+                $startTime = substr((string) $schedule->time, 0, 5);
+                $endTime = Carbon::createFromFormat('H:i', $startTime)->addHour()->format('H:i');
+
+                return array_filter([
+                    'id' => $schedule->id,
                     'day' => $schedule->day,
-                    'time' => $schedule->time,
-                ];
-            });
-
-        $takenSchedules = TakenSchedule::whereHas('scheduleTutor', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+                    'start_time' => $startTime,
+                    'end_time' => $endTime,
+                ], static fn ($value) => $value !== null);
             })
-            ->with(['user', 'subject'])
-            ->orderBy('date', 'desc')
-            ->get()
-            ->map(function ($ts) {
-                return [
-                    'id' => $ts->id,
-                    'date' => $ts->date,
-                    'status' => $ts->status,
-                    'student_name' => $ts->user->name ?? null,
-                    'student_photo' => $ts->user->profile_photo_path ?? null,
-                    'subject_name' => $ts->subject->name ?? null,
-                    'schedule_time' => $ts->scheduleTutor->time ?? null,
-                ];
-            });
+            ->values();
 
-        $scheduleStats = [
-            'total_schedules' => $takenSchedules->count(),
-            'completed_schedules' => $takenSchedules->where('status', ScheduleStatusEnum::COMPLETED->value)->count(),
-            'pending_schedules' => $takenSchedules->where('status', ScheduleStatusEnum::PENDING->value)->count(),
-            'cancelled_schedules' => $takenSchedules->where('status', ScheduleStatusEnum::CANCELLED->value)->count(),
-        ];
-
-        $upcomingSchedules = TakenSchedule::whereHas('scheduleTutor', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+        $upcomingSessions = TakenSchedule::query()
+            ->whereHas('scheduleTutor', function ($query) use ($user) {
+                $query->where('tutor_id', $user->id);
             })
-            ->where('date', '>=', now()->toDateString())
-            ->where('date', '<=', now()->addDays(7)->toDateString())
-            ->where('status', '!=', 'cancelled')
-            ->with(['user', 'subject', 'scheduleTutor'])
+            ->where('date', '>=', $now)
+            ->where('status', TakenScheduleStatusEnum::ACTIVE->value)
+            ->with(['student', 'subject.class'])
             ->orderBy('date', 'asc')
             ->get()
-            ->map(function ($ts) {
-                return [
-                    'id' => $ts->id,
-                    'date' => $ts->date,
-                    'status' => $ts->status,
-                    'student_name' => $ts->user->name ?? null,
-                    'subject_name' => $ts->subject->name ?? null,
-                    'schedule_time' => $ts->scheduleTutor->time ?? null,
-                ];
-            });
+            ->map(function (TakenSchedule $ts) {
+                $dateTime = $ts->date instanceof Carbon ? $ts->date : Carbon::parse($ts->date);
+                $startTime = $dateTime->format('H:i');
+                // No duration column exists in current schema; assume 1 hour.
+                $endTime = $dateTime->copy()->addHour()->format('H:i');
 
-        $completedSessions = TakenSchedule::whereHas('scheduleTutor', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+                $student = array_filter([
+                    'id' => $ts->student_id,
+                    'name' => $ts->student?->name,
+                    'photo' => $ts->student?->profile_photo_path,
+                ], static fn ($value) => $value !== null);
+
+                $subject = $ts->subject
+                    ? array_filter([
+                        'id' => $ts->subject->id,
+                        'name' => $ts->subject->name,
+                        'icon' => $ts->subject->icon_image_path,
+                        'class' => $ts->subject->class?->name,
+                    ], static fn ($value) => $value !== null)
+                    : null;
+
+                return array_filter([
+                    'id' => $ts->id,
+                    'date' => $dateTime->toDateString(),
+                    'start_time' => $startTime,
+                    'end_time' => $endTime,
+                    'student' => $student,
+                    'subject' => $subject,
+                    'status' => $ts->status?->value ?? $ts->status,
+                ], static fn ($value) => $value !== null);
             })
-            ->where('status', ScheduleStatusEnum::COMPLETED->value)
+            ->values();
+
+        $todaySessions = (int) TakenSchedule::query()
+            ->whereHas('scheduleTutor', function ($query) use ($user) {
+                $query->where('tutor_id', $user->id);
+            })
+            ->whereBetween('date', [$now->copy()->startOfDay(), $now->copy()->endOfDay()])
+            ->where('status', TakenScheduleStatusEnum::ACTIVE->value)
             ->count();
 
-        $earnings = [
-            'completed_sessions' => $completedSessions,
-            'salary_per_session' => $tutor->salary,
-            'estimated_total_earnings' => $completedSessions * ($tutor->salary ?? 0),
+        $completedSessions = (int) TakenSchedule::query()
+            ->whereHas('scheduleTutor', function ($query) use ($user) {
+                $query->where('tutor_id', $user->id);
+            })
+            ->where('status', TakenScheduleStatusEnum::COMPLETED->value)
+            ->count();
+
+        $ratePerSession = (int) ($tutor->salary ?? 0);
+        $earningsTotal = $completedSessions * $ratePerSession;
+
+        $ratingRow = Review::query()
+            ->where('tutor_id', $user->id)
+            ->selectRaw('COALESCE(AVG(rate), 0) as average, COUNT(*) as count')
+            ->first();
+
+        $rating = [
+            'average' => round((float) ($ratingRow?->average ?? 0), 2),
+            'count' => (int) ($ratingRow?->count ?? 0),
         ];
 
-        $reviews = Review::where('to_user_id', $user->id)
-            ->with('fromUser')
+        $reviews = Review::query()
+            ->where('tutor_id', $user->id)
+            ->with('student.user')
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($review) {
-                return [
+            ->map(function (Review $review) {
+                return array_filter([
                     'id' => $review->id,
-                    'rate' => $review->rate,
-                    'quality' => $review->quality,
-                    'delivery' => $review->delivery,
-                    'attitude' => $review->attitude,
-                    'benefit' => $review->benefit,
-                    'review' => $review->review,
-                    'from_user_name' => $review->fromUser->name ?? null,
-                    'from_user_photo' => $review->fromUser->profile_photo_path ?? null,
+                    'rating' => (float) $review->rate,
+                    'comment' => $review->comment,
+                    'student_name' => $review->student?->user?->name,
                     'created_at' => $review->created_at,
-                ];
-            });
-
-        $reviewStats = [
-            'total_reviews' => $reviews->count(),
-            'average_rating' => $reviews->avg('rate') ?? 0,
-        ];
+                ], static fn ($value) => $value !== null);
+            })
+            ->values();
 
         return new ResponseDTO([
             'status' => 'success',
@@ -193,15 +158,17 @@ class TutorDashboardService
             'data' => [
                 'profile' => $profile,
                 'subjects' => $subjects,
-                'students' => $students,
-                'student_stats' => $studentStats,
-                'my_schedules' => $schedules,
-                'taken_schedules' => $takenSchedules,
-                'schedule_stats' => $scheduleStats,
-                'upcoming_schedules' => $upcomingSchedules,
-                'earnings' => $earnings,
+                'availability_schedules' => $availabilitySchedules,
+                'upcoming_sessions' => $upcomingSessions,
+                'summary' => [
+                    'upcoming_count' => (int) $upcomingSessions->count(),
+                    'today_sessions' => $todaySessions,
+                ],
+                'earnings' => [
+                    'total' => $earningsTotal,
+                ],
+                'rating' => $rating,
                 'reviews' => $reviews,
-                'review_stats' => $reviewStats,
             ],
         ], 200);
     }
@@ -220,36 +187,52 @@ class TutorDashboardService
             ], 403);
         }
 
-        $completedSessionsThisMonth = TakenSchedule::whereHas('scheduleTutor', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->where('status', 'completed')
-            ->whereMonth('date', now()->month)
-            ->whereYear('date', now()->year)
-            ->count();
+        $tutor = $user->tutor;
 
-        $summary = [
-            'total_students' => StudentPackage::where('tutor_user_id', $user->id)->distinct('student_user_id')->count(),
-            'total_subjects' => $user->subjects->count(),
-            'total_schedules_today' => TakenSchedule::whereHas('scheduleTutor', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
-                ->where('date', now()->toDateString())
-                ->count(),
-            'total_upcoming_schedules' => TakenSchedule::whereHas('scheduleTutor', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
-                ->where('date', '>=', now()->toDateString())
-                ->where('status', '!=', 'cancelled')
-                ->count(),
-            'completed_sessions_this_month' => $completedSessionsThisMonth,
-            'estimated_earnings_this_month' => $completedSessionsThisMonth * ($user->tutor->salary ?? 0),
-        ];
+        $now = Carbon::now();
+        $startOfDay = $now->copy()->startOfDay();
+        $endOfDay = $now->copy()->endOfDay();
+
+        $active = TakenScheduleStatusEnum::ACTIVE->value;
+        $completed = TakenScheduleStatusEnum::COMPLETED->value;
+
+        // Single aggregated query for lightweight summary.
+        $stats = TakenSchedule::query()
+            ->whereHas('scheduleTutor', function ($query) use ($user) {
+                $query->where('tutor_id', $user->id);
+            })
+            ->selectRaw(
+                "\n                SUM(CASE\n                    WHEN `date` BETWEEN ? AND ?\n                        AND (status IS NULL OR status = ? OR status = ?)\n                    THEN 1 ELSE 0\n                END) as today_sessions,\n                SUM(CASE\n                    WHEN `date` > ?\n                        AND (status IS NULL OR status = ?)\n                    THEN 1 ELSE 0\n                END) as upcoming_sessions,\n                SUM(CASE\n                    WHEN status = ?\n                    THEN 1 ELSE 0\n                END) as completed_sessions\n            ",
+                [
+                    $startOfDay,
+                    $endOfDay,
+                    $active,
+                    $completed,
+                    $endOfDay,
+                    $active,
+                    $completed,
+                ]
+            )
+            ->first();
+
+        $todaySessions = (int) ($stats?->today_sessions ?? 0);
+        $upcomingSessions = (int) ($stats?->upcoming_sessions ?? 0);
+        $completedSessions = (int) ($stats?->completed_sessions ?? 0);
+
+        $ratePerSession = (int) ($tutor->salary ?? 0);
+        $totalEarnings = $completedSessions * $ratePerSession;
 
         return new ResponseDTO([
             'status' => 'success',
             'message' => 'Berhasil mengambil ringkasan tutor',
-            'data' => $summary,
+            'data' => [
+                'summary' => [
+                    'today_sessions' => $todaySessions,
+                    'upcoming_sessions' => $upcomingSessions,
+                    'completed_sessions' => $completedSessions,
+                    'total_earnings' => $totalEarnings,
+                ],
+            ],
         ], 200);
     }
 }

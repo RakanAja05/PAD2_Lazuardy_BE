@@ -1,0 +1,394 @@
+{
+  "info": {
+    "name": "PAD2 Lazuardy - Dashboards",
+    "_postman_id": "c2f1f6a2-7a33-4f0e-b7dc-7d1c7f0e2db3",
+    "description": "Collection untuk mengetes semua endpoint API Dashboards.\n\nCara pakai:\n- Set variable `baseUrl` (contoh: http://localhost)\n- Isi credential `studentEmail/studentPassword` dan `tutorEmail/tutorPassword`\n- Jalankan request login untuk mengisi `studentToken` / `tutorToken`\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "studentEmail",
+      "value": "student@example.com"
+    },
+    {
+      "key": "studentPassword",
+      "value": "password123"
+    },
+    {
+      "key": "tutorEmail",
+      "value": "tutor@example.com"
+    },
+    {
+      "key": "tutorPassword",
+      "value": "password123"
+    },
+    {
+      "key": "studentToken",
+      "value": ""
+    },
+    {
+      "key": "tutorToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /api/login (Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "pm.test('status=success', function () { pm.expect(body.status).to.eql('success'); });",
+                  "pm.test('token exists', function () { pm.expect(body.data).to.have.property('token'); });",
+                  "pm.collectionVariables.set('studentToken', body.data.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /api/login (Tutor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{tutorEmail}}\",\n  \"password\": \"{{tutorPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "pm.test('status=success', function () { pm.expect(body.status).to.eql('success'); });",
+                  "pm.test('token exists', function () { pm.expect(body.data).to.have.property('token'); });",
+                  "pm.collectionVariables.set('tutorToken', body.data.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dashboards",
+      "item": [
+        {
+          "name": "GET /api/dashboard/student",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/student",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboard",
+                "student"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "const body = pm.response.json();",
+                  "pm.test('status=success', function () { pm.expect(body.status).to.eql('success'); });",
+                  "pm.test('data schema (new)', function () {",
+                  "  pm.expect(body).to.have.property('data');",
+                  "  pm.expect(body.data).to.be.an('object');",
+                  "  pm.expect(body.data).to.have.property('profile');",
+                  "  pm.expect(body.data).to.have.property('session');",
+                  "  pm.expect(body.data.session).to.have.property('remaining_sessions');",
+                  "  pm.expect(body.data).to.have.property('upcoming_schedules');",
+                  "  pm.expect(body.data.upcoming_schedules).to.be.an('array');",
+                  "  pm.expect(body.data).to.have.property('summary');",
+                  "});",
+                  "pm.test('legacy fields removed', function () {",
+                  "  pm.expect(body.data).to.not.have.property('curriculum');",
+                  "  pm.expect(body.data).to.not.have.property('packages');",
+                  "  pm.expect(body.data).to.not.have.property('package_stats');",
+                  "  pm.expect(body.data).to.not.have.property('my_tutors');",
+                  "  pm.expect(body.data).to.not.have.property('schedules');",
+                  "});",
+                  "pm.test('upcoming_schedules item fields (if any)', function () {",
+                  "  const schedules = body.data.upcoming_schedules || [];",
+                  "  if (!schedules.length) return;",
+                  "  const s = schedules[0];",
+                  "  pm.expect(s).to.have.property('id');",
+                  "  pm.expect(s).to.have.property('subject');",
+                  "  pm.expect(s).to.have.property('tutor');",
+                  "  pm.expect(s.tutor).to.have.property('id');",
+                  "  pm.expect(s.tutor).to.have.property('name');",
+                  "  pm.expect(s).to.have.property('date');",
+                  "  pm.expect(s).to.have.property('start_time');",
+                  "  pm.expect(s).to.have.property('end_time');",
+                  "  pm.expect(s).to.have.property('status');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/dashboard/student/summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/student/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboard",
+                "student",
+                "summary"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "pm.test('status=success', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql('success');",
+                  "});",
+                  "pm.test('data schema (new)', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('data');",
+                  "  pm.expect(body.data).to.be.an('object');",
+                  "  pm.expect(body.data).to.have.property('session');",
+                  "  pm.expect(body.data.session).to.have.property('remaining_sessions');",
+                  "  pm.expect(body.data.session).to.have.property('total_sessions');",
+                  "  pm.expect(body.data.session).to.have.property('used_sessions');",
+                  "  pm.expect(body.data).to.have.property('summary');",
+                  "  pm.expect(body.data.summary).to.have.property('upcoming_count');",
+                  "  pm.expect(body.data.summary).to.have.property('next_schedule');",
+                  "});",
+                  "pm.test('legacy fields removed', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.not.have.property('total_packages');",
+                  "  pm.expect(body.data).to.not.have.property('total_remaining_sessions');",
+                  "  pm.expect(body.data).to.not.have.property('total_schedules_today');",
+                  "  pm.expect(body.data).to.not.have.property('total_upcoming_schedules');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/dashboard/student/recommended-tutors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/student/recommended-tutors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboard",
+                "student",
+                "recommended-tutors"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "pm.test('status=success', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql('success');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/dashboard/tutor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tutorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/tutor",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboard",
+                "tutor"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "pm.test('status=success', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql('success');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/dashboard/tutor/summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tutorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/tutor/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboard",
+                "tutor",
+                "summary"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('JSON response', function () { pm.response.to.be.json; });",
+                  "pm.test('status=success', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql('success');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateMeRequest;
 use App\Services\Auth\LoginService;
 use Illuminate\Http\Request;
 
@@ -99,6 +100,13 @@ class LoginController extends Controller
     public function me(Request $request)
     {
         $result = $this->loginService->me($request);
+
+        return response()->json($result->payload, $result->code);
+    }
+
+    public function updateMe(UpdateMeRequest $request)
+    {
+        $result = $this->loginService->updateMe($request);
 
         return response()->json($result->payload, $result->code);
     }

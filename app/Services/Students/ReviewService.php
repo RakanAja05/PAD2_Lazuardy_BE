@@ -3,40 +3,53 @@
 namespace App\Services\Students;
 
 use App\DTOs\ResponseDTO;
-use App\Enums\RatingOptionEnum;
-use App\Enums\RoleEnum;
+use App\Enums\TakenScheduleStatusEnum;
 use App\Models\Review;
-use App\Models\User;
-use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\ValidationException;
 
 class ReviewService
 {
     public function index(Request $request): ResponseDTO
     {
-        $user = $request->user()->load([
-            'studentPackageStudents.tutor.subjects.class',
-            'studentPackageStudents.subject',
-        ]);
+        $user = $request->user();
 
-        $tutorsToReview = $user->studentPackageStudents
-            ->unique('tutor_user_id')
-            ->map(function ($studentPackageStudent) {
-                $tutor = $studentPackageStudent->tutor;
+        $takenSchedules = $user->takenSchedules()
+            ->where('status', TakenScheduleStatusEnum::COMPLETED->value)
+            ->with([
+                'subject:id,name',
+                'scheduleTutor.user:id,name',
+                'scheduleTutor.tutor:user_id,description',
+                'scheduleTutor.tutor.subjects.class',
+            ])
+            ->orderByDesc('date')
+            ->get();
 
-                $classNames = $tutor->subjects
-                    ->pluck('class.name')
-                    ->unique()
-                    ->toArray();
+        $tutorsToReview = $takenSchedules
+            ->filter(fn ($takenSchedule) => $takenSchedule->scheduleTutor?->user)
+            ->unique(fn ($takenSchedule) => $takenSchedule->scheduleTutor->user->id)
+            ->values()
+            ->map(function ($takenSchedule) {
+                $tutorUser = $takenSchedule->scheduleTutor->user;
+                $tutorProfile = $takenSchedule->scheduleTutor->tutor;
+
+                $classNames = $tutorProfile
+                    ? $tutorProfile->subjects
+                        ->pluck('class.name')
+                        ->filter()
+                        ->unique()
+                        ->values()
+                        ->toArray()
+                    : [];
 
                 return [
-                    'tutor_id' => $tutor->id,
-                    'tutor_name' => $tutor->name,
-                    'tutor_description' => $tutor->description,
+                    'tutor_id' => $tutorUser->id,
+                    'tutor_name' => $tutorUser->name,
+                    'tutor_description' => $tutorProfile?->description,
                     'tutor_classes' => $classNames,
-                    'purchased_subject_name' => $studentPackageStudent->subject->name,
+                    'purchased_subject_name' => $takenSchedule->subject?->name,
                 ];
             });
 
@@ -49,62 +62,134 @@ class ReviewService
 
     public function storeOrUpdate(Request $request): ResponseDTO
     {
+        $allowedKeys = ['tutor_id', 'rate', 'comment'];
+        $extraKeys = array_diff(array_keys($request->all()), $allowedKeys);
+
+        if (!empty($extraKeys)) {
+            throw ValidationException::withMessages([
+                'unexpected_fields' => [
+                    'Field tidak didukung: ' . implode(', ', $extraKeys),
+                ],
+            ]);
+        }
+
         $request->validate([
-            'tutor_id' => [
-                'required',
-                'integer',
-                Rule::exists('users', 'id')->where('role', RoleEnum::TUTOR->value),
-            ],
-            'quality' => ['required', new Enum(RatingOptionEnum::class)],
-            'delivery' => ['required', new Enum(RatingOptionEnum::class)],
-            'attitude' => ['required', new Enum(RatingOptionEnum::class)],
-            'benefit' => ['required', new Enum(RatingOptionEnum::class)],
-            'rate' => ['required', 'integer'],
-            'review' => ['nullable', 'string'],
+            'tutor_id' => ['required', 'integer', Rule::exists('tutors', 'user_id')],
+            'rate' => ['required', 'numeric', 'min:1', 'max:5'],
+            'comment' => ['nullable', 'string'],
         ]);
 
-        $tutor = User::where('id', $request->tutor_id)
-            ->where('role', RoleEnum::TUTOR)
-            ->firstOrFail();
-
         $student = $request->user();
-        $data = $request->only(['quality', 'delivery', 'attitude', 'benefit', 'rate', 'review']);
 
-        try {
-            Review::updateOrCreate([
-                'from_user_id' => $student->id,
-                'to_user_id' => $tutor->id,
-            ], $data);
+        Review::updateOrCreate([
+            'student_id' => $student->id,
+            'tutor_id' => (int) $request->tutor_id,
+        ], [
+            'rate' => $request->rate,
+            'comment' => $request->comment,
+        ]);
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Review berhasil terkirim',
-                'data' => [],
-            ], 201);
-        } catch (Exception $e) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Review gagal terkirim: ' . $e->getMessage(),
-                'errors' => [
-                    'detail' => $e->getMessage(),
-                ],
-            ], 401);
-        }
+        return new ResponseDTO([
+            'status' => 'success',
+            'message' => 'Review berhasil tersimpan',
+            'data' => [],
+        ], 201);
     }
 
-    public function show(Request $request): ResponseDTO
+    public function update(Request $request, int $id): ResponseDTO
     {
-        $request->validate([
-            'tutor_id' => [
-                'required',
-                'integer',
-                Rule::exists('users', 'id')->where('role', RoleEnum::TUTOR->value),
-            ],
+        $allowedKeys = ['rate', 'comment'];
+        $extraKeys = array_diff(array_keys($request->all()), $allowedKeys);
+
+        if (!empty($extraKeys)) {
+            return new ResponseDTO([
+                'status' => 'error',
+                'message' => 'Validasi gagal',
+                'errors' => [
+                    'unexpected_fields' => [
+                        'Field tidak didukung: ' . implode(', ', $extraKeys),
+                    ],
+                ],
+            ], 422);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'rate' => ['sometimes', 'numeric', 'min:1', 'max:5'],
+            'comment' => ['sometimes', 'string'],
         ]);
+
+        if ($validator->fails()) {
+            return new ResponseDTO([
+                'status' => 'error',
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+        if (empty($validated)) {
+            return new ResponseDTO([
+                'status' => 'error',
+                'message' => 'Validasi gagal',
+                'errors' => [
+                    'detail' => ['Minimal kirim salah satu field: rate atau comment'],
+                ],
+            ], 422);
+        }
+
         $student = $request->user();
 
-        $reviewData = Review::where('from_user_id', $student->id)
-            ->where('to_user_id', $request->tutor_id)
+        $review = Review::find($id);
+        if (!$review) {
+            return new ResponseDTO([
+                'status' => 'error',
+                'message' => 'Review tidak ditemukan',
+                'errors' => [
+                    'id' => $id,
+                ],
+            ], 404);
+        }
+
+        if ((int) $review->student_id !== (int) $student->id) {
+            return new ResponseDTO([
+                'status' => 'error',
+                'message' => 'Tidak memiliki akses untuk mengubah review ini',
+                'errors' => [
+                    'authorization' => 'forbidden',
+                ],
+            ], 403);
+        }
+
+        $review->fill($validated);
+        $review->save();
+
+        return new ResponseDTO([
+            'status' => 'success',
+            'message' => 'Review berhasil diupdate',
+            'data' => $review->fresh(),
+        ], 200);
+    }
+
+    public function show(Request $request, int $tutorId): ResponseDTO
+    {
+        $validator = Validator::make([
+            'tutor_id' => $tutorId,
+        ], [
+            'tutor_id' => ['required', 'integer', Rule::exists('tutors', 'user_id')],
+        ]);
+
+        if ($validator->fails()) {
+            return new ResponseDTO([
+                'status' => 'error',
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $student = $request->user();
+
+        $reviewData = Review::where('student_id', $student->id)
+            ->where('tutor_id', $tutorId)
             ->first();
 
         return new ResponseDTO([

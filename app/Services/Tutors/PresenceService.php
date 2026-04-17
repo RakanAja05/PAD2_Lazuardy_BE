@@ -50,7 +50,7 @@ class PresenceService
             'material' => ['required', 'string'],
             'evaluation' => ['required', 'string'],
             'grade' => ['required', 'integer'],
-            'photo' => ['required', 'file', 'mimes:png,jpg, pdf, svg, webp'],
+            'photo' => ['required', 'file', 'mimes:png,jpg,pdf,svg,webp'],
         ]);
 
         $user = $request->user();

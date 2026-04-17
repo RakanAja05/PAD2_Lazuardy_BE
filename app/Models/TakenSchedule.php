@@ -6,6 +6,7 @@ use App\Enums\TakenScheduleStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class TakenSchedule extends Model
 {
@@ -37,6 +38,24 @@ class TakenSchedule extends Model
     }
 
     public function student(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'student_id', 'id');
+    }
+
+    public function tutor(): HasOneThrough
+    {
+        // Resolve tutor user through scheduleTutor: taken_schedules.schedule_tutor_id -> schedule_tutors.id -> schedule_tutors.tutor_id -> users.id
+        return $this->hasOneThrough(
+            User::class,
+            ScheduleTutor::class,
+            'id',
+            'id',
+            'schedule_tutor_id',
+            'tutor_id'
+        );
+    }
+
+    public function studentProfile(): BelongsTo
     {
         return $this->belongsTo(Student::class, 'student_id', 'user_id');
     }
