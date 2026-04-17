@@ -50,7 +50,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->sendRegisterOtp($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -82,7 +82,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->verifyRegisterOtp($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -117,7 +117,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->resendRegisterOtp($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -195,7 +195,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->storeStudentRegister($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -279,7 +279,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->storeTutorRegister($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -315,7 +315,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->forgotPassword($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -351,7 +351,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->verifyForgotPassword($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -379,6 +379,6 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->resetPassword($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

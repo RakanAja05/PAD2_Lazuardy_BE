@@ -27,7 +27,7 @@ class PaymentController extends Controller
     {
         $result = $this->paymentControllerService->showPaymentPackage($id);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -52,7 +52,7 @@ class PaymentController extends Controller
     {
         $result = $this->paymentControllerService->storeOrderPackage($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -81,7 +81,7 @@ class PaymentController extends Controller
     {
         $result = $this->paymentControllerService->uploadPaymentFile($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -97,7 +97,7 @@ class PaymentController extends Controller
     {
         $result = $this->paymentControllerService->showHistory($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -114,6 +114,6 @@ class PaymentController extends Controller
     {
         $result = $this->paymentControllerService->showDetail($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

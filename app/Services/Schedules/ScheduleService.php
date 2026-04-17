@@ -28,13 +28,15 @@ class ScheduleService
             ];
         }
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Data jadwal berhasil terkirim',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Data jadwal berhasil terkirim',
+            [
                 'schedules' => $tsData,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function indexTutor(Request $request): ResponseDTO
@@ -54,12 +56,14 @@ class ScheduleService
             });
         });
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Data jadwal berhasil terkirim',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Data jadwal berhasil terkirim',
+            [
                 'schedules' => $data,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 }

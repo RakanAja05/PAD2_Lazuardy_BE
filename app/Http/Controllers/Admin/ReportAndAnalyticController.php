@@ -24,6 +24,6 @@ class ReportAndAnalyticController extends Controller
     {
         $result = $this->reportAndAnalyticService->index();
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

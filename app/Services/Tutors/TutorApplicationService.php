@@ -18,13 +18,15 @@ class TutorApplicationService
         $tutor = $user->tutor;
 
         if (!$tutor) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Tutor tidak ditemukan',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Tutor tidak ditemukan',
+                null,
+                [
                     'tutor' => 'not_found',
                 ],
-            ], 404);
+                404
+            );
         }
 
         $filesByType = $user->files
@@ -49,11 +51,13 @@ class TutorApplicationService
             $data[$type] = $filesByType->get($type, collect());
         }
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil data formulir pendaftaran tutor',
-            'data' => $data,
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil data formulir pendaftaran tutor',
+            $data,
+            null,
+            200
+        );
     }
 
     public function store(StoreTutorApplicationRequest $request): ResponseDTO
@@ -78,21 +82,25 @@ class TutorApplicationService
             $tutorService->storeTutorFile($user, collect($fileData));
             DB::commit();
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Berhasil menyelesaikan formulir pendaftaran tutor',
-                'data' => [],
-            ], 200);
+            return new ResponseDTO(
+                'success',
+                'Berhasil menyelesaikan formulir pendaftaran tutor',
+                [],
+                null,
+                200
+            );
         } catch (Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 }

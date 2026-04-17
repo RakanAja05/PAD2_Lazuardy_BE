@@ -8,7 +8,7 @@ use App\Models\User;
 
 class SalaryPaymentHistoryService
 {
-    public function sagetPaymentHistory($userId): ResponseDTO
+    public function getPaymentHistory($userId): ResponseDTO
     {
         $user = User::findOrFail($userId);
 
@@ -16,10 +16,17 @@ class SalaryPaymentHistoryService
             ->orderBy('paid_at', 'desc')
             ->get();
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Payment history retrieved successfully',
-            'data' => $payments,
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Payment history retrieved successfully',
+            $payments,
+            null,
+            200
+        );
+    }
+
+    public function sagetPaymentHistory($userId): ResponseDTO
+    {
+        return $this->getPaymentHistory($userId);
     }
 }

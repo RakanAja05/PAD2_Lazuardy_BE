@@ -25,7 +25,7 @@ class StudyPackageController extends Controller
     {
         $result = $this->studyPackageService->packages($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -41,7 +41,7 @@ class StudyPackageController extends Controller
     {
         $result = $this->studyPackageService->index($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -58,6 +58,6 @@ class StudyPackageController extends Controller
     {
         $result = $this->studyPackageService->show($request, $packageId);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

@@ -20,13 +20,15 @@ class StudentDashboardService
         $user = $request->user();
 
         if (!$user->student) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'User bukan student',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'User bukan student',
+                null,
+                [
                     'role' => 'student_required',
                 ],
-            ], 403);
+                403
+            );
         }
 
         $student = $user->student;
@@ -154,17 +156,19 @@ class StudentDashboardService
             'next_schedule' => $nextSchedule,
         ], static fn($value) => $value !== null);
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil dashboard student',
-            'data' => array_filter([
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil dashboard student',
+            array_filter([
                 'profile' => $profile,
                 'session' => $session,
                 'upcoming_schedules' => $upcomingSchedules,
                 'summary' => $summary,
                 'subjects' => $subjects->isNotEmpty() ? $subjects : null,
             ], static fn($value) => $value !== null),
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function getRecommendedTutors(Request $request): ResponseDTO
@@ -172,13 +176,15 @@ class StudentDashboardService
         $user = $request->user();
 
         if (!$user->student) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'User bukan student',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'User bukan student',
+                null,
+                [
                     'role' => 'student_required',
                 ],
-            ], 403);
+                403
+            );
         }
 
         $studentAddress = $user->home_address;
@@ -235,10 +241,10 @@ class StudentDashboardService
 
         $tutors = $tutorsQuery->paginate(5);
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil rekomendasi tutor',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil rekomendasi tutor',
+            [
                 'tutors' => $tutors->map(function (User $tutor) {
                     $tutorAddress = is_array($tutor->home_address) ? $tutor->home_address : null;
                     $city = $tutorAddress
@@ -308,7 +314,9 @@ class StudentDashboardService
                     'has_more' => $tutors->hasMorePages(),
                 ],
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function summary(Request $request): ResponseDTO
@@ -316,13 +324,15 @@ class StudentDashboardService
         $user = $request->user();
 
         if (!$user->student) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'User bukan student',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'User bukan student',
+                null,
+                [
                     'role' => 'student_required',
                 ],
-            ], 403);
+                403
+            );
         }
 
         $now = Carbon::now();
@@ -387,13 +397,15 @@ class StudentDashboardService
             'next_schedule' => $nextSchedule,
         ], static fn($value) => $value !== null);
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil ringkasan student',
-            'data' => array_filter([
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil ringkasan student',
+            array_filter([
                 'session' => $session,
                 'summary' => $summary,
             ], static fn($value) => $value !== null),
-        ], 200);
+            null,
+            200
+        );
     }
 }

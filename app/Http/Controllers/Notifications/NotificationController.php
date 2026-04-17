@@ -25,7 +25,7 @@ class NotificationController extends Controller
     {
         $result = $this->notificationService->index($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -41,7 +41,7 @@ class NotificationController extends Controller
     {
         $result = $this->notificationService->unreadCount($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -58,7 +58,7 @@ class NotificationController extends Controller
     {
         $result = $this->notificationService->markAsRead($request, $id);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -74,7 +74,7 @@ class NotificationController extends Controller
     {
         $result = $this->notificationService->markAllAsRead($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -91,7 +91,7 @@ class NotificationController extends Controller
     {
         $result = $this->notificationService->delete($request, $id);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -107,6 +107,6 @@ class NotificationController extends Controller
     {
         $result = $this->notificationService->deleteAllRead($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

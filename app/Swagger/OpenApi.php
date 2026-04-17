@@ -49,10 +49,10 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="StandardError",
  *     type="object",
- *     required={"status","message","errors"},
+ *     required={"status","message","error"},
  *     @OA\Property(property="status", type="string", example="error"),
  *     @OA\Property(property="message", type="string", example="Validation error"),
- *     @OA\Property(property="errors", type="object")
+ *     @OA\Property(property="error", type="object")
  * )
  *
  * @OA\Schema(

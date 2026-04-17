@@ -35,11 +35,13 @@ class PresenceService
                 ];
             });
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil data presensi',
-            'data' => $data,
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil data presensi',
+            $data,
+            null,
+            200
+        );
     }
 
     public function store(Request $request): ResponseDTO
@@ -69,19 +71,23 @@ class PresenceService
 
             Presence::create($presenceData);
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Presensi berhasil',
-                'data' => [],
-            ], 201);
+            return new ResponseDTO(
+                'success',
+                'Presensi berhasil',
+                [],
+                null,
+                201
+            );
         }
 
-        return new ResponseDTO([
-            'status' => 'error',
-            'message' => 'Presensi gagal',
-            'errors' => [
+        return new ResponseDTO(
+            'error',
+            'Presensi gagal',
+            null,
+            [
                 'photo' => 'file_missing',
             ],
-        ], 401);
+            401
+        );
     }
 }

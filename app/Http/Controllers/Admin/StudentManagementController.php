@@ -25,7 +25,7 @@ class StudentManagementController extends Controller
     {
         $result = $this->studentManagementService->index();
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -42,7 +42,7 @@ class StudentManagementController extends Controller
     {
         $result = $this->studentManagementService->show($payment);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -59,7 +59,7 @@ class StudentManagementController extends Controller
     {
         $result = $this->studentManagementService->accept($payment);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -76,6 +76,6 @@ class StudentManagementController extends Controller
     {
         $result = $this->studentManagementService->reject($payment);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

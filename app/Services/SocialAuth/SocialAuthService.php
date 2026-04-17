@@ -29,7 +29,7 @@ class SocialAuthService
             return response()->json([
                 'status' => 'error',
                 'message' => 'Provider tidak didukung',
-                'errors' => [
+                'error' => [
                     'code' => 'provider_not_supported',
                     'provider' => $provider,
                 ],
@@ -40,7 +40,7 @@ class SocialAuthService
             return response()->json([
                 'status' => 'error',
                 'message' => 'Parameter OAuth tidak lengkap',
-                'errors' => [
+                'error' => [
                     'code' => 'oauth_missing_params',
                 ],
             ], 400);
@@ -74,7 +74,7 @@ class SocialAuthService
                                 return response()->json([
                                     'status' => 'error',
                                     'message' => 'Akun sudah terhubung dengan akun ' . ucfirst($provider) . ' yang lain',
-                                    'errors' => [
+                                    'error' => [
                                         'code' => 'provider_conflict',
                                         'provider' => $provider,
                                     ],
@@ -92,7 +92,7 @@ class SocialAuthService
                             return response()->json([
                                 'status' => 'error',
                                 'message' => 'Email sudah terdaftar. Silakan login menggunakan metode yang sudah terhubung.',
-                                'errors' => [
+                                'error' => [
                                     'code' => 'email_already_registered',
                                     'provider' => $provider,
                                 ],
@@ -176,14 +176,14 @@ class SocialAuthService
             $payload = [
                 'status' => 'error',
                 'message' => 'Gagal otentikasi melalui ' . ucfirst($provider) . '.',
-                'errors' => [
+                'error' => [
                     'code' => 'oauth_provider_error',
                     'provider' => $provider,
                 ],
             ];
 
             if (config('app.debug')) {
-                $payload['errors']['detail'] = $e->getMessage();
+                $payload['error']['detail'] = $e->getMessage();
             }
 
             return response()->json($payload, $status);
@@ -191,14 +191,14 @@ class SocialAuthService
             $payload = [
                 'status' => 'error',
                 'message' => 'Gagal otentikasi melalui ' . ucfirst($provider) . '.',
-                'errors' => [
+                'error' => [
                     'code' => 'oauth_unexpected_error',
                     'provider' => $provider,
                 ],
             ];
 
             if (config('app.debug')) {
-                $payload['errors']['detail'] = $e->getMessage();
+                $payload['error']['detail'] = $e->getMessage();
             }
 
             return response()->json($payload, 500);

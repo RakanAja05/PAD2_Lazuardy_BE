@@ -52,7 +52,7 @@ class LoginController extends Controller
     {
         $result = $this->loginService->login($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -72,7 +72,7 @@ class LoginController extends Controller
     {
         $result = $this->loginService->logout($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -101,13 +101,13 @@ class LoginController extends Controller
     {
         $result = $this->loginService->me($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     public function updateMe(UpdateMeRequest $request)
     {
         $result = $this->loginService->updateMe($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

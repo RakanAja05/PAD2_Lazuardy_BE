@@ -17,13 +17,15 @@ class TutorDashboardService
         $user = $request->user();
 
         if (!$user->tutor) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'User bukan tutor',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'User bukan tutor',
+                null,
+                [
                     'role' => 'tutor_required',
                 ],
-            ], 403);
+                403
+            );
         }
 
         $tutor = $user->tutor;
@@ -152,10 +154,10 @@ class TutorDashboardService
             })
             ->values();
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil dashboard tutor',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil dashboard tutor',
+            [
                 'profile' => $profile,
                 'subjects' => $subjects,
                 'availability_schedules' => $availabilitySchedules,
@@ -170,7 +172,9 @@ class TutorDashboardService
                 'rating' => $rating,
                 'reviews' => $reviews,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function summary(Request $request): ResponseDTO
@@ -178,13 +182,15 @@ class TutorDashboardService
         $user = $request->user();
 
         if (!$user->tutor) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'User bukan tutor',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'User bukan tutor',
+                null,
+                [
                     'role' => 'tutor_required',
                 ],
-            ], 403);
+                403
+            );
         }
 
         $tutor = $user->tutor;
@@ -222,10 +228,10 @@ class TutorDashboardService
         $ratePerSession = (int) ($tutor->salary ?? 0);
         $totalEarnings = $completedSessions * $ratePerSession;
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil ringkasan tutor',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil ringkasan tutor',
+            [
                 'summary' => [
                     'today_sessions' => $todaySessions,
                     'upcoming_sessions' => $upcomingSessions,
@@ -233,6 +239,8 @@ class TutorDashboardService
                     'total_earnings' => $totalEarnings,
                 ],
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 }

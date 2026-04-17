@@ -17,7 +17,7 @@ class TutorApplicationController extends Controller
     {
         $result = $this->tutorApplicationService->index($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -61,6 +61,6 @@ class TutorApplicationController extends Controller
     {
         $result = $this->tutorApplicationService->store($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

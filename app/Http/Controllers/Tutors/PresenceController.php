@@ -25,7 +25,7 @@ class PresenceController extends Controller
     {
         $result = $this->presenceService->index($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -58,6 +58,6 @@ class PresenceController extends Controller
     {
         $result = $this->presenceService->store($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

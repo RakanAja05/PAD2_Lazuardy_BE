@@ -25,7 +25,7 @@ class TutorVerifyController extends Controller
     {
         $result = $this->tutorVerifyService->index();
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -52,7 +52,7 @@ class TutorVerifyController extends Controller
 
         $result = $this->tutorVerifyService->approve($validated);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -81,6 +81,6 @@ class TutorVerifyController extends Controller
 
         $result = $this->tutorVerifyService->reject($validated);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

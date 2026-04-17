@@ -37,7 +37,7 @@ class ProfileController extends Controller
     {
         $result = $this->profileService->showStudentProfile($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -62,7 +62,7 @@ class ProfileController extends Controller
     {
         $result = $this->profileService->showTutorProfile($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -100,7 +100,7 @@ class ProfileController extends Controller
     {
         $result = $this->profileService->updateStudentProfile($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -134,14 +134,14 @@ class ProfileController extends Controller
     {
         $result = $this->profileService->updateTutorProfile($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     public function showTutorLessonMethod(Request $request)
     {
         $result = $this->profileService->showTutorLessonMethod($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -171,6 +171,6 @@ class ProfileController extends Controller
     {
         $result = $this->profileService->updateTutorLessonMethod($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

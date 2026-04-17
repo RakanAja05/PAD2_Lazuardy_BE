@@ -25,7 +25,7 @@ class TutorSalaryController extends Controller
     {
         $result = $this->tutorSalaryService->index($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -42,7 +42,7 @@ class TutorSalaryController extends Controller
     {
         $result = $this->tutorSalaryService->show($userId);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -63,7 +63,7 @@ class TutorSalaryController extends Controller
     {
         $result = $this->tutorSalaryService->confirmPayment($request, $userId);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -83,7 +83,7 @@ class TutorSalaryController extends Controller
     {
         $result = $this->tutorSalaryService->confirmBatchPayment($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -104,7 +104,7 @@ class TutorSalaryController extends Controller
     {
         $result = $this->tutorSalaryService->confirmPaymentWithInvoice($request, $userId);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -120,7 +120,7 @@ class TutorSalaryController extends Controller
     {
         $result = $this->tutorSalaryService->getPendingPayment($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -136,7 +136,7 @@ class TutorSalaryController extends Controller
     {
         $result = $this->tutorSalaryService->getVerificationPending($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -153,6 +153,6 @@ class TutorSalaryController extends Controller
     {
         $result = $this->tutorSalaryService->getSalaryHistory($userId);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

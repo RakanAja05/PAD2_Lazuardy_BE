@@ -53,11 +53,13 @@ class ReviewService
                 ];
             });
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Data daftar tutor berhasil terkirim',
-            'data' => $tutorsToReview,
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Data daftar tutor berhasil terkirim',
+            $tutorsToReview,
+            null,
+            200
+        );
     }
 
     public function storeOrUpdate(Request $request): ResponseDTO
@@ -89,11 +91,13 @@ class ReviewService
             'comment' => $request->comment,
         ]);
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Review berhasil tersimpan',
-            'data' => [],
-        ], 201);
+        return new ResponseDTO(
+            'success',
+            'Review berhasil tersimpan',
+            [],
+            null,
+            201
+        );
     }
 
     public function update(Request $request, int $id): ResponseDTO
@@ -102,15 +106,17 @@ class ReviewService
         $extraKeys = array_diff(array_keys($request->all()), $allowedKeys);
 
         if (!empty($extraKeys)) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Validasi gagal',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Validasi gagal',
+                null,
+                [
                     'unexpected_fields' => [
                         'Field tidak didukung: ' . implode(', ', $extraKeys),
                     ],
                 ],
-            ], 422);
+                422
+            );
         }
 
         $validator = Validator::make($request->all(), [
@@ -119,55 +125,65 @@ class ReviewService
         ]);
 
         if ($validator->fails()) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors(),
-            ], 422);
+            return new ResponseDTO(
+                'error',
+                'Validasi gagal',
+                null,
+                $validator->errors(),
+                422
+            );
         }
 
         $validated = $validator->validated();
         if (empty($validated)) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Validasi gagal',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Validasi gagal',
+                null,
+                [
                     'detail' => ['Minimal kirim salah satu field: rate atau comment'],
                 ],
-            ], 422);
+                422
+            );
         }
 
         $student = $request->user();
 
         $review = Review::find($id);
         if (!$review) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Review tidak ditemukan',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Review tidak ditemukan',
+                null,
+                [
                     'id' => $id,
                 ],
-            ], 404);
+                404
+            );
         }
 
         if ((int) $review->student_id !== (int) $student->id) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Tidak memiliki akses untuk mengubah review ini',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Tidak memiliki akses untuk mengubah review ini',
+                null,
+                [
                     'authorization' => 'forbidden',
                 ],
-            ], 403);
+                403
+            );
         }
 
         $review->fill($validated);
         $review->save();
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Review berhasil diupdate',
-            'data' => $review->fresh(),
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Review berhasil diupdate',
+            $review->fresh(),
+            null,
+            200
+        );
     }
 
     public function show(Request $request, int $tutorId): ResponseDTO
@@ -179,11 +195,13 @@ class ReviewService
         ]);
 
         if ($validator->fails()) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors(),
-            ], 422);
+            return new ResponseDTO(
+                'error',
+                'Validasi gagal',
+                null,
+                $validator->errors(),
+                422
+            );
         }
 
         $student = $request->user();
@@ -192,10 +210,12 @@ class ReviewService
             ->where('tutor_id', $tutorId)
             ->first();
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil detail review',
-            'data' => $reviewData,
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil detail review',
+            $reviewData,
+            null,
+            200
+        );
     }
 }

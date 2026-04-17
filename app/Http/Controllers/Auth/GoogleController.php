@@ -16,14 +16,14 @@ class GoogleController extends Controller
     {
         $result = $this->googleAuthService->redirectToGoogle();
 
-        return $result->payload;
+        return $result->data;
     }
 
     public function handleGoogleCallback()
     {
         $result = $this->googleAuthService->handleGoogleCallback();
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -66,6 +66,6 @@ class GoogleController extends Controller
     {
         $result = $this->googleAuthService->completeGoogleRegistration($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

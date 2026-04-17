@@ -25,7 +25,7 @@ class ScheduleController extends Controller
     {
         $result = $this->scheduleService->indexStudent($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -41,6 +41,6 @@ class ScheduleController extends Controller
     {
         $result = $this->scheduleService->indexTutor($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

@@ -25,7 +25,7 @@ class ReviewController extends Controller
     {
         $result = $this->reviewService->index($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -68,7 +68,7 @@ class ReviewController extends Controller
     {
         $result = $this->reviewService->storeOrUpdate($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -85,13 +85,13 @@ class ReviewController extends Controller
     {
         $result = $this->reviewService->show($request, $tutorId);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     public function update(Request $request, int $id)
     {
         $result = $this->reviewService->update($request, $id);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

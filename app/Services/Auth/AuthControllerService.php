@@ -36,13 +36,15 @@ class AuthControllerService
         $otpService = new OtpService();
         $otp = $otpService->createOtp($data['email'], OtpIdentifierEnum::EMAIL->value, OtpTypeEnum::REGISTER->value);
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'OTP berhasil terkirim ke email',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'OTP berhasil terkirim ke email',
+            [
                 'otp' => $otp['code'],
             ],
-        ], 201);
+            null,
+            201
+        );
     }
 
     public function verifyRegisterOtp(Request $request): ResponseDTO
@@ -60,23 +62,28 @@ class AuthControllerService
             OtpTypeEnum::REGISTER->value
         );
 
-        $payload = [
-            'status' => $result['status'],
-            'message' => $result['message'],
-        ];
-
-        if ($result['status'] === 'success') {
-            $payload['data'] = [
-                'identifier' => $result['identifier'] ?? null,
-            ];
-        } else {
-            $payload['errors'] = [
-                'identifier' => $result['identifier'] ?? null,
-                'code' => $result['code'] ?? null,
-            ];
+        if (($result['status'] ?? null) === 'success') {
+            return new ResponseDTO(
+                'success',
+                (string) ($result['message'] ?? ''),
+                [
+                    'identifier' => $result['identifier'] ?? null,
+                ],
+                null,
+                (int) ($result['code'] ?? 200)
+            );
         }
 
-        return new ResponseDTO($payload, $result['code']);
+        return new ResponseDTO(
+            'error',
+            (string) ($result['message'] ?? ''),
+            null,
+            [
+                'identifier' => $result['identifier'] ?? null,
+                'code' => $result['code'] ?? null,
+            ],
+            (int) ($result['code'] ?? 400)
+        );
     }
 
     public function resendRegisterOtp(Request $request): ResponseDTO
@@ -92,22 +99,27 @@ class AuthControllerService
             OtpTypeEnum::REGISTER->value
         );
 
-        $payload = [
-            'status' => $result['status'],
-            'message' => $result['message'],
-        ];
-
-        if ($result['status'] === 'success') {
-            $payload['data'] = [
-                'otp' => $result['otp_code'] ?? null,
-            ];
-        } else {
-            $payload['errors'] = [
-                'detail' => $result['message'],
-            ];
+        if (($result['status'] ?? null) === 'success') {
+            return new ResponseDTO(
+                'success',
+                (string) ($result['message'] ?? ''),
+                [
+                    'otp' => $result['otp_code'] ?? null,
+                ],
+                null,
+                (int) ($result['code'] ?? 200)
+            );
         }
 
-        return new ResponseDTO($payload, $result['code']);
+        return new ResponseDTO(
+            'error',
+            (string) ($result['message'] ?? ''),
+            null,
+            [
+                'detail' => $result['message'] ?? null,
+            ],
+            (int) ($result['code'] ?? 400)
+        );
     }
 
     public function storeStudentRegister(StoreStudentRegisterRequest $request): ResponseDTO
@@ -131,13 +143,15 @@ class AuthControllerService
             $socialData = Cache::get($socialCacheKey);
 
             if (!$socialData || empty($socialData['provider']) || empty($socialData['provider_id'])) {
-                return new ResponseDTO([
-                    'status' => 'error',
-                    'message' => 'Sesi registrasi social tidak ditemukan atau sudah kadaluarsa',
-                    'errors' => [
+                return new ResponseDTO(
+                    'error',
+                    'Sesi registrasi social tidak ditemukan atau sudah kadaluarsa',
+                    null,
+                    [
                         'social_temp_token' => $socialTempToken,
                     ],
-                ], 422);
+                    422
+                );
             }
 
             $allowedProviders = ['google', 'facebook'];
@@ -150,13 +164,15 @@ class AuthControllerService
                 $cachedEmail = $socialData['email'] ?? null;
 
                 if ($emailLocked && $cachedEmail !== null && $userData['email'] !== $cachedEmail) {
-                    return new ResponseDTO([
-                        'status' => 'error',
-                        'message' => 'Email dari social login tidak boleh diubah',
-                        'errors' => [
+                    return new ResponseDTO(
+                        'error',
+                        'Email dari social login tidak boleh diubah',
+                        null,
+                        [
                             'email' => 'email_locked',
                         ],
-                    ], 422);
+                        422
+                    );
                 }
 
                 if ($emailLocked && $cachedEmail !== null) {
@@ -198,23 +214,27 @@ class AuthControllerService
                 Cache::forget($socialCacheKey);
             }
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Registrasi akun berhasil',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'Registrasi akun berhasil',
+                [
                     'token' => $userResult['token'],
                 ],
-            ], 201);
+                null,
+                201
+            );
         } catch (Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Registrasi gagal: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Registrasi gagal: ' . $e->getMessage(),
+                null,
+                [
                     'code' => $e->getCode(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -239,13 +259,15 @@ class AuthControllerService
             $socialData = Cache::get($socialCacheKey);
 
             if (!$socialData || empty($socialData['provider']) || empty($socialData['provider_id'])) {
-                return new ResponseDTO([
-                    'status' => 'error',
-                    'message' => 'Sesi registrasi social tidak ditemukan atau sudah kadaluarsa',
-                    'errors' => [
+                return new ResponseDTO(
+                    'error',
+                    'Sesi registrasi social tidak ditemukan atau sudah kadaluarsa',
+                    null,
+                    [
                         'social_temp_token' => $socialTempToken,
                     ],
-                ], 422);
+                    422
+                );
             }
 
             $allowedProviders = ['google', 'facebook'];
@@ -258,13 +280,15 @@ class AuthControllerService
                 $cachedEmail = $socialData['email'] ?? null;
 
                 if ($emailLocked && $cachedEmail !== null && $userData['email'] !== $cachedEmail) {
-                    return new ResponseDTO([
-                        'status' => 'error',
-                        'message' => 'Email dari social login tidak boleh diubah',
-                        'errors' => [
+                    return new ResponseDTO(
+                        'error',
+                        'Email dari social login tidak boleh diubah',
+                        null,
+                        [
                             'email' => 'email_locked',
                         ],
-                    ], 422);
+                        422
+                    );
                 }
 
                 if ($emailLocked && $cachedEmail !== null) {
@@ -302,23 +326,27 @@ class AuthControllerService
                 Cache::forget($socialCacheKey);
             }
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Registrasi akun berhasil',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'Registrasi akun berhasil',
+                [
                     'token' => $userResult['token'],
                 ],
-            ], 201);
+                null,
+                201
+            );
         } catch (Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Registrasi gagal: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Registrasi gagal: ' . $e->getMessage(),
+                null,
+                [
                     'code' => $e->getCode(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -332,13 +360,15 @@ class AuthControllerService
         $user = User::getUserByEmail($validatedData['email']);
 
         if (!$user->exists()) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Email tidak ditemukan.',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Email tidak ditemukan.',
+                null,
+                [
                     'email' => $validatedData['email'],
                 ],
-            ], 404);
+                404
+            );
         }
 
         DB::beginTransaction();
@@ -358,17 +388,27 @@ class AuthControllerService
             $caching = $otpService->storeOtpToCache(OtpTypeEnum::FORGOT_PASSWORD->value, $data);
             DB::commit();
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'OTP untuk reset password telah dikirim ke email Anda.',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'OTP untuk reset password telah dikirim ke email Anda.',
+                [
                     'otp' => $otp['code'],
                     'temp_token' => $caching['token'],
                 ],
-            ], 200);
+                null,
+                200
+            );
         } catch (Exception $e) {
             DB::rollBack();
-            throw $e;
+            return new ResponseDTO(
+                'error',
+                'Gagal mengirim OTP untuk reset password.',
+                null,
+                [
+                    'detail' => $e->getMessage(),
+                ],
+                500
+            );
         }
     }
 
@@ -385,23 +425,28 @@ class AuthControllerService
         $tokenReset = Str::random(15);
         Cache::put('auth:reset-password:' . $tokenReset, ['email' => $verify['identifier']], 1800);
 
-        $payload = [
-            'status' => $verify['status'],
-            'message' => $verify['message'],
-        ];
-
-        if ($verify['status'] === 'success') {
-            $payload['data'] = [
-                'token' => $tokenReset,
-            ];
-        } else {
-            $payload['errors'] = [
-                'identifier' => $verify['identifier'] ?? null,
-                'code' => $verify['code'] ?? null,
-            ];
+        if (($verify['status'] ?? null) === 'success') {
+            return new ResponseDTO(
+                'success',
+                (string) ($verify['message'] ?? ''),
+                [
+                    'token' => $tokenReset,
+                ],
+                null,
+                (int) ($verify['code'] ?? 200)
+            );
         }
 
-        return new ResponseDTO($payload, $verify['code']);
+        return new ResponseDTO(
+            'error',
+            (string) ($verify['message'] ?? ''),
+            null,
+            [
+                'identifier' => $verify['identifier'] ?? null,
+                'code' => $verify['code'] ?? null,
+            ],
+            (int) ($verify['code'] ?? 400)
+        );
     }
 
     public function resetPassword(UpdateAuthRequest $request): ResponseDTO
@@ -410,16 +455,30 @@ class AuthControllerService
 
         $cacheKey = 'auth:reset-password:' . $validatedData['token'];
         $cacheData = Cache::get($cacheKey);
+        if (!$cacheData || empty($cacheData['email'])) {
+            return new ResponseDTO(
+                'error',
+                'Token reset tidak valid atau sudah kadaluarsa.',
+                null,
+                [
+                    'token' => 'invalid',
+                ],
+                422
+            );
+        }
+
         $user = User::getUserByEmail($cacheData['email']);
 
         if (!$user->exists()) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Email tidak ditemukan.',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Email tidak ditemukan.',
+                null,
+                [
                     'email' => $cacheData['email'] ?? null,
                 ],
-            ], 404);
+                404
+            );
         }
 
         DB::beginTransaction();
@@ -432,11 +491,13 @@ class AuthControllerService
             throw $e;
         }
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Password berhasil direset.',
-            'data' => [],
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Password berhasil direset.',
+            [],
+            null,
+            200
+        );
     }
 
 }

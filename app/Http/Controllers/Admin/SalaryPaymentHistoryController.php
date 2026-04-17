@@ -25,6 +25,6 @@ class SalaryPaymentHistoryController extends Controller
     {
         $result = $this->salaryPaymentHistoryService->getPaymentHistory($userId);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

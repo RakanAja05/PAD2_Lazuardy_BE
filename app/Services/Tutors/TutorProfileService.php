@@ -27,13 +27,15 @@ class TutorProfileService
             ->first();
 
         if (!$tutor) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Tutor tidak ditemukan',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Tutor tidak ditemukan',
+                null,
+                [
                     'tutor_id' => $id,
                 ],
-            ], 404);
+                404
+            );
         }
 
         $distance = null;
@@ -64,10 +66,10 @@ class TutorProfileService
         $availableSchedules = $this->getAvailableSchedules($id);
         $reviews = $this->getReviews($id, $request->input('review_page', 1));
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil profil tutor',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil profil tutor',
+            [
                 'user_id' => $tutor->id,
                 'name' => $tutor->name,
                 'profile_photo_path' => $tutor->profile_photo_path,
@@ -115,7 +117,9 @@ class TutorProfileService
                 'available_schedules' => $availableSchedules,
                 'reviews' => $reviews,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function availableSlots(Request $request, $id): ResponseDTO
@@ -144,15 +148,17 @@ class TutorProfileService
             ];
         });
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil jadwal tersedia',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil jadwal tersedia',
+            [
                 'date' => $date,
                 'day_name' => $this->getDayName($dayOfWeek),
                 'slots' => $availableSlots,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     private function getAvailableSchedules($tutorId): array

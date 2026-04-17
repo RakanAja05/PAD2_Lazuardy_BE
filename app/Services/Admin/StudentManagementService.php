@@ -18,11 +18,13 @@ class StudentManagementService
             ->orderBy('created_at', 'asc')
             ->paginate(9);
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil daftar pembayaran',
-            'data' => $results,
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil daftar pembayaran',
+            $results,
+            null,
+            200
+        );
     }
 
     public function show(Payment $payment): ResponseDTO
@@ -30,14 +32,16 @@ class StudentManagementService
         $payment->load('order.user.student', 'order.package');
         $file = Storage::url($payment->proof_image_url);
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil detail pembayaran',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil detail pembayaran',
+            [
                 'detail' => $payment,
                 'file' => $file,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function accept(Payment $payment): ResponseDTO
@@ -47,19 +51,23 @@ class StudentManagementService
                 'status' => PaymentStatusEnum::VALIDATED,
             ]);
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Verifikasi pembayaran diterima',
-                'data' => [],
-            ], 200);
+            return new ResponseDTO(
+                'success',
+                'Verifikasi pembayaran diterima',
+                [],
+                null,
+                200
+            );
         } catch (Throwable $e) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Gagal menerima verifikasi: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Gagal menerima verifikasi: ' . $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -70,19 +78,23 @@ class StudentManagementService
                 'status' => PaymentStatusEnum::REJECTED,
             ]);
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Verifikasi pembayaran ditolak',
-                'data' => [],
-            ], 200);
+            return new ResponseDTO(
+                'success',
+                'Verifikasi pembayaran ditolak',
+                [],
+                null,
+                200
+            );
         } catch (Throwable $e) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Gagal menolak verifikasi: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Gagal menolak verifikasi: ' . $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 }

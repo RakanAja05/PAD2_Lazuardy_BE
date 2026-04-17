@@ -19,11 +19,13 @@ class PaymentControllerService
 {
     public function showPaymentPackage(Package $package): ResponseDTO
     {
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil detail paket',
-            'data' => $package,
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil detail paket',
+            $package,
+            null,
+            200
+        );
     }
 
     public function storeOrderPackage(Request $request): ResponseDTO
@@ -53,21 +55,25 @@ class PaymentControllerService
 
             DB::commit();
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Berhasil membuat order',
-                'data' => [],
-            ], 200);
+            return new ResponseDTO(
+                'success',
+                'Berhasil membuat order',
+                [],
+                null,
+                200
+            );
         } catch (Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Gagal membuat order: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Gagal membuat order: ' . $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -91,29 +97,35 @@ class PaymentControllerService
                 ]);
 
             if ($updatePayment === 0) {
-                return new ResponseDTO([
-                    'status' => 'error',
-                    'message' => 'Gagal mengupload data file',
-                    'errors' => [
+                return new ResponseDTO(
+                    'error',
+                    'Gagal mengupload data file',
+                    null,
+                    [
                         'payment' => 'update_failed',
                     ],
-                ], 200);
+                    200
+                );
             }
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Bukti pembayaran berhasil terkirim',
-                'data' => [],
-            ], 200);
+            return new ResponseDTO(
+                'success',
+                'Bukti pembayaran berhasil terkirim',
+                [],
+                null,
+                200
+            );
         }
 
-        return new ResponseDTO([
-            'status' => 'error',
-            'message' => 'Tidak ditemukan file yang diunggah',
-            'errors' => [
+        return new ResponseDTO(
+            'error',
+            'Tidak ditemukan file yang diunggah',
+            null,
+            [
                 'file_upload' => 'missing',
             ],
-        ], 400);
+            400
+        );
     }
 
     public function showHistory(Request $request): ResponseDTO
@@ -149,19 +161,23 @@ class PaymentControllerService
                 }
             }
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Berhasil mengambil riwayat transaksi',
-                'data' => $historyData,
-            ], 200);
+            return new ResponseDTO(
+                'success',
+                'Berhasil mengambil riwayat transaksi',
+                $historyData,
+                null,
+                200
+            );
         } catch (Throwable $e) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan saat memproses riwayat transaksi.',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Terjadi kesalahan saat memproses riwayat transaksi.',
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -190,10 +206,12 @@ class PaymentControllerService
             'time_created' => $payment->created_at->format('H:i:s'),
         ];
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil detail pembayaran',
-            'data' => $data,
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil detail pembayaran',
+            $data,
+            null,
+            200
+        );
     }
 }

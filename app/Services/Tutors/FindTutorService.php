@@ -16,13 +16,15 @@ class FindTutorService
         $user = Auth::user();
 
         if (!$user->latitude || !$user->longitude) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Lokasi Anda belum tersedia. Mohon aktifkan GPS atau lengkapi data alamat.',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Lokasi Anda belum tersedia. Mohon aktifkan GPS atau lengkapi data alamat.',
+                null,
+                [
                     'location' => 'missing',
                 ],
-            ], 400);
+                400
+            );
         }
 
         $lat = $user->latitude;
@@ -272,10 +274,10 @@ class FindTutorService
             ];
         });
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Tutors sorted by recommendation score',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Tutors sorted by recommendation score',
+            [
                 'tutors' => $result,
                 'pagination' => [
                     'current_page' => $page,
@@ -318,7 +320,9 @@ class FindTutorService
                     ],
                 ],
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function show(Request $request, $id): ResponseDTO
@@ -326,13 +330,15 @@ class FindTutorService
         $user = Auth::user();
 
         if (!$user->latitude || !$user->longitude) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Lokasi Anda belum tersedia.',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Lokasi Anda belum tersedia.',
+                null,
+                [
                     'location' => 'missing',
                 ],
-            ], 400);
+                400
+            );
         }
 
         $lat = $user->latitude;
@@ -372,13 +378,15 @@ class FindTutorService
             ->first();
 
         if (!$tutor) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Tutor tidak ditemukan',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Tutor tidak ditemukan',
+                null,
+                [
                     'tutor_id' => $id,
                 ],
-            ], 404);
+                404
+            );
         }
 
         $address = is_string($tutor->home_address)
@@ -393,10 +401,10 @@ class FindTutorService
             ])->values()
             : collect();
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil detail tutor',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil detail tutor',
+            [
                 'user_id' => $tutor->id,
                 'name' => $tutor->name,
                 'telephone_number' => $tutor->telephone_number,
@@ -433,6 +441,8 @@ class FindTutorService
                     'teaching_mode' => $tutor->tutor?->learning_method,
                 ],
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 }

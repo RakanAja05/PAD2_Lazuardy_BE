@@ -22,27 +22,31 @@ class LoginService
         ]);
 
         if (!Auth::attempt($credentials)) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Email atau password salah',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Email atau password salah',
+                null,
+                [
                     'credentials' => 'invalid',
                 ],
-            ], 401);
+                401
+            );
         }
 
         $user = $request->user();
         $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Login berhasil',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Login berhasil',
+            [
                 'token' => $token,
                 'user' => $user,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function logout(Request $request): ResponseDTO
@@ -53,22 +57,26 @@ class LoginService
             $token->delete();
         }
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Logout berhasil',
-            'data' => [],
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Logout berhasil',
+            [],
+            null,
+            200
+        );
     }
 
     public function me(Request $request): ResponseDTO
     {
         $user = $request->user();
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil profil',
-            'data' => $this->buildMeUser($user),
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil profil',
+            $this->buildMeUser($user),
+            null,
+            200
+        );
     }
 
     public function updateMe(UpdateMeRequest $request): ResponseDTO
@@ -204,11 +212,13 @@ class LoginService
 
         $user->refresh();
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil memperbarui profil',
-            'data' => $this->buildMeUser($user),
-        ], 200);
+        return new ResponseDTO(
+            'success',
+            'Berhasil memperbarui profil',
+            $this->buildMeUser($user),
+            null,
+            200
+        );
     }
 
     private function buildMeUser(User $user): array

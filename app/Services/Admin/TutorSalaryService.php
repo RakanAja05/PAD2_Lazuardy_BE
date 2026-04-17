@@ -43,14 +43,16 @@ class TutorSalaryService
 
         $totalSalary = $tutors->sum('salary');
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil data gaji tutor',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil data gaji tutor',
+            [
                 'tutors' => $data,
                 'total_salary' => $totalSalary,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function show($userId): ResponseDTO
@@ -60,19 +62,21 @@ class TutorSalaryService
             ->first();
 
         if (!$tutor) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Tutor tidak ditemukan',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Tutor tidak ditemukan',
+                null,
+                [
                     'user_id' => $userId,
                 ],
-            ], 404);
+                404
+            );
         }
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil detail gaji tutor',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil detail gaji tutor',
+            [
                 'user_id' => $tutor->user_id,
                 'name' => $tutor->user->name,
                 'email' => $tutor->user->email,
@@ -81,7 +85,9 @@ class TutorSalaryService
                 'rekening' => $tutor->rekening,
                 'sanction_amount' => $tutor->sanction_amount,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function confirmPayment(Request $request, $userId): ResponseDTO
@@ -95,23 +101,27 @@ class TutorSalaryService
             ->first();
 
         if (!$tutor) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Tutor tidak ditemukan',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Tutor tidak ditemukan',
+                null,
+                [
                     'user_id' => $userId,
                 ],
-            ], 404);
+                404
+            );
         }
 
         if ($tutor->salary == 0) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Gaji tutor sudah 0, tidak ada yang perlu dikonfirmasi',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Gaji tutor sudah 0, tidak ada yang perlu dikonfirmasi',
+                null,
+                [
                     'salary' => $tutor->salary,
                 ],
-            ], 400);
+                400
+            );
         }
 
         DB::beginTransaction();
@@ -122,27 +132,31 @@ class TutorSalaryService
 
             DB::commit();
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Gaji tutor berhasil dikonfirmasi dan direset',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'Gaji tutor berhasil dikonfirmasi dan direset',
+                [
                     'user_id' => $tutor->user_id,
                     'name' => $tutor->user->name,
                     'paid_salary' => $paidSalary,
                     'current_salary' => $tutor->salary,
                     'note' => $request->note,
                 ],
-            ], 200);
+                null,
+                200
+            );
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan saat konfirmasi pembayaran: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Terjadi kesalahan saat konfirmasi pembayaran: ' . $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -166,26 +180,30 @@ class TutorSalaryService
         ]);
 
         if (empty($tutorIds)) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'tutor_ids harus disediakan dan tidak boleh kosong',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'tutor_ids harus disediakan dan tidak boleh kosong',
+                null,
+                [
                     'tutor_ids' => $tutorIds,
                 ],
-            ], 422);
+                422
+            );
         }
 
         $existingTutors = Tutor::whereIn('user_id', $tutorIds)->pluck('user_id')->toArray();
         $missingTutors = array_diff($tutorIds, $existingTutors);
 
         if (!empty($missingTutors)) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Tutor dengan ID: ' . implode(', ', $missingTutors) . ' tidak ditemukan',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Tutor dengan ID: ' . implode(', ', $missingTutors) . ' tidak ditemukan',
+                null,
+                [
                     'missing_tutors' => $missingTutors,
                 ],
-            ], 422);
+                422
+            );
         }
 
         DB::beginTransaction();
@@ -196,13 +214,15 @@ class TutorSalaryService
                 ->get();
 
             if ($tutors->isEmpty()) {
-                return new ResponseDTO([
-                    'status' => 'error',
-                    'message' => 'Tidak ada tutor dengan gaji > 0 untuk dikonfirmasi',
-                    'errors' => [
+                return new ResponseDTO(
+                    'error',
+                    'Tidak ada tutor dengan gaji > 0 untuk dikonfirmasi',
+                    null,
+                    [
                         'tutor_ids' => $tutorIds,
                     ],
-                ], 400);
+                    400
+                );
             }
 
             $totalPaid = 0;
@@ -224,26 +244,30 @@ class TutorSalaryService
 
             DB::commit();
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Pembayaran gaji batch berhasil dikonfirmasi',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'Pembayaran gaji batch berhasil dikonfirmasi',
+                [
                     'total_tutors' => count($tutorDetails),
                     'total_paid' => $totalPaid,
                     'tutors' => $tutorDetails,
                     'note' => $request->note,
                 ],
-            ], 200);
+                null,
+                200
+            );
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan saat konfirmasi batch: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Terjadi kesalahan saat konfirmasi batch: ' . $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -260,23 +284,27 @@ class TutorSalaryService
             ->first();
 
         if (!$tutor) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Tutor tidak ditemukan',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Tutor tidak ditemukan',
+                null,
+                [
                     'user_id' => $userId,
                 ],
-            ], 404);
+                404
+            );
         }
 
         if ($tutor->salary == 0) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Gaji tutor sudah 0, tidak ada yang perlu dikonfirmasi',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Gaji tutor sudah 0, tidak ada yang perlu dikonfirmasi',
+                null,
+                [
                     'salary' => $tutor->salary,
                 ],
-            ], 400);
+                400
+            );
         }
 
         DB::beginTransaction();
@@ -297,10 +325,10 @@ class TutorSalaryService
 
             $paidSalary = $salaryPayment->amount;
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Pembayaran gaji berhasil dikonfirmasi dan email telah diproses.',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'Pembayaran gaji berhasil dikonfirmasi dan email telah diproses.',
+                [
                     'user_id' => $tutor->user_id,
                     'name' => $tutor->user->name,
                     'email' => $tutor->user->email,
@@ -309,17 +337,21 @@ class TutorSalaryService
                     'payment_method' => $request->payment_method,
                     'email_sent' => $salaryPayment->email_sent,
                 ],
-            ], 200);
+                null,
+                200
+            );
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan saat konfirmasi pembayaran: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Terjadi kesalahan saat konfirmasi pembayaran: ' . $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -357,15 +389,17 @@ class TutorSalaryService
 
         $totalPending = $tutors->sum('salary');
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil data pembayaran tertunda',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil data pembayaran tertunda',
+            [
                 'tutors' => $data,
                 'count' => count($data),
                 'total_pending' => $totalPending,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function getVerificationPending(Request $request): ResponseDTO
@@ -395,14 +429,16 @@ class TutorSalaryService
             ];
         });
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil data verifikasi pending',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil data verifikasi pending',
+            [
                 'tutors' => $data,
                 'count' => count($data),
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function getSalaryHistory($userId): ResponseDTO
@@ -412,14 +448,16 @@ class TutorSalaryService
             ->get();
 
         if ($salaryPayments->isEmpty()) {
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Belum ada riwayat pembayaran',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'Belum ada riwayat pembayaran',
+                [
                     'payments' => [],
                     'total_paid' => 0,
                 ],
-            ], 200);
+                null,
+                200
+            );
         }
 
         $data = $salaryPayments->map(function ($payment) {
@@ -434,13 +472,15 @@ class TutorSalaryService
             ];
         });
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil riwayat pembayaran',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil riwayat pembayaran',
+            [
                 'payments' => $data,
                 'total_paid' => $salaryPayments->sum('amount'),
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 }
