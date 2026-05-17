@@ -69,9 +69,7 @@ class TutorDashboardService
             ->values();
 
         $upcomingSessions = TakenSchedule::query()
-            ->whereHas('scheduleTutor', function ($query) use ($user) {
-                $query->where('tutor_id', $user->id);
-            })
+            ->where('tutor_id', $user->id)
             ->where('date', '>=', $now)
             ->where('status', TakenScheduleStatusEnum::ACTIVE->value)
             ->with(['student', 'subject.class'])
@@ -79,7 +77,7 @@ class TutorDashboardService
             ->get()
             ->map(function (TakenSchedule $ts) {
                 $dateTime = $ts->date instanceof Carbon ? $ts->date : Carbon::parse($ts->date);
-                $startTime = $dateTime->format('H:i');
+                $startTime = $ts->time ? substr((string) $ts->time, 0, 5) : $dateTime->format('H:i');
                 // No duration column exists in current schema; assume 1 hour.
                 $endTime = $dateTime->copy()->addHour()->format('H:i');
 
@@ -111,17 +109,13 @@ class TutorDashboardService
             ->values();
 
         $todaySessions = (int) TakenSchedule::query()
-            ->whereHas('scheduleTutor', function ($query) use ($user) {
-                $query->where('tutor_id', $user->id);
-            })
+            ->where('tutor_id', $user->id)
             ->whereBetween('date', [$now->copy()->startOfDay(), $now->copy()->endOfDay()])
             ->where('status', TakenScheduleStatusEnum::ACTIVE->value)
             ->count();
 
         $completedSessions = (int) TakenSchedule::query()
-            ->whereHas('scheduleTutor', function ($query) use ($user) {
-                $query->where('tutor_id', $user->id);
-            })
+            ->where('tutor_id', $user->id)
             ->where('status', TakenScheduleStatusEnum::COMPLETED->value)
             ->count();
 
@@ -204,9 +198,7 @@ class TutorDashboardService
 
         // Single aggregated query for lightweight summary.
         $stats = TakenSchedule::query()
-            ->whereHas('scheduleTutor', function ($query) use ($user) {
-                $query->where('tutor_id', $user->id);
-            })
+            ->where('tutor_id', $user->id)
             ->selectRaw(
                 "\n                SUM(CASE\n                    WHEN `date` BETWEEN ? AND ?\n                        AND (status IS NULL OR status = ? OR status = ?)\n                    THEN 1 ELSE 0\n                END) as today_sessions,\n                SUM(CASE\n                    WHEN `date` > ?\n                        AND (status IS NULL OR status = ?)\n                    THEN 1 ELSE 0\n                END) as upcoming_sessions,\n                SUM(CASE\n                    WHEN status = ?\n                    THEN 1 ELSE 0\n                END) as completed_sessions\n            ",
                 [

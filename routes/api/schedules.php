@@ -10,5 +10,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:student')->group(function () {
         Route::get('/student/schedule', [ScheduleController::class, 'indexStudent']);
+        Route::post('/student/schedule', [ScheduleController::class, 'storeStudent']);
     });
 });

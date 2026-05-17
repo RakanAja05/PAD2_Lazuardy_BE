@@ -11,6 +11,7 @@ use App\Http\Requests\StoreStudentRegisterRequest;
 use App\Http\Requests\StoreTutorRegisterRequest;
 use App\Http\Requests\UpdateAuthRequest;
 use App\Http\Requests\VerifyOtpRequest;
+use App\Models\ParentModel;
 use App\Models\Student;
 use App\Models\Tutor;
 use App\Models\User;
@@ -26,6 +27,8 @@ use Illuminate\Support\Str;
 
 class AuthControllerService
 {
+    private const PARENT_REGISTER_CACHE_PREFIX = 'registration:parent:';
+
     public function sendRegisterOtp(Request $request): ResponseDTO
     {
         $data = $request->validate([
@@ -49,6 +52,60 @@ class AuthControllerService
 
     public function verifyRegisterOtp(Request $request): ResponseDTO
     {
+        if ($request->filled('temp_token')) {
+            $data = $request->validate([
+                'temp_token' => ['required', 'string'],
+                'otp' => ['required', 'string'],
+            ]);
+
+            $cacheKey = self::PARENT_REGISTER_CACHE_PREFIX . $data['temp_token'];
+            $cacheData = Cache::get($cacheKey);
+            if (!$cacheData || empty($cacheData['email'])) {
+                return new ResponseDTO(
+                    'error',
+                    'Sesi registrasi orang tua tidak ditemukan atau sudah kadaluarsa',
+                    null,
+                    [
+                        'temp_token' => 'invalid',
+                    ],
+                    422
+                );
+            }
+
+            $otpService = new OtpService();
+            $result = $otpService->checkOtp(
+                $data['otp'],
+                $cacheData['email'],
+                OtpIdentifierEnum::EMAIL->value,
+                OtpTypeEnum::REGISTER->value
+            );
+
+            if (($result['status'] ?? null) === 'success') {
+                $cacheData['parent_verified'] = true;
+                Cache::put($cacheKey, $cacheData, 1800);
+
+                return new ResponseDTO(
+                    'success',
+                    (string) ($result['message'] ?? ''),
+                    [
+                        'temp_token' => $data['temp_token'],
+                    ],
+                    null,
+                    (int) ($result['code'] ?? 200)
+                );
+            }
+
+            return new ResponseDTO(
+                'error',
+                (string) ($result['message'] ?? ''),
+                null,
+                [
+                    'code' => $result['code'] ?? null,
+                ],
+                (int) ($result['code'] ?? 400)
+            );
+        }
+
         $request->validate([
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'otp' => ['required', 'string'],
@@ -120,6 +177,253 @@ class AuthControllerService
             ],
             (int) ($result['code'] ?? 400)
         );
+    }
+
+    public function sendParentRegisterOtp(Request $request): ResponseDTO
+    {
+        $data = $request->validate([
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $otpService = new OtpService();
+        $otp = $otpService->createOtp(
+            $data['email'],
+            OtpIdentifierEnum::EMAIL->value,
+            OtpTypeEnum::REGISTER->value
+        );
+
+        $tempToken = Str::random(15);
+        Cache::put(self::PARENT_REGISTER_CACHE_PREFIX . $tempToken, [
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'parent_verified' => false,
+        ], 1800);
+
+        return new ResponseDTO(
+            'success',
+            'OTP berhasil terkirim ke email',
+            [
+                'otp' => $otp['code'],
+                'temp_token' => $tempToken,
+            ],
+            null,
+            201
+        );
+    }
+
+    public function sendParentChildOtp(Request $request): ResponseDTO
+    {
+        $data = $request->validate([
+            'temp_token' => ['required', 'string'],
+            'child_email' => ['required', 'string', 'email', 'max:255', 'exists:users,email'],
+        ]);
+
+        $cacheKey = self::PARENT_REGISTER_CACHE_PREFIX . $data['temp_token'];
+        $cacheData = Cache::get($cacheKey);
+        if (!$cacheData || empty($cacheData['email']) || empty($cacheData['parent_verified'])) {
+            return new ResponseDTO(
+                'error',
+                'Sesi registrasi orang tua tidak valid atau belum terverifikasi',
+                null,
+                [
+                    'temp_token' => 'invalid',
+                ],
+                422
+            );
+        }
+
+        if ($cacheData['email'] === $data['child_email']) {
+            return new ResponseDTO(
+                'error',
+                'Email anak tidak boleh sama dengan email orang tua',
+                null,
+                [
+                    'child_email' => 'same_as_parent',
+                ],
+                422
+            );
+        }
+
+        $studentUser = User::where('email', $data['child_email'])->first();
+        if (!$studentUser || $studentUser->role !== RoleEnum::STUDENT) {
+            return new ResponseDTO(
+                'error',
+                'Email anak tidak terdaftar sebagai siswa',
+                null,
+                [
+                    'child_email' => 'not_student',
+                ],
+                422
+            );
+        }
+
+        $student = Student::where('user_id', $studentUser->id)->first();
+        if (!$student) {
+            return new ResponseDTO(
+                'error',
+                'Data siswa tidak ditemukan',
+                null,
+                [
+                    'child_email' => 'student_missing',
+                ],
+                404
+            );
+        }
+
+        if (ParentModel::where('student_id', $studentUser->id)->exists()) {
+            return new ResponseDTO(
+                'error',
+                'Siswa sudah terhubung dengan orang tua',
+                null,
+                [
+                    'child_email' => 'already_linked',
+                ],
+                409
+            );
+        }
+
+        $otpService = new OtpService();
+        $otp = $otpService->createOtp(
+            $data['child_email'],
+            OtpIdentifierEnum::EMAIL->value,
+            OtpTypeEnum::REGISTER->value
+        );
+
+        $cacheData['child_email'] = $data['child_email'];
+        Cache::put($cacheKey, $cacheData, 1800);
+
+        return new ResponseDTO(
+            'success',
+            'OTP berhasil terkirim ke email anak',
+            [
+                'otp' => $otp['code'],
+            ],
+            null,
+            200
+        );
+    }
+
+    public function verifyParentChildOtp(Request $request): ResponseDTO
+    {
+        $data = $request->validate([
+            'temp_token' => ['required', 'string'],
+            'child_email' => ['required', 'string', 'email', 'max:255', 'exists:users,email'],
+            'otp' => ['required', 'string'],
+        ]);
+
+        $cacheKey = self::PARENT_REGISTER_CACHE_PREFIX . $data['temp_token'];
+        $cacheData = Cache::get($cacheKey);
+        if (!$cacheData || empty($cacheData['email']) || empty($cacheData['parent_verified'])) {
+            return new ResponseDTO(
+                'error',
+                'Sesi registrasi orang tua tidak valid atau belum terverifikasi',
+                null,
+                [
+                    'temp_token' => 'invalid',
+                ],
+                422
+            );
+        }
+
+        if (($cacheData['child_email'] ?? null) !== $data['child_email']) {
+            return new ResponseDTO(
+                'error',
+                'Email anak tidak sesuai dengan sesi registrasi',
+                null,
+                [
+                    'child_email' => 'mismatch',
+                ],
+                422
+            );
+        }
+
+        $otpService = new OtpService();
+        $result = $otpService->checkOtp(
+            $data['otp'],
+            $data['child_email'],
+            OtpIdentifierEnum::EMAIL->value,
+            OtpTypeEnum::REGISTER->value
+        );
+
+        if (($result['status'] ?? null) !== 'success') {
+            return new ResponseDTO(
+                'error',
+                (string) ($result['message'] ?? ''),
+                null,
+                [
+                    'code' => $result['code'] ?? null,
+                ],
+                (int) ($result['code'] ?? 400)
+            );
+        }
+
+        $studentUser = User::where('email', $data['child_email'])->first();
+        if (!$studentUser || $studentUser->role !== RoleEnum::STUDENT) {
+            return new ResponseDTO(
+                'error',
+                'Email anak tidak terdaftar sebagai siswa',
+                null,
+                [
+                    'child_email' => 'not_student',
+                ],
+                422
+            );
+        }
+
+        if (ParentModel::where('student_id', $studentUser->id)->exists()) {
+            return new ResponseDTO(
+                'error',
+                'Siswa sudah terhubung dengan orang tua',
+                null,
+                [
+                    'child_email' => 'already_linked',
+                ],
+                409
+            );
+        }
+
+        $authService = new AuthService();
+
+        DB::beginTransaction();
+        try {
+            $userResult = $authService->registerUser([
+                'email' => $cacheData['email'],
+                'password' => $cacheData['password'],
+                'role' => RoleEnum::PARENT,
+            ]);
+
+            ParentModel::create([
+                'user_id' => $userResult['user']->id,
+                'student_id' => $studentUser->id,
+            ]);
+
+            DB::commit();
+
+            Cache::forget($cacheKey);
+
+            return new ResponseDTO(
+                'success',
+                'Registrasi orang tua berhasil',
+                [
+                    'token' => $userResult['token'],
+                ],
+                null,
+                201
+            );
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return new ResponseDTO(
+                'error',
+                'Registrasi gagal: ' . $e->getMessage(),
+                null,
+                [
+                    'code' => $e->getCode(),
+                ],
+                500
+            );
+        }
     }
 
     public function storeStudentRegister(StoreStudentRegisterRequest $request): ResponseDTO

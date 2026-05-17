@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ScheduleTutor extends Model
 {
@@ -27,10 +26,5 @@ class ScheduleTutor extends Model
     public function tutor(): BelongsTo
     {
         return $this->belongsTo(Tutor::class, 'tutor_id', 'user_id');
-    }
-
-    public function takenSchedules(): HasMany
-    {
-        return $this->hasMany(TakenSchedule::class, 'schedule_tutor_id');
     }
 }

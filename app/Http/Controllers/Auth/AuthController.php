@@ -57,19 +57,30 @@ class AuthController extends Controller
      * @OA\Patch(
      *     path="/api/register/verify",
      *     tags={"Auth"},
-     *     summary="Verify register OTP",
+    *     summary="Verify register OTP",
     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"email","otp"},
-     *             @OA\Property(property="email", type="string"),
-     *             @OA\Property(property="otp", type="string")
-     *         )
-     *     ),
+    *         required=true,
+    *         @OA\JsonContent(
+    *             required={"otp"},
+    *             @OA\Property(property="email", type="string"),
+    *             @OA\Property(property="temp_token", type="string"),
+    *             @OA\Property(property="otp", type="string")
+    *         )
+    *     ),
      *     @OA\Response(
      *         response=200,
      *         description="OTP verified",
-     *         @OA\JsonContent(ref="#/components/schemas/StandardSuccess")
+    *         @OA\JsonContent(
+    *             allOf={
+    *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
+    *                 @OA\Schema(
+    *                     @OA\Property(property="data", type="object",
+    *                         @OA\Property(property="identifier", type="string"),
+    *                         @OA\Property(property="temp_token", type="string")
+    *                     )
+    *                 )
+    *             }
+    *         )
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -116,6 +127,117 @@ class AuthController extends Controller
     public function resendRegisterOtp(Request $request)
     {
         $result = $this->authControllerService->resendRegisterOtp($request);
+
+        return $this->respond($result);
+    }
+
+    /**
+     * @OA@Post(
+     *     path="/api/register/parent",
+     *     tags={"Auth"},
+     *     summary="Send parent register OTP",
+    *     @OA@RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password","password_confirmation"},
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="password_confirmation", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="OTP sent",
+     *         @OA\JsonContent(
+     *             allOf={
+     *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="data", type="object",
+     *                         @OA\Property(property="otp", type="string"),
+     *                         @OA\Property(property="temp_token", type="string")
+     *                     )
+     *                 )
+     *             }
+     *         )
+     *     )
+     * )
+     */
+    public function sendParentRegisterOtp(Request $request)
+    {
+        $result = $this->authControllerService->sendParentRegisterOtp($request);
+
+        return $this->respond($result);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/register/parent/child",
+     *     tags={"Auth"},
+     *     summary="Send child email OTP for parent registration",
+    *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"temp_token","child_email"},
+     *             @OA\Property(property="temp_token", type="string"),
+     *             @OA\Property(property="child_email", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OTP sent",
+     *         @OA\JsonContent(
+     *             allOf={
+     *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="data", type="object",
+     *                         @OA\Property(property="otp", type="string")
+     *                     )
+     *                 )
+     *             }
+     *         )
+     *     )
+     * )
+     */
+    public function sendParentChildOtp(Request $request)
+    {
+        $result = $this->authControllerService->sendParentChildOtp($request);
+
+        return $this->respond($result);
+    }
+
+    /**
+     * @OA\Patch(
+     *     path="/api/register/parent/child/verify",
+     *     tags={"Auth"},
+     *     summary="Verify child email OTP and create parent",
+    *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"temp_token","child_email","otp"},
+     *             @OA\Property(property="temp_token", type="string"),
+     *             @OA\Property(property="child_email", type="string"),
+     *             @OA\Property(property="otp", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Parent registered",
+     *         @OA\JsonContent(
+     *             allOf={
+     *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="data", type="object",
+     *                         @OA\Property(property="token", type="string")
+     *                     )
+     *                 )
+     *             }
+     *         )
+     *     )
+     * )
+     */
+    public function verifyParentChildOtp(Request $request)
+    {
+        $result = $this->authControllerService->verifyParentChildOtp($request);
 
         return $this->respond($result);
     }
@@ -314,42 +436,6 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $result = $this->authControllerService->forgotPassword($request);
-
-        return $this->respond($result);
-    }
-
-    /**
-     * @OA\Patch(
-     *     path="/api/forgot-password/verify",
-     *     tags={"Auth"},
-     *     summary="Verify forgot password OTP",
-    *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"otp_code","temp_token"},
-     *             @OA\Property(property="otp_code", type="string"),
-     *             @OA\Property(property="temp_token", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="OTP verified",
-     *         @OA\JsonContent(
-     *             allOf={
-     *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
-     *                 @OA\Schema(
-     *                     @OA\Property(property="data", type="object",
-     *                         @OA\Property(property="token", type="string")
-     *                     )
-     *                 )
-     *             }
-     *         )
-     *     )
-     * )
-     */
-    public function verifyForgotPassword(VerifyOtpRequest $request)
-    {
-        $result = $this->authControllerService->verifyForgotPassword($request);
 
         return $this->respond($result);
     }

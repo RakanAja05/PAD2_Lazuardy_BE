@@ -14,7 +14,7 @@ class TutorVerifyController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/verify/tutor",
+    *     path="/api/admin/tutor/verify",
      *     tags={"Admin"},
      *     summary="List tutors pending verification",
      *     security={{"bearerAuth":{}}},
@@ -30,25 +30,19 @@ class TutorVerifyController extends Controller
 
     /**
      * @OA\Patch(
-     *     path="/api/verify/tutor/approve",
+     *     path="/api/admin/tutor/{userId}/verify/approve",
      *     tags={"Admin"},
      *     summary="Approve tutor verification",
      *     security={{"bearerAuth":{}}},
-    *     @OA\RequestBody(
-    *         required=true,
-    *         @OA\JsonContent(
-    *             required={"user_id"},
-    *             @OA\Property(property="user_id", type="integer")
-    *         )
-    *     ),
+     *     @OA\Parameter(name="userId", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(response=200, description="Approved", @OA\JsonContent(ref="#/components/schemas/StandardSuccess"))
      * )
      */
-    public function approve(Request $request)
+    public function approve(int $userId)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:tutors,user_id',
-        ]);
+        $validated = [
+            'user_id' => $userId,
+        ];
 
         $result = $this->tutorVerifyService->approve($validated);
 
@@ -57,27 +51,27 @@ class TutorVerifyController extends Controller
 
     /**
      * @OA\Patch(
-     *     path="/api/verify/tutor/reject",
+     *     path="/api/admin/tutor/{userId}/verify/reject",
      *     tags={"Admin"},
      *     summary="Reject tutor verification",
      *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="userId", in="path", required=true, @OA\Schema(type="integer")),
     *     @OA\RequestBody(
-    *         required=true,
+    *         required=false,
     *         @OA\JsonContent(
-    *             required={"user_id"},
-    *             @OA\Property(property="user_id", type="integer"),
     *             @OA\Property(property="reason", type="string", nullable=true)
     *         )
     *     ),
      *     @OA\Response(response=200, description="Rejected", @OA\JsonContent(ref="#/components/schemas/StandardSuccess"))
      * )
      */
-    public function reject(Request $request)
+    public function reject(Request $request, int $userId)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:tutors,user_id',
             'reason' => 'nullable|string|max:500',
         ]);
+
+        $validated['user_id'] = $userId;
 
         $result = $this->tutorVerifyService->reject($validated);
 

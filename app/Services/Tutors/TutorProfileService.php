@@ -3,11 +3,13 @@
 namespace App\Services\Tutors;
 
 use App\DTOs\ResponseDTO;
+use App\Enums\TakenScheduleStatusEnum;
 use App\Models\Review;
 use App\Models\ScheduleTutor;
 use App\Models\TakenSchedule;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class TutorProfileService
@@ -129,16 +131,20 @@ class TutorProfileService
         ]);
 
         $date = $request->input('date');
-        $dayOfWeek = date('N', strtotime($date));
+        $dayKey = strtolower(Carbon::parse($date)->format('l'));
 
         $schedules = ScheduleTutor::where('tutor_id', $id)
-            ->where('day', $dayOfWeek)
+            ->where('day', $dayKey)
             ->get();
 
         $availableSlots = $schedules->map(function ($schedule) use ($date) {
-            $isTaken = TakenSchedule::where('schedule_tutor_id', $schedule->id)
-                ->where('date', $date)
-                ->whereIn('status', ['pending', 'confirmed'])
+            $isTaken = TakenSchedule::where('tutor_id', $schedule->tutor_id)
+                ->whereDate('date', $date)
+                ->where('time', $schedule->time)
+                ->whereIn('status', [
+                    TakenScheduleStatusEnum::PENDING->value,
+                    TakenScheduleStatusEnum::ACTIVE->value,
+                ])
                 ->exists();
 
             return [
@@ -153,7 +159,7 @@ class TutorProfileService
             'Berhasil mengambil jadwal tersedia',
             [
                 'date' => $date,
-                'day_name' => $this->getDayName($dayOfWeek),
+                'day_name' => $this->getDayName($dayKey),
                 'slots' => $availableSlots,
             ],
             null,
@@ -173,8 +179,13 @@ class TutorProfileService
                 'day' => $day,
                 'day_name' => $this->getDayName($day),
                 'time_slots' => $daySchedules->map(function ($schedule) use ($tutorId) {
-                    $upcomingBookings = TakenSchedule::where('schedule_tutor_id', $schedule->id)
-                        ->where('date', '>=', now()->toDateString())
+                    $upcomingBookings = TakenSchedule::where('tutor_id', $tutorId)
+                        ->whereDate('date', '>=', now()->toDateString())
+                        ->where('time', $schedule->time)
+                        ->whereIn('status', [
+                            TakenScheduleStatusEnum::PENDING->value,
+                            TakenScheduleStatusEnum::ACTIVE->value,
+                        ])
                         ->count();
 
                     return [
@@ -250,7 +261,7 @@ class TutorProfileService
 
     private function getDayName($day): string
     {
-        $days = [
+        $byIso = [
             1 => 'Senin',
             2 => 'Selasa',
             3 => 'Rabu',
@@ -260,6 +271,24 @@ class TutorProfileService
             7 => 'Minggu',
         ];
 
-        return $days[$day] ?? 'Unknown';
+        if (is_int($day) || (is_string($day) && ctype_digit($day))) {
+            $n = (int) $day;
+            return $byIso[$n] ?? 'Unknown';
+        }
+
+        if (is_string($day)) {
+            return match (strtolower($day)) {
+                'monday' => 'Senin',
+                'tuesday' => 'Selasa',
+                'wednesday' => 'Rabu',
+                'thursday' => 'Kamis',
+                'friday' => 'Jumat',
+                'saturday' => 'Sabtu',
+                'sunday' => 'Minggu',
+                default => 'Unknown',
+            };
+        }
+
+        return 'Unknown';
     }
 }

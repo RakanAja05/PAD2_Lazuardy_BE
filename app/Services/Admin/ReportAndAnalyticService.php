@@ -3,8 +3,10 @@
 namespace App\Services\Admin;
 
 use App\DTOs\ResponseDTO;
+use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Enums\TutorStatusEnum;
+use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Review;
 use App\Models\Student;
@@ -16,13 +18,13 @@ class ReportAndAnalyticService
     public function index(): ResponseDTO
     {
         $totalStudent = Student::all()->count();
-        $totalStudentVerif = Payment::where('status', PaymentStatusEnum::UPLOADED)->count();
+        $totalStudentVerif = Payment::where('status', PaymentStatusEnum::PENDING->value)->count();
         $totalTutor = Tutor::all()->count();
         $totalTutorVerif = Tutor::where('status', TutorStatusEnum::PENDING->value)->count();
 
         $startDate = Carbon::now()->startOfMonth();
 
-        $totalTransaction = Payment::where('status', PaymentStatusEnum::VALIDATED)
+        $totalTransaction = Order::where('status', OrderStatusEnum::PAID->value)
             ->where('created_at', '>=', $startDate)
             ->count();
 

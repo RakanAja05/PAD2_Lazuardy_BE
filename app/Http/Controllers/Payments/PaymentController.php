@@ -39,9 +39,8 @@ class PaymentController extends Controller
     *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"package_id","total_amount","payment_method"},
+    *             required={"package_id","payment_method"},
      *             @OA\Property(property="package_id", type="integer"),
-     *             @OA\Property(property="total_amount", type="integer"),
     *             @OA\Property(property="payment_method", type="string", enum={"mandiri","bni","bri","bpr","bpd","qris"})
      *         )
      *     ),
@@ -51,35 +50,6 @@ class PaymentController extends Controller
     public function storeOrderPackage(Request $request)
     {
         $result = $this->paymentControllerService->storeOrderPackage($request);
-
-        return $this->respond($result);
-    }
-
-    /**
-     * @OA\Post(
-     *     path="/api/package/payment",
-     *     tags={"Payments"},
-     *     summary="Upload payment proof",
-     *     security={{"bearerAuth":{}}},
-    *     @OA\RequestBody(
-     *         required=true,
-     *         content={
-    *             @OA\MediaType(
-    *                 mediaType="multipart/form-data",
-    *                 @OA\Schema(
-    *                     required={"file_upload","order_id"},
-    *                     @OA\Property(property="file_upload", type="string", format="binary"),
-    *                     @OA\Property(property="order_id", type="integer")
-    *                 )
-    *             )
-     *         }
-     *     ),
-     *     @OA\Response(response=200, description="Payment uploaded", @OA\JsonContent(ref="#/components/schemas/StandardSuccess"))
-     * )
-     */
-    public function uploadPaymentFile(Request $request)
-    {
-        $result = $this->paymentControllerService->uploadPaymentFile($request);
 
         return $this->respond($result);
     }

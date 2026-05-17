@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\TutorStatusEnum;
+use App\Enums\TakenScheduleStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,20 +12,26 @@ class TutorConfirm extends Model
     /** @use HasFactory<\Database\Factories\TutorConfirmFactory> */
     use HasFactory;
 
+    protected $table = 'schedules';
+
     protected $fillable =
     [
         'student_id',
         'tutor_id',
-        'schedule_tutor_id',
+        'subject_id',
         'reason',
         'address',
+        'date',
+        'time',
         'status',
     ];
 
     protected function casts(): array
     {
         return [
-            'status' => TutorStatusEnum::class,
+            'status' => TakenScheduleStatusEnum::class,
+            'date' => 'datetime',
+            'time' => 'string',
         ];
     }
 
@@ -37,10 +43,5 @@ class TutorConfirm extends Model
     public function tutor(): BelongsTo
     {
         return $this->belongsTo(Tutor::class, 'tutor_id', 'user_id');
-    }
-
-    public function scheduleTutor(): BelongsTo
-    {
-        return $this->belongsTo(ScheduleTutor::class, 'schedule_tutor_id');
     }
 }

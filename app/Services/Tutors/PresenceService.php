@@ -13,7 +13,7 @@ class PresenceService
         $user = $request->user()->load([
             'takenSchedules.student.student.class',
             'takenSchedules.subject',
-            'takenSchedules.scheduleTutor',
+            'takenSchedules.tutor',
         ]);
 
         $data = $user->takenSchedules
@@ -47,7 +47,7 @@ class PresenceService
     public function store(Request $request): ResponseDTO
     {
         $request->validate([
-            'taken_schedule_id' => ['required', 'integer', 'exists:taken_schedules,id'],
+            'taken_schedule_id' => ['required', 'integer', 'exists:schedules,id'],
             'student_user_id' => ['required', 'integer', 'exists:users,id,role,student'],
             'material' => ['required', 'string'],
             'evaluation' => ['required', 'string'],

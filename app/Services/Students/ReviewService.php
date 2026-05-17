@@ -20,20 +20,20 @@ class ReviewService
             ->where('status', TakenScheduleStatusEnum::COMPLETED->value)
             ->with([
                 'subject:id,name',
-                'scheduleTutor.user:id,name',
-                'scheduleTutor.tutor:user_id,description',
-                'scheduleTutor.tutor.subjects.class',
+                'tutor:id,name',
+                'tutor.tutor:user_id,description',
+                'tutor.tutor.subjects.class',
             ])
             ->orderByDesc('date')
             ->get();
 
         $tutorsToReview = $takenSchedules
-            ->filter(fn ($takenSchedule) => $takenSchedule->scheduleTutor?->user)
-            ->unique(fn ($takenSchedule) => $takenSchedule->scheduleTutor->user->id)
+            ->filter(fn ($takenSchedule) => $takenSchedule->tutor)
+            ->unique(fn ($takenSchedule) => $takenSchedule->tutor->id)
             ->values()
             ->map(function ($takenSchedule) {
-                $tutorUser = $takenSchedule->scheduleTutor->user;
-                $tutorProfile = $takenSchedule->scheduleTutor->tutor;
+                $tutorUser = $takenSchedule->tutor;
+                $tutorProfile = $takenSchedule->tutor?->tutor;
 
                 $classNames = $tutorProfile
                     ? $tutorProfile->subjects

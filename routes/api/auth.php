@@ -13,6 +13,9 @@ Route::middleware('guest')->group(function () {
     Route::patch('/register/resend-otp', [AuthController::class, 'resendRegisterOtp'])->name('register.resend-otp');
     Route::patch('/register/student', [AuthController::class, 'storeStudentRegister'])->name('register.student');
     Route::patch('/register/tutor', [AuthController::class, 'storeTutorRegister'])->name('register.tutor');
+    Route::post('/register/parent', [AuthController::class, 'sendParentRegisterOtp'])->name('register.parent.send-otp');
+    Route::post('/register/parent/child', [AuthController::class, 'sendParentChildOtp'])->name('register.parent.child.send-otp');
+    Route::patch('/register/parent/verify', [AuthController::class, 'verifyParentChildOtp'])->name('register.parent.child.verify-otp');
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.forgot');
     Route::patch('/forgot-password/verify', [AuthController::class, 'verifyForgotPassword'])->name('password.verify-otp');
     Route::patch('/reset-password', [AuthController::class, 'resetPassword'])->name('password.reset');

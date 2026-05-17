@@ -113,12 +113,12 @@ class StudentDashboardService
                         TakenScheduleStatusEnum::CANCELLED->value,
                     ]);
             })
-            ->with(['scheduleTutor.user', 'subject'])
+            ->with(['tutor', 'subject'])
             ->orderBy('date', 'asc')
             ->get()
             ->map(function (TakenSchedule $ts) use ($startOfNextWeek) {
                 $dateTime = $ts->date instanceof Carbon ? $ts->date : Carbon::parse($ts->date);
-                $startTime = $dateTime->format('H:i');
+                $startTime = $ts->time ? substr((string) $ts->time, 0, 5) : $dateTime->format('H:i');
                 // No duration column exists in current schema; assume 1 hour.
                 $endTime = $dateTime->copy()->addHour()->format('H:i');
 
@@ -127,9 +127,9 @@ class StudentDashboardService
                 return array_filter([
                     'id' => $ts->id,
                     'subject' => $ts->subject?->name ?? null,
-                    'tutor' => $ts->scheduleTutor?->user ? array_filter([
-                        'id' => $ts->scheduleTutor->tutor_id,
-                        'name' => $ts->scheduleTutor->user->name,
+                    'tutor' => $ts->tutor ? array_filter([
+                        'id' => $ts->tutor_id,
+                        'name' => $ts->tutor->name,
                     ], static fn($v) => $v !== null) : null,
                     'date' => $dateTime->toDateString(),
                     'start_time' => $startTime,

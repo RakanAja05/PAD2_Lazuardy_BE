@@ -5,8 +5,11 @@ namespace App\Enums;
 enum ScheduleStatusEnum: string
 {
     case PENDING = 'pending';
-    case COMPLETED = 'completed';
+    case ACTIVE = 'active';
+    case REJECTED = 'rejected';
     case CANCELLED = 'cancelled';
+    case EXPIRED = 'expired';
+    case COMPLETED = 'completed';
 
     public static function list(): array
     {
@@ -17,8 +20,11 @@ enum ScheduleStatusEnum: string
     {
         return [
             self::PENDING->value => 'Menunggu',
-            self::COMPLETED->value => 'Selesai',
+            self::ACTIVE->value => 'Aktif',
+            self::REJECTED->value => 'Ditolak',
             self::CANCELLED->value => 'Dibatalkan',
+            self::EXPIRED->value => 'Terlewat',
+            self::COMPLETED->value => 'Selesai',
         ];
     }
 
@@ -26,8 +32,11 @@ enum ScheduleStatusEnum: string
     {
         return match ($this) {
             self::PENDING => 'Menunggu',
-            self::COMPLETED => 'Selesai',
+            self::ACTIVE => 'Aktif',
+            self::REJECTED => 'Ditolak',
             self::CANCELLED => 'Dibatalkan',
+            self::EXPIRED => 'Terlewat',
+            self::COMPLETED => 'Selesai',
         };
     }
 }

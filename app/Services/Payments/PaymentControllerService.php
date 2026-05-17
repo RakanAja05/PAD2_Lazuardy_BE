@@ -7,16 +7,21 @@ use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Package;
 use App\Models\Payment;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Enum;
 use Throwable;
 
 class PaymentControllerService
 {
+    public function __construct(private readonly XenditService $xenditService)
+    {
+    }
+
     public function showPaymentPackage(Package $package): ResponseDTO
     {
         return new ResponseDTO(
@@ -32,25 +37,49 @@ class PaymentControllerService
     {
         $request->validate([
             'package_id' => ['required', 'exists:packages,id'],
-            'total_amount' => ['required', 'integer', 'min:0'],
             'payment_method' => ['required', new Enum(PaymentMethodEnum::class)],
         ]);
 
         $user = $request->user();
+        $package = Package::findOrFail($request->package_id);
+        $amount = (int) $package->price;
+        $externalId = 'INV-' . Str::uuid()->toString();
+
         DB::beginTransaction();
         try {
             $order = Order::create([
                 'user_id' => $user->id,
-                'package_id' => $request->package_id,
-                'total_amount' => $request->total_amount,
+                'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(6)),
+                'total_amount' => $amount,
                 'status' => OrderStatusEnum::PENDING->value,
             ]);
 
-            Payment::create([
+            OrderItem::create([
                 'order_id' => $order->id,
-                'amount' => $request->total_amount,
+                'package_id' => $package->id,
+                'qty' => 1,
+                'price' => $amount,
+                'subtotal' => $amount,
+            ]);
+
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'amount' => $amount,
                 'payment_method' => $request->payment_method,
                 'status' => PaymentStatusEnum::PENDING->value,
+                'external_id' => $externalId,
+            ]);
+
+            $invoice = $this->xenditService->createInvoice(
+                $externalId,
+                $amount,
+                $user->email
+            );
+
+            $payment->update([
+                'xendit_id' => $invoice['id'] ?? null,
+                'checkout_url' => $invoice['invoice_url'] ?? null,
+                'payload_raw' => $invoice,
             ]);
 
             DB::commit();
@@ -58,11 +87,16 @@ class PaymentControllerService
             return new ResponseDTO(
                 'success',
                 'Berhasil membuat order',
-                [],
+                [
+                    'order_id' => $order->id,
+                    'payment_id' => $payment->id,
+                    'external_id' => $externalId,
+                    'checkout_url' => $payment->checkout_url,
+                ],
                 null,
                 200
             );
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
 
             return new ResponseDTO(
@@ -77,57 +111,6 @@ class PaymentControllerService
         }
     }
 
-    public function uploadPaymentFile(Request $request): ResponseDTO
-    {
-        $request->validate([
-            'file_upload' => ['required', 'file', 'mimes:png,jpg, pdf, svg, webp'],
-            'order_id' => ['required', 'exists:orders,id'],
-        ]);
-
-        if ($request->hasFile('file_upload')) {
-            $file = $request->file('file_upload');
-            $path = $file->store('uploads', 'public');
-
-            $updatePayment = Payment::where('id', $request->order_id)
-                ->where('status', '!=', PaymentStatusEnum::VALIDATED->value)
-                ->updateOrFail([
-                    'status' => PaymentStatusEnum::UPLOADED->value,
-                    'proof_image_url' => $path,
-                    'updated_at' => now(),
-                ]);
-
-            if ($updatePayment === 0) {
-                return new ResponseDTO(
-                    'error',
-                    'Gagal mengupload data file',
-                    null,
-                    [
-                        'payment' => 'update_failed',
-                    ],
-                    200
-                );
-            }
-
-            return new ResponseDTO(
-                'success',
-                'Bukti pembayaran berhasil terkirim',
-                [],
-                null,
-                200
-            );
-        }
-
-        return new ResponseDTO(
-            'error',
-            'Tidak ditemukan file yang diunggah',
-            null,
-            [
-                'file_upload' => 'missing',
-            ],
-            400
-        );
-    }
-
     public function showHistory(Request $request): ResponseDTO
     {
         try {
@@ -136,7 +119,7 @@ class PaymentControllerService
             $payments = Payment::whereHas('order', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 })
-                ->with('order.package')
+                ->with('order.packages')
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -144,7 +127,7 @@ class PaymentControllerService
 
             foreach ($payments as $payment) {
                 $order = $payment->order;
-                $package = $order->package ?? null;
+                $package = $order?->packages?->first();
 
                 if ($package) {
                     $historyData[] = [
@@ -187,14 +170,25 @@ class PaymentControllerService
             'payment_id' => ['required', 'integer', 'exists:payments,id'],
         ]);
 
-        $payment = Payment::with(['order.package'])
+        $payment = Payment::with(['order.packages'])
             ->whereHas('order', function ($query) use ($request) {
                 $query->where('user_id', $request->user()->id);
             })
-            ->where($request->payment_id)
+            ->where('id', $request->payment_id)
             ->firstOrFail();
 
-        $package = $payment->order->package;
+        $package = $payment->order?->packages?->first();
+        if (!$package) {
+            return new ResponseDTO(
+                'error',
+                'Paket tidak ditemukan pada order',
+                null,
+                [
+                    'package' => 'not_found',
+                ],
+                404
+            );
+        }
         $data = [
             'package_id' => $package->id,
             'package_name' => $package->name,

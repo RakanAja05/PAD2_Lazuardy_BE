@@ -28,6 +28,13 @@ class ScheduleController extends Controller
         return $this->respond($result);
     }
 
+    public function storeStudent(Request $request)
+    {
+        $result = $this->scheduleService->storeStudent($request);
+
+        return $this->respond($result);
+    }
+
     /**
      * @OA\Get(
      *     path="/api/tutor/schedule",

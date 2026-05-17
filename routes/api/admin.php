@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->group(function () {
-        Route::get('/verify/tutor', [TutorVerifyController::class, 'index']);
-        Route::patch('/verify/tutor/approve', [TutorVerifyController::class, 'approve']);
-        Route::patch('/verify/tutor/reject', [TutorVerifyController::class, 'reject']);
+        Route::get('/admin/tutor/verify', [TutorVerifyController::class, 'index']);
+        Route::patch('/admin/tutor/{userId}/verify/approve', [TutorVerifyController::class, 'approve'])
+            ->whereNumber('userId');
+        Route::patch('/admin/tutor/{userId}/verify/reject', [TutorVerifyController::class, 'reject'])
+            ->whereNumber('userId');
 
         Route::get('/admin/tutor-salary', [TutorSalaryController::class, 'index']);
         Route::get('/admin/tutor-salary/{userId}', [TutorSalaryController::class, 'show']);

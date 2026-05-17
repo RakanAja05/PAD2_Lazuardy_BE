@@ -26,6 +26,20 @@ class PackagesSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
+            [
+                'id' => SeedIds::PACKAGE_GIAT_ID,
+                'name' => 'Paket Giat',
+                'session' => 8,
+                'price' => 350000,
+                'discount' => 0.00,
+                'description' => json_encode([
+                    '8 sesi belajar',
+                    'Tutor berpengalaman',
+                ], JSON_UNESCAPED_UNICODE),
+                'image_path' => 'packages/giat.png',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
         ]);
     }
 }

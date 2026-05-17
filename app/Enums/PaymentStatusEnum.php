@@ -5,9 +5,9 @@ namespace App\Enums;
 enum PaymentStatusEnum: string
 {
     case PENDING = "pending";
-    case UPLOADED = "uploaded";
-    case VALIDATED = "validated";
-    case REJECTED = "rejected";
+    case PAID = "paid";
+    case FAILED = "failed";
+    case EXPIRED = "expired";
     
     
     public function displayName() : string 
@@ -15,9 +15,9 @@ enum PaymentStatusEnum: string
         return match($this) 
         {
             self::PENDING => "Menunggu pembayaran",
-            self::UPLOADED => 'Menunggu verifikasi',
-            self::VALIDATED => 'Pembayaran berhasil',
-            self::REJECTED => 'Ditolak',
+            self::PAID => 'Pembayaran berhasil',
+            self::FAILED => 'Pembayaran gagal',
+            self::EXPIRED => 'Pembayaran kadaluarsa',
         };
     }
     

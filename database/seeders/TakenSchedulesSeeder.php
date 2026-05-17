@@ -10,15 +10,22 @@ class TakenSchedulesSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('taken_schedules')->insertOrIgnore([
+        $now = now();
+        $time = '09:00:00';
+
+        DB::table('schedules')->insertOrIgnore([
             [
                 'id' => SeedIds::TAKEN_SCHEDULE_ID,
                 'student_id' => SeedIds::STUDENT_USER_ID,
-                'schedule_tutor_id' => SeedIds::SCHEDULE_TUTOR_ID,
+                'tutor_id' => SeedIds::TUTOR_USER_ID,
                 'subject_id' => SeedIds::SUBJECT_MATH_ID,
-                'date' => now()->addDay(),
+                'date' => $now->copy()->addDay()->setTimeFromTimeString($time),
+                'time' => $time,
+                'reason' => null,
                 'address' => 'Jl. Jadwal No. 5',
                 'status' => TakenScheduleStatusEnum::ACTIVE->value,
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
         ]);
     }
