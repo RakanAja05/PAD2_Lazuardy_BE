@@ -18,11 +18,6 @@ class XenditWebhookService
         $callbackToken = (string) $request->header('x-callback-token');
         $expectedToken = (string) config('xendit.callback_token');
 
-        \Log::info('Xendit Webhook Token Debug', [
-    'received'  => $callbackToken,
-    'expected'  => $expectedToken,
-    'match'     => $callbackToken === $expectedToken,
-]);
 
         if ($expectedToken !== '' && !hash_equals($expectedToken, $callbackToken)) {
             return new ResponseDTO(
