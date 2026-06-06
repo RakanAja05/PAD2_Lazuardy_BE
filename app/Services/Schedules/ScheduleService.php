@@ -49,8 +49,9 @@ class ScheduleService
         );
     }
 
-    public function historyStudent(Request $request): ResponseDTO
-    {
+public function historyStudent(Request $request): ResponseDTO
+{
+    try {
         $user = $request->user();
 
         $historySchedules = $user->takenSchedules()
@@ -90,13 +91,16 @@ class ScheduleService
         return new ResponseDTO(
             'success',
             'Data riwayat belajar berhasil terkirim',
-            [
-                'history' => $historyData,
-            ],
+            ['history' => $historyData],
             null,
             200
         );
+
+    } catch (\Throwable $e) {
+        \Log::error('historyStudent error: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+        throw $e;
     }
+}
 
     public function indexTutor(Request $request): ResponseDTO
     {
