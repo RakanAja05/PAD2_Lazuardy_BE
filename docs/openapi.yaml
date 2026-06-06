@@ -1299,6 +1299,125 @@ paths:
         '404':
           $ref: '#/components/responses/NotFoundError'
 
+  /navigation:
+    get:
+      tags: [Dashboard]
+      summary: Get navigation items
+      responses:
+        '200':
+          description: Navigation items
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          navigation:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                title:
+                                  type: string
+                                path:
+                                  type: string
+
+  /tutor/requests:
+    get:
+      tags: [Tutor]
+      summary: List tutor booking requests (pending)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of requests
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          requests:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                student_user_id:
+                                  type: integer
+                                student_name:
+                                  type: string
+                                date:
+                                  type: string
+                                day:
+                                  type: integer
+                                time:
+                                  type: string
+                                status:
+                                  type: string
+
+  /tutor/request/{id}/approve:
+    patch:
+      tags: [Tutor]
+      summary: Approve a tutor booking request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Request approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /tutor/request/{id}/reject:
+    patch:
+      tags: [Tutor]
+      summary: Reject a tutor booking request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Request rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2383,3 +2502,52 @@ components:
         status:
           type: string
           example: active
+    TutorRequestItem:
+      type: object
+      required: [id, student_user_id, date, time, status]
+      properties:
+        id:
+          type: integer
+          example: 900
+        tutor_user_id:
+          type: integer
+          example: 12
+        student_user_id:
+          type: integer
+          example: 55
+        student_name:
+          type: string
+          example: John Doe
+        date:
+          type: string
+          example: '2026-04-18'
+        day:
+          type: integer
+          example: 6
+        time:
+          type: string
+          example: '13:00:00'
+        status:
+          type: string
+          example: pending
+
+    TutorRequestListData:
+      type: object
+      required: [requests]
+      properties:
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/TutorRequestItem'
+
+    NavigationItem:
+      type: object
+      required: [title, path]
+      properties:
+        title:
+          type: string
+          example: Home
+        path:
+          type: string
+          example: /
+

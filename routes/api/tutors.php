@@ -5,6 +5,7 @@ use App\Http\Controllers\Tutors\FindTutorController;
 use App\Http\Controllers\Tutors\PresenceController;
 use App\Http\Controllers\Tutors\TutorApplicationController;
 use App\Http\Controllers\Tutors\TutorProfileController;
+use App\Http\Controllers\Tutors\TutorRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -19,7 +20,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:tutor')->group(function () {
         Route::get('/tutor/apply', [TutorApplicationController::class, 'index']);
         Route::post('/tutor/apply', [TutorApplicationController::class, 'store']);
-        Route::patch('/tutor/lesson-formulir', [ProfileController::class, 'updateTutorLessonMethod']);
+            Route::patch('/tutor/lesson-formulir', [ProfileController::class, 'updateTutorLessonMethod']);
+            Route::patch('/tutor/profile', [ProfileController::class, 'updateTutorProfile']);
+
+            // Tutor booking requests (pengajuan)
+            Route::get('/tutor/requests', [TutorRequestController::class, 'index']);
+            Route::patch('/tutor/request/{id}/approve', [TutorRequestController::class, 'approve'])->whereNumber('id');
+            Route::patch('/tutor/request/{id}/reject', [TutorRequestController::class, 'reject'])->whereNumber('id');
 
         Route::get('/tutor/presence', [PresenceController::class, 'index']);
         Route::post('/tutor/presence', [PresenceController::class, 'store']);

@@ -10,3 +10,4 @@ require __DIR__ . '/api/students.php';
 require __DIR__ . '/api/admin.php';
 require __DIR__ . '/api/social-auth.php';
 require __DIR__ . '/api/parent.php';
+require __DIR__ . '/api/navigation.php';
