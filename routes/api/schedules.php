@@ -10,6 +10,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:student')->group(function () {
         Route::get('/student/schedule', [ScheduleController::class, 'indexStudent']);
+        Route::get('/student/schedule/history', [ScheduleController::class, 'historyStudent']);
         Route::post('/student/schedule', [ScheduleController::class, 'storeStudent']);
     });
 });

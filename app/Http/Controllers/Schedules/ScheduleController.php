@@ -15,7 +15,7 @@ class ScheduleController extends Controller
     /**
      * @OA\Get(
      *     path="/api/student/schedule",
-     *     tags={"Schedules"},
+        *     tags={"Schedule"},
      *     summary="Student schedules",
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(response=200, description="Schedules", @OA\JsonContent(ref="#/components/schemas/StandardSuccess"))
@@ -24,6 +24,23 @@ class ScheduleController extends Controller
     public function indexStudent(Request $request)
     {
         $result = $this->scheduleService->indexStudent($request);
+
+        return $this->respond($result);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/student/schedule/history",
+        *     tags={"Schedule"},
+     *     summary="Student learning history",
+        *     description="Riwayat jadwal belajar siswa yang sudah selesai atau tidak aktif.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="History", @OA\JsonContent(ref="#/components/schemas/StandardSuccess"))
+     * )
+     */
+    public function historyStudent(Request $request)
+    {
+        $result = $this->scheduleService->historyStudent($request);
 
         return $this->respond($result);
     }
@@ -38,7 +55,7 @@ class ScheduleController extends Controller
     /**
      * @OA\Get(
      *     path="/api/tutor/schedule",
-     *     tags={"Schedules"},
+        *     tags={"Schedule"},
      *     summary="Tutor schedules",
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(response=200, description="Schedules", @OA\JsonContent(ref="#/components/schemas/StandardSuccess"))

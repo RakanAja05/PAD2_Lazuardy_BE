@@ -800,19 +800,13 @@ paths:
                     data:
                       schedules:
                         - id: 22
+                          tutor_user_id: 12
+                          student_user_id: 9
+                          student_name: John Doe
                           date: '2026-04-18'
-                          start_time: '09:00'
-                          end_time: '11:00'
-                          status: confirmed
-                          student:
-                            id: 9
-                            name: John Doe
-                            profile_photo_path: null
-                      pagination:
-                        current_page: 1
-                        per_page: 10
-                        total: 1
-                        has_more: false
+                          day: 6
+                          time: '09:00:00'
+                          status: active
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -845,19 +839,53 @@ paths:
                     data:
                       schedules:
                         - id: 10
+                          tutor_user_id: 12
+                          student_user_id: 9
+                          tutor_name: Tutor A
                           date: '2026-04-18'
-                          start_time: '13:00'
-                          end_time: '15:00'
-                          status: confirmed
-                          tutor:
-                            id: 12
-                            name: Tutor A
-                            profile_photo_path: null
-                      pagination:
-                        current_page: 1
-                        per_page: 10
-                        total: 1
-                        has_more: false
+                          day: 6
+                          time: '13:00:00'
+                          status: active
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /student/schedule/history:
+    get:
+      tags: [Schedule]
+      summary: Student learning history
+      description: Riwayat belajar student berdasarkan jadwal yang sudah selesai, dibatalkan, ditolak, atau terlewat.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Riwayat belajar student
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StudentLearningHistoryData'
+              examples:
+                success:
+                  value:
+                    status: success
+                    message: Data riwayat belajar berhasil terkirim
+                    data:
+                      history:
+                        - id: 31
+                          tutor_user_id: 12
+                          student_user_id: 9
+                          tutor_name: Tutor A
+                          subject_name: Matematika
+                          date: '2026-04-10'
+                          day: 5
+                          time: '13:00:00'
+                          status: completed
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -1879,6 +1907,15 @@ components:
           items:
             $ref: '#/components/schemas/Schedule'
 
+    StudentLearningHistoryData:
+      type: object
+      required: [history]
+      properties:
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schedule'
+
     Review:
       type: object
       required: [id, tutor_id, student_id, rate, comment, created_at]
@@ -2311,27 +2348,38 @@ components:
 
     Schedule:
       type: object
-      required: [id, tutor_id, student_id, subject, start_at, end_at, status]
+      required: [id, tutor_user_id, student_user_id, date, day, time, status]
       properties:
         id:
           type: integer
           example: 900
-        tutor_id:
+        tutor_user_id:
           type: integer
           example: 12
-        student_id:
+        student_user_id:
           type: integer
           example: 55
-        subject:
-          $ref: '#/components/schemas/Subject'
-        start_at:
+        tutor_name:
           type: string
-          format: date-time
-          example: '2026-04-18T08:00:00Z'
-        end_at:
+          nullable: true
+          example: Tutor A
+        student_name:
           type: string
-          format: date-time
-          example: '2026-04-18T09:00:00Z'
+          nullable: true
+          example: John Doe
+        subject_name:
+          type: string
+          nullable: true
+          example: Matematika
+        date:
+          type: string
+          example: '2026-04-18'
+        day:
+          type: integer
+          example: 6
+        time:
+          type: string
+          example: '13:00:00'
         status:
           type: string
-          example: scheduled
+          example: active

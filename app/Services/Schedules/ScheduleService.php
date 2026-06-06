@@ -49,6 +49,55 @@ class ScheduleService
         );
     }
 
+    public function historyStudent(Request $request): ResponseDTO
+    {
+        $user = $request->user();
+
+        $historySchedules = $user->takenSchedules()
+            ->where(function ($query) {
+                $query
+                    ->whereIn('status', [
+                        TakenScheduleStatusEnum::COMPLETED->value,
+                        TakenScheduleStatusEnum::CANCELLED->value,
+                        TakenScheduleStatusEnum::REJECTED->value,
+                        TakenScheduleStatusEnum::EXPIRED->value,
+                    ])
+                    ->orWhere('date', '<', Carbon::now());
+            })
+            ->with(['tutor', 'subject'])
+            ->orderByDesc('date')
+            ->get();
+
+        $historyData = [];
+        foreach ($historySchedules as $takenSchedule) {
+            $dateTime = $takenSchedule->date instanceof Carbon
+                ? $takenSchedule->date
+                : ($takenSchedule->date ? Carbon::parse($takenSchedule->date) : null);
+
+            $historyData[] = [
+                'id' => $takenSchedule->id,
+                'tutor_user_id' => $takenSchedule->tutor_id,
+                'student_user_id' => $takenSchedule->student_id,
+                'tutor_name' => $takenSchedule->tutor?->name,
+                'subject_name' => $takenSchedule->subject?->name,
+                'date' => $dateTime?->toDateString(),
+                'day' => $dateTime?->dayOfWeekIso,
+                'time' => $takenSchedule->time,
+                'status' => $takenSchedule->status?->value ?? $takenSchedule->status,
+            ];
+        }
+
+        return new ResponseDTO(
+            'success',
+            'Data riwayat belajar berhasil terkirim',
+            [
+                'history' => $historyData,
+            ],
+            null,
+            200
+        );
+    }
+
     public function indexTutor(Request $request): ResponseDTO
     {
         $user = $request->user();
