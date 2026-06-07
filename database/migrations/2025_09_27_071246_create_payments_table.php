@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\PaymentStatusEnum;
+use App\Enums\PayoutStatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $payment_status = PaymentStatusEnum::list();
+        $payment_status = PayoutStatusEnum::list();
 
         Schema::create('payments', function (Blueprint $table) use ($payment_status) {
             $table->id();

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\PaymentStatusEnum;
+use App\Enums\PayoutStatusEnum;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +21,7 @@ class PaymentsSeeder extends Seeder
                 'payment_method' => 'mandiri',
                 'payment_channel' => 'invoice',
                 'amount' => 200000,
-                'status' => PaymentStatusEnum::PENDING->value,
+                'status' => PayoutStatusEnum::PENDING->value,
                 'checkout_url' => 'https://example.test/checkout/ORD-000001',
                 'paid_at' => null,
                 'payload_raw' => json_encode([

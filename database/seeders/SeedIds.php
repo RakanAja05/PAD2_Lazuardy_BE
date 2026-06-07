@@ -27,9 +27,6 @@ final class SeedIds
     public const CLASS_11_ID = 11;
     public const CLASS_12_ID = 12;
 
-    public const SUBJECT_MATH_ID = 1;
-    public const SUBJECT_ENGLISH_ID = 2;
-
     public const SCHEDULE_TUTOR_ID = 1;
     public const SCHEDULE_TUTOR_2_ID = 2;
     public const SCHEDULE_TUTOR_3_ID = 3;

@@ -3,7 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\SocialAuth\SocialAuthController;
+use L5Swagger\Http\Controllers\SwaggerController;
+use L5Swagger\Http\Controllers\SwaggerAssetController;
 
+Route::get('api/documentation', [SwaggerController::class, 'api'])->name('l5-swagger.default.api');
+Route::get('api/docs', [SwaggerController::class, 'docs'])->name('l5-swagger.default.docs');
+Route::get('api/oauth2-callback', [SwaggerController::class, 'oauth2Callback'])->name('l5-swagger.default.oauth2_callback');
 // Google OAuth Routes (butuh session untuk state verification)
 // Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.redirect');
 // Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');

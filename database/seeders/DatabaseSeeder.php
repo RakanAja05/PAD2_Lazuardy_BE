@@ -34,7 +34,6 @@ class DatabaseSeeder extends Seeder
 
             OtpsSeeder::class,
             NotificationsSeeder::class,
-            SalaryPaymentsSeeder::class,
             PersonalAccessTokensSeeder::class,
             CacheSeeder::class,
             CacheLocksSeeder::class,

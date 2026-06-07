@@ -36,7 +36,17 @@ tags:
     description: Student reviews
   - name: Tutor
     description: Tutor discovery and public profile
-
+  - name: Admin
+    description: Admin endpoints
+  - name: Master
+    description: Data master (kelas, mata pelajaran)
+  - name: Notification
+    description: Notifikasi user
+  - name: Parent
+    description: Parent endpoints
+  - name: Payment
+    description: Pembayaran dan order paket
+    
 paths:
   /login:
     post:
@@ -1417,7 +1427,734 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
         '404':
           $ref: '#/components/responses/NotFoundError'
+  /student/request:
+    get:
+      tags: [Schedule]
+      summary: List pengajuan jadwal student
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daftar pengajuan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          schedules:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Schedule'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
 
+    post:
+      tags: [Schedule]
+      summary: Buat pengajuan jadwal ke tutor
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [schedule_id, address]
+              properties:
+                schedule_id:
+                  type: integer
+                  example: 1
+                subject_id:
+                  type: integer
+                  nullable: true
+                  example: 1
+                address:
+                  type: string
+                  example: Jl. Contoh No. 1
+                reason:
+                  type: string
+                  nullable: true
+                  example: Ingin belajar matematika
+      responses:
+        '201':
+          description: Pengajuan dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          schedule:
+                            $ref: '#/components/schemas/Schedule'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /student/request/{id}:
+    delete:
+      tags: [Schedule]
+      summary: Batalkan pengajuan jadwal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Pengajuan dibatalkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /tutor/presence:
+    get:
+      tags: [Tutor]
+      summary: List presensi tutor
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daftar presensi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          presences:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Presence'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags: [Tutor]
+      summary: Submit presensi sesi belajar
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [taken_schedule_id, student_id, topic, photo]
+              properties:
+                taken_schedule_id:
+                  type: integer
+                  example: 1
+                student_id:
+                  type: integer
+                  example: 3
+                topic:
+                  type: string
+                  example: Aljabar Linear
+                note:
+                  type: string
+                  nullable: true
+                  example: Siswa memahami dengan baik
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Presensi berhasil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /tutor/payout:
+    get:
+      tags: [Tutor]
+      summary: Riwayat payout tutor
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Riwayat payout
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          current_balance:
+                            type: integer
+                            example: 150000
+                          payouts:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Payout'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags: [Tutor]
+      summary: Ajukan pencairan saldo
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Pengajuan payout dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          payout:
+                            $ref: '#/components/schemas/Payout'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /admin/statistics:
+    get:
+      tags: [Admin]
+      summary: Statistik lengkap admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [today, this_week, this_month, this_year, all_time]
+            default: all_time
+          example: this_month
+      responses:
+        '200':
+          description: Statistik admin
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AdminStatistics'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /admin/payout:
+    get:
+      tags: [Admin]
+      summary: Daftar pengajuan payout tutor
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daftar payout
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          payouts:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Payout'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /admin/payout/{id}/approve:
+    patch:
+      tags: [Admin]
+      summary: Setujui pengajuan payout
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Payout disetujui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /admin/payout/{id}/reject:
+    patch:
+      tags: [Admin]
+      summary: Tolak pengajuan payout
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rejected_reason]
+              properties:
+                rejected_reason:
+                  type: string
+                  example: Data rekening tidak valid
+      responses:
+        '200':
+          description: Payout ditolak
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /admin/tutor/verify:
+    get:
+      tags: [Admin]
+      summary: Daftar tutor pending verifikasi
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daftar tutor
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          tutors:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/TutorPublic'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /admin/tutor/{userId}/verify/approve:
+    patch:
+      tags: [Admin]
+      summary: Approve verifikasi tutor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 2
+      responses:
+        '200':
+          description: Tutor diverifikasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /admin/tutor/{userId}/verify/reject:
+    patch:
+      tags: [Admin]
+      summary: Reject verifikasi tutor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 2
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  example: Dokumen tidak lengkap
+      responses:
+        '200':
+          description: Tutor ditolak
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /classes:
+    get:
+      tags: [Master]
+      summary: List semua kelas
+      responses:
+        '200':
+          description: Daftar kelas
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          classes:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Class'
+
+  /classes/{id}:
+    get:
+      tags: [Master]
+      summary: Detail kelas beserta subjects
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 7
+      responses:
+        '200':
+          description: Detail kelas
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          class:
+                            $ref: '#/components/schemas/ClassWithSubjects'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /notifications:
+    get:
+      tags: [Notification]
+      summary: List notifikasi user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daftar notifikasi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          notifications:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Notification'
+
+  /notifications/unread-count:
+    get:
+      tags: [Notification]
+      summary: Jumlah notifikasi belum dibaca
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Unread count
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          unread_count:
+                            type: integer
+                            example: 3
+
+  /notifications/read-all:
+    patch:
+      tags: [Notification]
+      summary: Tandai semua notifikasi sebagai dibaca
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Semua notifikasi dibaca
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+    delete:
+      tags: [Notification]
+      summary: Hapus semua notifikasi yang sudah dibaca
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Notifikasi dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /notifications/{id}/read:
+    patch:
+      tags: [Notification]
+      summary: Tandai notifikasi sebagai dibaca
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 11111111-1111-1111-1111-111111111111
+      responses:
+        '200':
+          description: Notifikasi dibaca
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /notifications/{id}:
+    delete:
+      tags: [Notification]
+      summary: Hapus notifikasi
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 11111111-1111-1111-1111-111111111111
+      responses:
+        '200':
+          description: Notifikasi dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /parent/schedule:
+    get:
+      tags: [Parent]
+      summary: Jadwal anak (parent)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Jadwal anak
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          schedules:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Schedule'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /parent/learning-results:
+    get:
+      tags: [Parent]
+      summary: Hasil belajar anak (parent)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Hasil belajar
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          results:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Presence'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /package/order:
+    get:
+      tags: [Payment]
+      summary: Detail order paket
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Detail order
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          order:
+                            $ref: '#/components/schemas/Order'
+
+    post:
+      tags: [Payment]
+      summary: Buat order paket
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [package_id]
+              properties:
+                package_id:
+                  type: integer
+                  example: 1
+                qty:
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: Order dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          order:
+                            $ref: '#/components/schemas/Order'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /payment/history:
+    get:
+      tags: [Payment]
+      summary: Riwayat pembayaran student
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Riwayat pembayaran
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          payments:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Order'
 components:
   securitySchemes:
     bearerAuth:
@@ -2550,4 +3287,213 @@ components:
         path:
           type: string
           example: /
+    Presence:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        schedule_id:
+          type: integer
+          example: 1
+        tutor_id:
+          type: integer
+          example: 2
+        student_id:
+          type: integer
+          example: 3
+        topic:
+          type: string
+          example: Aljabar Linear
+        note:
+          type: string
+          nullable: true
+          example: Siswa memahami dengan baik
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-06-07T09:00:00Z'
+
+    Payout:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        payout_number:
+          type: string
+          example: PAY-ABCDE12345
+        tutor_name:
+          type: string
+          nullable: true
+          example: Ahmad Fauzi
+        amount:
+          type: integer
+          example: 150000
+        status:
+          type: string
+          enum: [requested, pending, success, rejected, failed]
+          example: requested
+        status_label:
+          type: string
+          example: Diajukan
+        bank_code:
+          type: string
+          example: BCA
+        account_number:
+          type: string
+          example: '1234567890'
+        account_holder_name:
+          type: string
+          example: Ahmad Fauzi
+        approved_at:
+          type: string
+          nullable: true
+          format: date-time
+          example: null
+        rejected_reason:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-06-07T09:00:00Z'
+
+    AdminStatistics:
+      type: object
+      properties:
+        period:
+          type: string
+          example: this_month
+        orders:
+          type: object
+          properties:
+            total_transactions:
+              type: integer
+              example: 45
+            total_revenue:
+              type: integer
+              example: 9000000
+            total_sessions_sold:
+              type: integer
+              example: 180
+            breakdown_by_package:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: Paket Basic
+                  total_bought:
+                    type: integer
+                    example: 20
+                  total_revenue:
+                    type: integer
+                    example: 4000000
+        schedules:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 100
+            active:
+              type: integer
+              example: 30
+            completed:
+              type: integer
+              example: 60
+            cancelled:
+              type: integer
+              example: 10
+        students:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 50
+            active:
+              type: integer
+              example: 20
+        tutors:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 15
+            active:
+              type: integer
+              example: 12
+            pending:
+              type: integer
+              example: 3
+
+    Class:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7
+        name:
+          type: string
+          example: Kelas 7
+        level:
+          type: string
+          enum: [SD, SMP, SMA]
+          example: SMP
+
+    ClassWithSubjects:
+      allOf:
+        - $ref: '#/components/schemas/Class'
+        - type: object
+          properties:
+            subjects:
+              type: array
+              items:
+                $ref: '#/components/schemas/Subject'
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 11111111-1111-1111-1111-111111111111
+        type:
+          type: string
+          example: App\Notifications\ScheduleApproved
+        data:
+          type: object
+        read_at:
+          type: string
+          nullable: true
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        order_number:
+          type: string
+          example: ORD-20260607-001
+        total_amount:
+          type: integer
+          example: 200000
+        status:
+          type: string
+          enum: [pending, paid, cancelled]
+          example: paid
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-06-07T09:00:00Z'
 

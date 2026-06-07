@@ -9,10 +9,9 @@ return [
             ],
 
             'routes' => [
-                /*
-                 * Route for accessing api documentation interface
-                 */
                 'api' => 'api/documentation',
+                'docs' => 'api/docs',
+                'oauth2_callback' => 'api/oauth2-callback',
             ],
             'paths' => [
                 /*
@@ -54,7 +53,7 @@ return [
             /*
              * Route for accessing parsed swagger annotations.
              */
-            'docs' => 'docs',
+            'docs' => 'api/docs',
 
             /*
              * Route for Oauth2 authentication callback.

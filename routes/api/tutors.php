@@ -6,6 +6,7 @@ use App\Http\Controllers\Tutors\PresenceController;
 use App\Http\Controllers\Tutors\TutorApplicationController;
 use App\Http\Controllers\Tutors\TutorProfileController;
 use App\Http\Controllers\Tutors\TutorRequestController;
+use App\Http\Controllers\Tutors\TutorPayoutController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -30,5 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/tutor/presence', [PresenceController::class, 'index']);
         Route::post('/tutor/presence', [PresenceController::class, 'store']);
+        Route::get('/tutor/payout', [TutorPayoutController::class, 'index']);
+        Route::post('/tutor/payout', [TutorPayoutController::class, 'store']);
     });
 });

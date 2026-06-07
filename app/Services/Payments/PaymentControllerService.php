@@ -5,7 +5,7 @@ namespace App\Services\Payments;
 use App\DTOs\ResponseDTO;
 use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentMethodEnum;
-use App\Enums\PaymentStatusEnum;
+use App\Enums\PayoutStatusEnum;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Package;
@@ -66,7 +66,7 @@ class PaymentControllerService
                 'order_id' => $order->id,
                 'amount' => $amount,
                 'payment_method' => $request->payment_method,
-                'status' => PaymentStatusEnum::PENDING->value,
+                'status' => PayoutStatusEnum::PENDING->value,
                 'external_id' => $externalId,
             ]);
 

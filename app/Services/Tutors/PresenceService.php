@@ -5,6 +5,9 @@ namespace App\Services\Tutors;
 use App\DTOs\ResponseDTO;
 use App\Models\Presence;
 use Illuminate\Http\Request;
+use App\Models\TakenSchedule;
+use App\Enums\TakenScheduleStatusEnum;
+use App\Models\Tutor;
 
 class PresenceService
 {
@@ -48,46 +51,44 @@ class PresenceService
     {
         $request->validate([
             'taken_schedule_id' => ['required', 'integer', 'exists:schedules,id'],
-            'student_user_id' => ['required', 'integer', 'exists:users,id,role,student'],
-            'material' => ['required', 'string'],
-            'evaluation' => ['required', 'string'],
-            'grade' => ['required', 'integer'],
-            'photo' => ['required', 'file', 'mimes:png,jpg,pdf,svg,webp'],
+            'student_id'        => ['required', 'integer', 'exists:users,id'],
+            'topic'             => ['required', 'string'],
+            'note'              => ['nullable', 'string'],
+            'photo'             => ['required', 'file', 'mimes:png,jpg,pdf,svg,webp'],
         ]);
 
         $user = $request->user();
 
-        $presenceData = $request->only([
-            'taken_schedule_id', 'student_user_id',
-            'material', 'evaluation', 'grade',
-        ]);
+        $takenSchedule = TakenSchedule::query()
+            ->where('id', $request->taken_schedule_id)
+            ->where('tutor_id', $user->id)
+            ->where('status', TakenScheduleStatusEnum::ACTIVE->value)
+            ->first();
 
-        $presenceData['tutor_user_id'] = $user->id;
-
-        if ($request->hasFile('photo')) {
-            $file = $request->file('photo');
-            $path = $file->store('uploads', 'public');
-            $presenceData['pbm_image_url'] = $path;
-
-            Presence::create($presenceData);
-
-            return new ResponseDTO(
-                'success',
-                'Presensi berhasil',
-                [],
-                null,
-                201
-            );
+        if (!$takenSchedule) {
+            return new ResponseDTO('error', 'Jadwal tidak ditemukan atau tidak aktif', null, ['taken_schedule_id' => 'invalid'], 404);
         }
 
-        return new ResponseDTO(
-            'error',
-            'Presensi gagal',
-            null,
-            [
-                'photo' => 'file_missing',
-            ],
-            401
-        );
+        if (!$request->hasFile('photo')) {
+            return new ResponseDTO('error', 'Presensi gagal', null, ['photo' => 'file_missing'], 422);
+        }
+
+        $path = $request->file('photo')->store('uploads', 'public');
+
+        $presenceData = $request->only(['topic', 'note']);
+        $presenceData['schedule_id'] = $request->taken_schedule_id;
+        $presenceData['student_id']  = $request->student_id;
+        $presenceData['tutor_id']    = $user->id;
+        $presenceData['pbm_image_url'] = $path;
+
+        Presence::create($presenceData);
+
+        $takenSchedule->update(['status' => TakenScheduleStatusEnum::COMPLETED->value]);
+
+        Tutor::query()
+            ->where('user_id', $user->id)
+            ->increment('salary');
+
+        return new ResponseDTO('success', 'Presensi berhasil', [], null, 201);
     }
 }
