@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\ClassEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $classes = ClassEnum::list();
-
-        Schema::create('classes', function (Blueprint $table) use ($classes) {
+        Schema::create('classes', function (Blueprint $table) {
             $table->id();
-            $table->enum('name', $classes);
+            $table->string('name');
+            $table->string('level');
         });
     }
 

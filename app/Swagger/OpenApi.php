@@ -49,10 +49,10 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="StandardError",
  *     type="object",
- *     required={"status","message","errors"},
+ *     required={"status","message","error"},
  *     @OA\Property(property="status", type="string", example="error"),
  *     @OA\Property(property="message", type="string", example="Validation error"),
- *     @OA\Property(property="errors", type="object")
+ *     @OA\Property(property="error", type="object")
  * )
  *
  * @OA\Schema(
@@ -63,10 +63,10 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="email", type="string", example="john@example.com"),
  *     @OA\Property(property="role", type="string", example="student"),
  *     @OA\Property(property="telephone_number", type="string", example="081234567890"),
- *     @OA\Property(property="profile_photo_url", type="string", example="uploads/photo.jpg"),
+ *     @OA\Property(property="profile_photo_path", type="string", example="uploads/photo.jpg"),
  *     @OA\Property(property="gender", type="string", example="male"),
  *     @OA\Property(property="date_of_birth", type="string", example="2005-01-15"),
- *     @OA\Property(property="religion", type="string", example="islam")
+ *     @OA\Property(property="religion", type="string", example="not set")
  * )
  */
 class OpenApi

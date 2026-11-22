@@ -25,7 +25,7 @@ class TutorDashboardController extends Controller
     {
         $result = $this->tutorDashboardService->index($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -41,6 +41,6 @@ class TutorDashboardController extends Controller
     {
         $result = $this->tutorDashboardService->summary($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

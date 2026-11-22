@@ -3,13 +3,63 @@
 namespace App\Services\Tutors;
 
 use App\DTOs\ResponseDTO;
+use App\Enums\FileTypeEnum;
 use App\Http\Requests\StoreTutorApplicationRequest;
 use App\Services\TutorService;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TutorApplicationService
 {
+    public function index(Request $request): ResponseDTO
+    {
+        $user = $request->user()->load(['tutor', 'files']);
+        $tutor = $user->tutor;
+
+        if (!$tutor) {
+            return new ResponseDTO(
+                'error',
+                'Tutor tidak ditemukan',
+                null,
+                [
+                    'tutor' => 'not_found',
+                ],
+                404
+            );
+        }
+
+        $filesByType = $user->files
+            ->groupBy('type')
+            ->map(function ($files) {
+                return $files
+                    ->map(fn($file) => [
+                        'id' => $file->id,
+                        'name' => $file->name,
+                        'path_url' => $file->path_url,
+                        'type' => $file->type,
+                    ])
+                    ->values();
+            });
+
+        $data = [
+            'experience' => $tutor->experience,
+            'organization' => $tutor->organization,
+        ];
+
+        foreach (FileTypeEnum::list() as $type) {
+            $data[$type] = $filesByType->get($type, collect());
+        }
+
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil data formulir pendaftaran tutor',
+            $data,
+            null,
+            200
+        );
+    }
+
     public function store(StoreTutorApplicationRequest $request): ResponseDTO
     {
         $request->validated();
@@ -21,8 +71,8 @@ class TutorApplicationService
         ]);
 
         $fileData = $request->only([
-            'cv', 'ktp', 'ijazah',
-            'certificate', 'portofolio',
+            'cv', 'id_card', 'diploma',
+            'certificate', 'portfolio',
         ]);
 
         $tutorService = new TutorService();
@@ -32,21 +82,25 @@ class TutorApplicationService
             $tutorService->storeTutorFile($user, collect($fileData));
             DB::commit();
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Berhasil menyelesaikan formulir pendaftaran tutor',
-                'data' => [],
-            ], 200);
+            return new ResponseDTO(
+                'success',
+                'Berhasil menyelesaikan formulir pendaftaran tutor',
+                [],
+                null,
+                200
+            );
         } catch (Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 }

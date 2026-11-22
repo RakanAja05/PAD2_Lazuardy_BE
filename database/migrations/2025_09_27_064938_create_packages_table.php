@@ -16,11 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->integer('session')->nullable();
             $table->integer('price')->nullable();
-            $table->decimal('discount', 5, 2)->nullable();
-            $table->longText('description')->nullable();
-            $table->json('benefit')->nullable();
-            $table->string('image_url')->nullable();
-            $table->integer('subject_amount')->nullable();
+            $table->decimal('discount', 10, 2)->nullable();
+            $table->json('description')->nullable();
+            $table->string('image_path')->nullable();
             $table->timestamps();
         });
     }

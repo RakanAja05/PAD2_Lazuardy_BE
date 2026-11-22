@@ -14,7 +14,13 @@ class GoogleAuthService
     {
         $response = Socialite::driver('google')->redirect();
 
-        return new ResponseDTO($response, $response->getStatusCode());
+        return new ResponseDTO(
+            'success',
+            'Redirect to Google',
+            $response,
+            null,
+            $response->getStatusCode()
+        );
     }
 
     public function handleGoogleCallback(): ResponseDTO
@@ -33,10 +39,10 @@ class GoogleAuthService
                 $existingUser->tokens()->delete();
                 $token = $existingUser->createToken('auth_token')->plainTextToken;
 
-                return new ResponseDTO([
-                    'status' => 'success',
-                    'message' => 'Login berhasil',
-                    'data' => [
+                return new ResponseDTO(
+                    'success',
+                    'Login berhasil',
+                    [
                         'type' => 'login',
                         'token' => $token,
                         'user' => [
@@ -46,13 +52,15 @@ class GoogleAuthService
                             'role' => $existingUser->role,
                         ],
                     ],
-                ], 200);
+                    null,
+                    200
+                );
             }
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'User belum terdaftar, silakan lengkapi data',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'User belum terdaftar, silakan lengkapi data',
+                [
                     'type' => 'register',
                     'google_data' => [
                         'google_id' => $googleUser->getId(),
@@ -61,15 +69,19 @@ class GoogleAuthService
                         'avatar' => $googleUser->getAvatar(),
                     ],
                 ],
-            ], 200);
+                null,
+                200
+            );
         } catch (\Exception $e) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Gagal login dengan Google: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Gagal login dengan Google: ' . $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -83,7 +95,7 @@ class GoogleAuthService
             'telephone_number' => 'nullable|string|max:15',
             'date_of_birth' => 'nullable|date',
             'gender' => 'nullable|in:male,female',
-            'profile_photo_url' => 'nullable|url',
+            'profile_photo_path' => 'nullable|string',
         ]);
 
         try {
@@ -95,29 +107,33 @@ class GoogleAuthService
                 'telephone_number' => $validated['telephone_number'] ?? null,
                 'date_of_birth' => $validated['date_of_birth'] ?? null,
                 'gender' => $validated['gender'] ?? null,
-                'profile_photo_url' => $validated['profile_photo_url'] ?? null,
+                'profile_photo_path' => $validated['profile_photo_path'] ?? null,
                 'email_verified_at' => now(),
                 'password' => Hash::make(uniqid()),
             ]);
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Registrasi berhasil',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'Registrasi berhasil',
+                [
                     'user' => $user,
                     'token' => $token,
                 ],
-            ], 201);
+                null,
+                201
+            );
         } catch (\Exception $e) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Gagal menyelesaikan registrasi',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Gagal menyelesaikan registrasi',
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 }

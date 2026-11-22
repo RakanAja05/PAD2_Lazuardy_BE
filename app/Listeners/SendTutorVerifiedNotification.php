@@ -26,7 +26,7 @@ class SendTutorVerifiedNotification implements ShouldQueue
     public function handle(TutorVerifiedEvent $event): void
     {
         // Dapatkan tutor dari tutorConfirm
-        $tutor = User::find($event->tutorConfirm->tutor_user_id);
+        $tutor = User::find($event->tutorConfirm->tutor_id);
 
         // Kirim notifikasi ke tutor (Flutter & Vue)
         if ($tutor) {

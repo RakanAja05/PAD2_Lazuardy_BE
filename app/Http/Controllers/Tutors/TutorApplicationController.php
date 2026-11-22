@@ -5,11 +5,19 @@ namespace App\Http\Controllers\Tutors;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTutorApplicationRequest;
 use App\Services\Tutors\TutorApplicationService;
+use Illuminate\Http\Request;
 
 class TutorApplicationController extends Controller
 {
     public function __construct(private readonly TutorApplicationService $tutorApplicationService)
     {
+    }
+
+    public function index(Request $request)
+    {
+        $result = $this->tutorApplicationService->index($request);
+
+        return $this->respond($result);
     }
 
     /**
@@ -28,11 +36,11 @@ class TutorApplicationController extends Controller
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             )),
-     *             @OA\Property(property="ktp", type="array", @OA\Items(type="object",
+    *             @OA\Property(property="id_card", type="array", @OA\Items(type="object",
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             )),
-     *             @OA\Property(property="ijazah", type="array", @OA\Items(type="object",
+    *             @OA\Property(property="diploma", type="array", @OA\Items(type="object",
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             )),
@@ -40,7 +48,7 @@ class TutorApplicationController extends Controller
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             )),
-     *             @OA\Property(property="portofolio", type="array", @OA\Items(type="object",
+    *             @OA\Property(property="portfolio", type="array", @OA\Items(type="object",
      *                 @OA\Property(property="name", type="string"),
      *                 @OA\Property(property="path_url", type="string")
      *             ))
@@ -53,6 +61,6 @@ class TutorApplicationController extends Controller
     {
         $result = $this->tutorApplicationService->store($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

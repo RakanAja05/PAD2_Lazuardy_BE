@@ -4,19 +4,23 @@ namespace App\Enums;
 
 enum TakenScheduleStatusEnum: string
 {
+    case PENDING = 'pending';
     case ACTIVE = "active";
-    case COMPLETED = 'completed';
+    case REJECTED = 'rejected';
+    case CANCELLED = 'cancelled';
     case EXPIRED = "expired";
-    case CANCELLED = "cancelled";
+    case COMPLETED = 'completed';
 
-    public function displayName() : string 
+    public function displayName() : string
     {
-        return match($this) 
+        return match($this)
         {
+            self::PENDING => 'Menunggu',
             self::ACTIVE => 'Aktif',
-            self::COMPLETED => 'Tuntas',
-            self::EXPIRED => 'Terlewat',
+            self::REJECTED => 'Ditolak',
             self::CANCELLED => 'Dibatalkan',
+            self::EXPIRED => 'Terlewat',
+            self::COMPLETED => 'Tuntas',
         };
     }
         public static function tryFromDisplayName(string $displayName): ?self
@@ -28,12 +32,12 @@ enum TakenScheduleStatusEnum: string
         }
         return null;
     }
-    public static function list() : array 
+    public static function list() : array
     {
         return array_map(fn($case) => $case->value, self::cases());
     }
 
-    public static function displayList() : array 
+    public static function displayList() : array
     {
         return array_map(fn($case) => $case->displayName(), self::cases());
     }

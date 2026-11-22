@@ -26,7 +26,7 @@ class TutorProfileController extends Controller
     {
         $result = $this->tutorProfileService->show($request, $id);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -44,6 +44,6 @@ class TutorProfileController extends Controller
     {
         $result = $this->tutorProfileService->availableSlots($request, $id);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

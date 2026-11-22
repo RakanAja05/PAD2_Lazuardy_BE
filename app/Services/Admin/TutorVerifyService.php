@@ -13,7 +13,7 @@ class TutorVerifyService
     public function index(): ResponseDTO
     {
         $tutorsPaginator = Tutor::with(['user.files', 'subjects'])
-            ->where('status', TutorStatusEnum::VERIFY->value)
+            ->where('status', TutorStatusEnum::PENDING->value)
             ->paginate(9);
 
         $tutorsCollection = $tutorsPaginator->getCollection()->map(function ($t) {
@@ -44,13 +44,15 @@ class TutorVerifyService
 
         $tutorsPaginator->setCollection($tutorsCollection);
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil data tutor',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil data tutor',
+            [
                 'tutors' => $tutorsPaginator,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function approve(array $validated): ResponseDTO
@@ -58,34 +60,38 @@ class TutorVerifyService
         DB::beginTransaction();
         try {
             $tutor = Tutor::where('user_id', $validated['user_id'])
-                ->where('status', TutorStatusEnum::VERIFY->value)
+                ->where('status', TutorStatusEnum::PENDING->value)
                 ->firstOrFail();
 
-            $tutor->status = TutorStatusEnum::ACTIVE;
+            $tutor->status = TutorStatusEnum::VERIFIED;
             $tutor->save();
 
             DB::commit();
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Tutor berhasil diverifikasi dan diaktifkan',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'Tutor berhasil diverifikasi dan diaktifkan',
+                [
                     'tutor' => [
                         'user_id' => $tutor->user_id,
                         'status' => $tutor->status->value,
                     ],
                 ],
-            ], 200);
+                null,
+                200
+            );
         } catch (Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Gagal memverifikasi tutor: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Gagal memverifikasi tutor: ' . $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 
@@ -94,7 +100,7 @@ class TutorVerifyService
         DB::beginTransaction();
         try {
             $tutor = Tutor::where('user_id', $validated['user_id'])
-                ->where('status', TutorStatusEnum::VERIFY->value)
+                ->where('status', TutorStatusEnum::PENDING->value)
                 ->firstOrFail();
 
             $tutor->status = TutorStatusEnum::REJECTED;
@@ -102,27 +108,31 @@ class TutorVerifyService
 
             DB::commit();
 
-            return new ResponseDTO([
-                'status' => 'success',
-                'message' => 'Tutor ditolak',
-                'data' => [
+            return new ResponseDTO(
+                'success',
+                'Tutor ditolak',
+                [
                     'tutor' => [
                         'user_id' => $tutor->user_id,
                         'status' => $tutor->status->value,
                         'reason' => $validated['reason'] ?? null,
                     ],
                 ],
-            ], 200);
+                null,
+                200
+            );
         } catch (Exception $e) {
             DB::rollBack();
 
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Gagal menolak tutor: ' . $e->getMessage(),
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Gagal menolak tutor: ' . $e->getMessage(),
+                null,
+                [
                     'detail' => $e->getMessage(),
                 ],
-            ], 500);
+                500
+            );
         }
     }
 }

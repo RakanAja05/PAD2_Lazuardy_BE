@@ -42,8 +42,8 @@ class TutorAppliedNotification extends Notification implements ShouldQueue
     {
         return [
             'tutor_confirm_id' => $this->tutorConfirm->id,
-            'tutor_user_id' => $this->tutorConfirm->tutor_user_id,
-            'student_user_id' => $this->tutorConfirm->student_user_id,
+            'tutor_user_id' => $this->tutorConfirm->tutor_id,
+            'student_user_id' => $this->tutorConfirm->student_id,
             'reason' => $this->tutorConfirm->reason,
             'title' => 'Pendaftaran Tutor Baru',
             'message' => 'Tutor baru telah mendaftar dan menunggu verifikasi dari admin.',

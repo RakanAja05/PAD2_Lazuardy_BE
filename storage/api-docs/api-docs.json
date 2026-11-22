@@ -792,6 +792,7 @@
                                 "required": [
                                     "email",
                                     "password",
+                                    "password_confirmation",
                                     "name",
                                     "gender",
                                     "date_of_birth",
@@ -802,7 +803,8 @@
                                     "subdistrict",
                                     "street",
                                     "latitude",
-                                    "longitude"
+                                    "longitude",
+                                    "class_id"
                                 ],
                                 "properties": {
                                     "email": {
@@ -849,6 +851,7 @@
                                     "religion": {
                                         "type": "string",
                                         "enum": [
+                                            "not set",
                                             "islam",
                                             "kristen",
                                             "katolik",
@@ -865,18 +868,6 @@
                                     },
                                     "class_id": {
                                         "type": "integer"
-                                    },
-                                    "curriculum_id": {
-                                        "type": "integer"
-                                    },
-                                    "school": {
-                                        "type": "string"
-                                    },
-                                    "parent": {
-                                        "type": "string"
-                                    },
-                                    "parent_telephone_number": {
-                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -887,6 +878,7 @@
                                 "required": [
                                     "email",
                                     "password",
+                                    "password_confirmation",
                                     "name",
                                     "gender",
                                     "date_of_birth",
@@ -897,7 +889,8 @@
                                     "subdistrict",
                                     "street",
                                     "latitude",
-                                    "longitude"
+                                    "longitude",
+                                    "class_id"
                                 ],
                                 "properties": {
                                     "email": {
@@ -947,6 +940,7 @@
                                     "religion": {
                                         "type": "string",
                                         "enum": [
+                                            "not set",
                                             "islam",
                                             "kristen",
                                             "katolik",
@@ -963,18 +957,6 @@
                                     },
                                     "class_id": {
                                         "type": "integer"
-                                    },
-                                    "curriculum_id": {
-                                        "type": "integer"
-                                    },
-                                    "school": {
-                                        "type": "string"
-                                    },
-                                    "parent": {
-                                        "type": "string"
-                                    },
-                                    "parent_telephone_number": {
-                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -1040,8 +1022,8 @@
                                     "street",
                                     "latitude",
                                     "longitude",
-                                    "bank",
-                                    "rekening"
+                                    "bank_code",
+                                    "account_number"
                                 ],
                                 "properties": {
                                     "email": {
@@ -1087,6 +1069,7 @@
                                     "religion": {
                                         "type": "string",
                                         "enum": [
+                                            "not set",
                                             "islam",
                                             "kristen",
                                             "katolik",
@@ -1101,11 +1084,21 @@
                                     "longitude": {
                                         "type": "number"
                                     },
-                                    "bank": {
+                                    "bank_code": {
                                         "type": "string"
                                     },
-                                    "rekening": {
+                                    "account_number": {
                                         "type": "string"
+                                    },
+                                    "bank": {
+                                        "description": "Legacy alias of bank_code",
+                                        "type": "string",
+                                        "deprecated": true
+                                    },
+                                    "rekening": {
+                                        "description": "Legacy alias of account_number",
+                                        "type": "string",
+                                        "deprecated": true
                                     }
                                 },
                                 "type": "object"
@@ -1128,8 +1121,8 @@
                                     "street",
                                     "latitude",
                                     "longitude",
-                                    "bank",
-                                    "rekening"
+                                    "bank_code",
+                                    "account_number"
                                 ],
                                 "properties": {
                                     "email": {
@@ -1179,6 +1172,7 @@
                                     "religion": {
                                         "type": "string",
                                         "enum": [
+                                            "not set",
                                             "islam",
                                             "kristen",
                                             "katolik",
@@ -1193,11 +1187,21 @@
                                     "longitude": {
                                         "type": "number"
                                     },
-                                    "bank": {
+                                    "bank_code": {
                                         "type": "string"
                                     },
-                                    "rekening": {
+                                    "account_number": {
                                         "type": "string"
+                                    },
+                                    "bank": {
+                                        "description": "Legacy alias of bank_code",
+                                        "type": "string",
+                                        "deprecated": true
+                                    },
+                                    "rekening": {
+                                        "description": "Legacy alias of account_number",
+                                        "type": "string",
+                                        "deprecated": true
                                     }
                                 },
                                 "type": "object"
@@ -1443,7 +1447,7 @@
                                     "gender": {
                                         "type": "string"
                                     },
-                                    "profile_photo_url": {
+                                    "profile_photo_path": {
                                         "type": "string"
                                     }
                                 },
@@ -2291,7 +2295,7 @@
                                 "required": [
                                     "name",
                                     "telephone_number",
-                                    "profile_photo_url",
+                                    "profile_photo_path",
                                     "gender",
                                     "date_of_birth",
                                     "religion",
@@ -2309,7 +2313,7 @@
                                     "telephone_number": {
                                         "type": "string"
                                     },
-                                    "profile_photo_url": {
+                                    "profile_photo_path": {
                                         "type": "string"
                                     },
                                     "gender": {
@@ -2325,6 +2329,7 @@
                                     "religion": {
                                         "type": "string",
                                         "enum": [
+                                            "not set",
                                             "islam",
                                             "kristen",
                                             "katolik",
@@ -2429,6 +2434,7 @@
                                     "religion": {
                                         "type": "string",
                                         "enum": [
+                                            "not set",
                                             "islam",
                                             "kristen",
                                             "katolik",
@@ -2532,13 +2538,13 @@
                                                 "day": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "minggu",
-                                                        "senin",
-                                                        "selasa",
-                                                        "rabu",
-                                                        "kamis",
-                                                        "jumat",
-                                                        "sabtu"
+                                                        "sunday",
+                                                        "monday",
+                                                        "tuesday",
+                                                        "wednesday",
+                                                        "thursday",
+                                                        "friday",
+                                                        "saturday"
                                                     ]
                                                 },
                                                 "time": {
@@ -3075,7 +3081,7 @@
                                             "type": "object"
                                         }
                                     },
-                                    "ktp": {
+                                    "id_card": {
                                         "type": "array",
                                         "items": {
                                             "properties": {
@@ -3089,7 +3095,7 @@
                                             "type": "object"
                                         }
                                     },
-                                    "ijazah": {
+                                    "diploma": {
                                         "type": "array",
                                         "items": {
                                             "properties": {
@@ -3117,7 +3123,7 @@
                                             "type": "object"
                                         }
                                     },
-                                    "portofolio": {
+                                    "portfolio": {
                                         "type": "array",
                                         "items": {
                                             "properties": {
@@ -3304,7 +3310,7 @@
                         "type": "string",
                         "example": "081234567890"
                     },
-                    "profile_photo_url": {
+                    "profile_photo_path": {
                         "type": "string",
                         "example": "uploads/photo.jpg"
                     },
@@ -3318,7 +3324,7 @@
                     },
                     "religion": {
                         "type": "string",
-                        "example": "islam"
+                        "example": "not set"
                     }
                 },
                 "type": "object"

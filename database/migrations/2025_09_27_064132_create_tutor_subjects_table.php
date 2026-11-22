@@ -15,10 +15,10 @@ return new class extends Migration
         $status = SubjectApplicationEnum::list();
 
         Schema::create('tutor_subjects', function (Blueprint $table) use ($status) {
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('tutor_id')->constrained('tutors', 'user_id')->onDelete('cascade');
             $table->foreignId('subject_id')->constrained('subjects')->onDelete('cascade');
             $table->enum('status', $status);
-            $table->primary(['user_id', 'subject_id']);
+            $table->primary(['tutor_id', 'subject_id']);
         });
     }
 

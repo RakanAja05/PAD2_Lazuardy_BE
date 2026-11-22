@@ -2,57 +2,29 @@
 
 namespace App\Models;
 
-use App\Enums\RatingOption;
-use App\Enums\RatingOptionEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Review extends Model
 {
     /** @use HasFactory<\Database\Factories\ReviewFactory> */
     use HasFactory;
 
-        protected $fillable = 
-    [
-        'from_user_id',
-        'to_user_id',
-        'quality',
-        'delivery',
-        'attitude',
-        'benefit',
+    protected $fillable = [
+        'tutor_id',
+        'student_id',
         'rate',
-        'review',
+        'comment',
     ];
 
-    public function fromUser()
+    public function tutor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'from_user_id');
+        return $this->belongsTo(Tutor::class, 'tutor_id', 'user_id');
     }
 
-    public function toUser()
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'to_user_id');
-    }
-
-
-
-    public function getQualityLabelAttribute()
-    {
-        return $this->quality ? RatingOptionEnum::from($this->quality)->displayName() : null;
-    }
-
-    public function getDeliveryLabelAttribute()
-    {
-        return $this->delivery ? RatingOptionEnum::from($this->delivery)->displayName() : null;
-    }
-
-    public function getAttitudeLabelAttribute()
-    {
-        return $this->attitude ? RatingOptionEnum::from($this->attitude)->displayName() : null;
-    }
-
-    public function getBenefitLabelAttribute()
-    {
-        return $this->benefit ? RatingOptionEnum::from($this->benefit)->displayName() : null;
+        return $this->belongsTo(Student::class, 'student_id', 'user_id');
     }
 }

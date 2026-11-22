@@ -2,15 +2,20 @@
 
 namespace App\Models;
 
+use App\Enums\OtpIdentifierEnum;
+use App\Enums\OtpTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 
 class Otp extends Model
 {
     public $timestamps = true;
-    protected $fillable = ['user_id', 'identifier', 'identifier_type', 'code', 'verification_type', 'attempts', 'expired_at'];
+    protected $fillable = ['identifier', 'identifier_type', 'code', 'verification_type', 'attempts', 'is_used', 'expired_at'];
 
     protected $casts = [
+        'identifier_type' => OtpIdentifierEnum::class,
+        'verification_type' => OtpTypeEnum::class,
         'expired_at' => 'datetime',
+        'is_used' => 'boolean',
     ];
 
     public function isExpired()
@@ -32,7 +37,7 @@ class Otp extends Model
     public function scopeValid($query)
     {
         return $query->where('attempts', '<', 5)->where('expired_at', '>', now())->where('is_used', false);
-    }   
+    }
 
     public function scopeByIdentifier($query, $identifier, $identifierType)
     {

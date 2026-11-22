@@ -42,7 +42,7 @@ class TutorVerifiedNotification extends Notification implements ShouldQueue
     {
         return [
             'tutor_confirm_id' => $this->tutorConfirm->id,
-            'tutor_user_id' => $this->tutorConfirm->tutor_user_id,
+            'tutor_user_id' => $this->tutorConfirm->tutor_id,
             'status' => $this->tutorConfirm->status,
             'title' => 'Verifikasi Tutor',
             'message' => 'Selamat! Akun tutor Anda telah diverifikasi oleh admin. Anda sekarang dapat mulai menerima pesanan.',

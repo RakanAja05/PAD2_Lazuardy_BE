@@ -1,0 +1,280 @@
+{
+  "info": {
+    "name": "PAD2 Lazuardy - Payments (Xendit)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "studentEmail",
+      "value": "student@example.test"
+    },
+    {
+      "key": "studentPassword",
+      "value": "password"
+    },
+    {
+      "key": "studentToken",
+      "value": ""
+    },
+    {
+      "key": "packageId",
+      "value": "1"
+    },
+    {
+      "key": "paymentId",
+      "value": ""
+    },
+    {
+      "key": "externalId",
+      "value": ""
+    },
+    {
+      "key": "checkoutUrl",
+      "value": ""
+    },
+    {
+      "key": "xenditCallbackToken",
+      "value": "{{XENDIT_CALLBACK_TOKEN}}"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /api/login (Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{studentEmail}}\",\n  \"password\": \"{{studentPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.test('status=success', function () { pm.expect(body.status).to.eql('success'); });",
+                  "pm.collectionVariables.set('studentToken', body.data.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "GET /api/package/order/{{packageId}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/package/order/{{packageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "package",
+                "order",
+                "{{packageId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /api/package/order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"package_id\": {{packageId}},\n  \"payment_method\": \"mandiri\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/package/order",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "package",
+                "order"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.test('status=success', function () { pm.expect(body.status).to.eql('success'); });",
+                  "pm.collectionVariables.set('paymentId', body.data.payment_id);",
+                  "pm.collectionVariables.set('externalId', body.data.external_id);",
+                  "pm.collectionVariables.set('checkoutUrl', body.data.checkout_url);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /api/payment/history",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payment",
+                "history"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /api/payment/history/detail?payment_id={{paymentId}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/history/detail?payment_id={{paymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payment",
+                "history",
+                "detail"
+              ],
+              "query": [
+                {
+                  "key": "payment_id",
+                  "value": "{{paymentId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhook (Xendit)",
+      "item": [
+        {
+          "name": "POST /api/xendit/webhook (PAID)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-callback-token",
+                "value": "{{xenditCallbackToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"external_id\": \"{{externalId}}\",\n  \"status\": \"PAID\",\n  \"paid_at\": \"2026-05-17T12:00:00+07:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/xendit/webhook",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "xendit",
+                "webhook"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

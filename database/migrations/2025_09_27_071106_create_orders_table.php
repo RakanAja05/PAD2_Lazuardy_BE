@@ -16,7 +16,7 @@ return new class extends Migration
 
         Schema::create('orders', function (Blueprint $table) use ($orderStatus) {
             $table->id();
-            $table->foreignId('package_id')->constrained('packages', 'id');
+            $table->string('order_number');
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->integer('total_amount');
             $table->enum('status', $orderStatus);

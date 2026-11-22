@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum ReligionEnum: string
 {
+    case NOT_SET = 'not set';
     case ISLAM = 'islam';
     case KRISTEN = 'kristen';
     case KATOLIK = 'katolik';
@@ -11,20 +12,21 @@ enum ReligionEnum: string
     case BUDDHA = 'buddha';
     case KONGHUCU = 'konghucu';
 
-    
-    public function displayName() : string 
+
+    public function displayName() : string
     {
-        return match($this) 
+        return match($this)
         {
-            self::ISLAM->value => 'Islam',
-            self::KRISTEN->value => 'Kristen',
-            self::KATOLIK->value => 'Katolik',
-            self::HINDU->value => 'Hindu',
-            self::BUDDHA->value => 'Buddha',
-            self::KONGHUCU->value => 'Konghucu',
+            self::NOT_SET => 'Not set',
+            self::ISLAM => 'Islam',
+            self::KRISTEN => 'Kristen',
+            self::KATOLIK => 'Katolik',
+            self::HINDU => 'Hindu',
+            self::BUDDHA => 'Buddha',
+            self::KONGHUCU => 'Konghucu',
         };
     }
-    
+
     public static function tryFromDisplayName(string $displayName): ?self
     {
         foreach (self::cases() as $case) {
@@ -39,10 +41,10 @@ enum ReligionEnum: string
     {
         return array_map(fn($case) => $case->value, self::cases());
     }
-    
+
     public static function displayList(): array
     {
-        return array_map(fn($case) => $case->displayName($case->value), self::cases());
+        return array_map(fn($case) => $case->displayName(), self::cases());
     }
 
 

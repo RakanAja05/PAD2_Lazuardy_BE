@@ -3,11 +3,13 @@
 namespace App\Services\Tutors;
 
 use App\DTOs\ResponseDTO;
+use App\Enums\TakenScheduleStatusEnum;
 use App\Models\Review;
 use App\Models\ScheduleTutor;
 use App\Models\TakenSchedule;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class TutorProfileService
@@ -17,9 +19,9 @@ class TutorProfileService
         $user = Auth::user();
 
         $tutor = User::select('users.*')
-            ->selectRaw('COALESCE(AVG(reviews.rate), 0) as avg_rating')
+            ->selectRaw('AVG(reviews.rate) as avg_rating')
             ->selectRaw('COUNT(reviews.id) as review_count')
-            ->leftJoin('reviews', 'users.id', '=', 'reviews.to_user_id')
+            ->leftJoin('reviews', 'users.id', '=', 'reviews.tutor_id')
             ->with(['tutor', 'tutor.subjects', 'tutor.subjects.class'])
             ->where('users.id', $id)
             ->where('users.role', 'tutor')
@@ -27,13 +29,15 @@ class TutorProfileService
             ->first();
 
         if (!$tutor) {
-            return new ResponseDTO([
-                'status' => 'error',
-                'message' => 'Tutor tidak ditemukan',
-                'errors' => [
+            return new ResponseDTO(
+                'error',
+                'Tutor tidak ditemukan',
+                null,
+                [
                     'tutor_id' => $id,
                 ],
-            ], 404);
+                404
+            );
         }
 
         $distance = null;
@@ -64,13 +68,13 @@ class TutorProfileService
         $availableSchedules = $this->getAvailableSchedules($id);
         $reviews = $this->getReviews($id, $request->input('review_page', 1));
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil profil tutor',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil profil tutor',
+            [
                 'user_id' => $tutor->id,
                 'name' => $tutor->name,
-                'profile_photo_url' => $tutor->profile_photo_url,
+                'profile_photo_path' => $tutor->profile_photo_path,
                 'telephone_number' => $tutor->telephone_number,
                 'gender' => $tutor->gender,
                 'rating' => [
@@ -115,7 +119,9 @@ class TutorProfileService
                 'available_schedules' => $availableSchedules,
                 'reviews' => $reviews,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     public function availableSlots(Request $request, $id): ResponseDTO
@@ -125,16 +131,20 @@ class TutorProfileService
         ]);
 
         $date = $request->input('date');
-        $dayOfWeek = date('N', strtotime($date));
+        $dayKey = strtolower(Carbon::parse($date)->format('l'));
 
-        $schedules = ScheduleTutor::where('user_id', $id)
-            ->where('day', $dayOfWeek)
+        $schedules = ScheduleTutor::where('tutor_id', $id)
+            ->where('day', $dayKey)
             ->get();
 
         $availableSlots = $schedules->map(function ($schedule) use ($date) {
-            $isTaken = TakenSchedule::where('schedule_tutor_id', $schedule->id)
-                ->where('date', $date)
-                ->whereIn('status', ['pending', 'confirmed'])
+            $isTaken = TakenSchedule::where('tutor_id', $schedule->tutor_id)
+                ->whereDate('date', $date)
+                ->where('time', $schedule->time)
+                ->whereIn('status', [
+                    TakenScheduleStatusEnum::PENDING->value,
+                    TakenScheduleStatusEnum::ACTIVE->value,
+                ])
                 ->exists();
 
             return [
@@ -144,20 +154,22 @@ class TutorProfileService
             ];
         });
 
-        return new ResponseDTO([
-            'status' => 'success',
-            'message' => 'Berhasil mengambil jadwal tersedia',
-            'data' => [
+        return new ResponseDTO(
+            'success',
+            'Berhasil mengambil jadwal tersedia',
+            [
                 'date' => $date,
-                'day_name' => $this->getDayName($dayOfWeek),
+                'day_name' => $this->getDayName($dayKey),
                 'slots' => $availableSlots,
             ],
-        ], 200);
+            null,
+            200
+        );
     }
 
     private function getAvailableSchedules($tutorId): array
     {
-        $schedules = ScheduleTutor::where('user_id', $tutorId)
+        $schedules = ScheduleTutor::where('tutor_id', $tutorId)
             ->orderBy('day')
             ->orderBy('time')
             ->get();
@@ -167,8 +179,13 @@ class TutorProfileService
                 'day' => $day,
                 'day_name' => $this->getDayName($day),
                 'time_slots' => $daySchedules->map(function ($schedule) use ($tutorId) {
-                    $upcomingBookings = TakenSchedule::where('schedule_tutor_id', $schedule->id)
-                        ->where('date', '>=', now()->toDateString())
+                    $upcomingBookings = TakenSchedule::where('tutor_id', $tutorId)
+                        ->whereDate('date', '>=', now()->toDateString())
+                        ->where('time', $schedule->time)
+                        ->whereIn('status', [
+                            TakenScheduleStatusEnum::PENDING->value,
+                            TakenScheduleStatusEnum::ACTIVE->value,
+                        ])
                         ->count();
 
                     return [
@@ -192,14 +209,14 @@ class TutorProfileService
         $perPage = 10;
         $offset = ($page - 1) * $perPage;
 
-        $reviews = Review::where('to_user_id', $tutorId)
-            ->with('fromUser')
+        $reviews = Review::where('tutor_id', $tutorId)
+            ->with('student.user')
             ->orderBy('created_at', 'desc')
             ->skip($offset)
             ->take($perPage)
             ->get();
 
-        $totalReviews = Review::where('to_user_id', $tutorId)->count();
+        $totalReviews = Review::where('tutor_id', $tutorId)->count();
 
         return [
             'total' => $totalReviews,
@@ -207,21 +224,20 @@ class TutorProfileService
             'per_page' => $perPage,
             'has_more' => ($offset + $perPage) < $totalReviews,
             'data' => $reviews->map(function ($review) {
+                $reviewerUser = $review->student?->user;
+
                 return [
                     'id' => $review->id,
                     'reviewer' => [
-                        'name' => $review->fromUser->name ?? 'Rakan',
-                        'photo_url' => $review->fromUser->profile_photo_url ?? null,
+                        'user_id' => $review->student_id,
+                        'name' => $reviewerUser?->name,
+                        'photo_path' => $reviewerUser?->profile_photo_path,
                     ],
                     'rating' => [
                         'stars' => $review->rate,
-                        'quality' => $review->quality,
-                        'delivery' => $review->delivery,
-                        'attitude' => $review->attitude,
-                        'benefit' => $review->benefit,
                     ],
-                    'review_text' => $review->review,
-                    'date' => $review->created_at->format('d/m/Y'),
+                    'comment' => $review->comment,
+                    'date' => $review->created_at?->format('d/m/Y'),
                 ];
             }),
         ];
@@ -245,7 +261,7 @@ class TutorProfileService
 
     private function getDayName($day): string
     {
-        $days = [
+        $byIso = [
             1 => 'Senin',
             2 => 'Selasa',
             3 => 'Rabu',
@@ -255,6 +271,24 @@ class TutorProfileService
             7 => 'Minggu',
         ];
 
-        return $days[$day] ?? 'Unknown';
+        if (is_int($day) || (is_string($day) && ctype_digit($day))) {
+            $n = (int) $day;
+            return $byIso[$n] ?? 'Unknown';
+        }
+
+        if (is_string($day)) {
+            return match (strtolower($day)) {
+                'monday' => 'Senin',
+                'tuesday' => 'Selasa',
+                'wednesday' => 'Rabu',
+                'thursday' => 'Kamis',
+                'friday' => 'Jumat',
+                'saturday' => 'Sabtu',
+                'sunday' => 'Minggu',
+                default => 'Unknown',
+            };
+        }
+
+        return 'Unknown';
     }
 }

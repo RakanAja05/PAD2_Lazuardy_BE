@@ -21,7 +21,8 @@ class StoreStudentRegisterRequest extends FormRequest
         [
             // tabel user
             'email' => ['required','string','email','max:255','unique:users'],
-            'password' => ['required', 'string', 'min:8'],
+            'social_temp_token' => ['nullable', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'name' => ['required', 'string', 'min:2', 'max:255'],
             'gender' => ['required', new Enum(GenderEnum::class)],
 
@@ -36,12 +37,13 @@ class StoreStudentRegisterRequest extends FormRequest
                 'required',
                 'string',
                 'max:15',
+                'unique:users,telephone_number',
             ],
 
             'profile_photo' => [
                 'nullable',
                 'file',
-                'mimes:png,jpg, pdf, svg, webp',
+                'mimes:png,jpg,pdf,svg,webp',
             ],
 
             'province' => ['required', 'string', 'min:2', 'max:255'],
@@ -65,24 +67,9 @@ class StoreStudentRegisterRequest extends FormRequest
 
             // Tabel Student
             'class_id' => [
-                'nullable',
+                'required',
                 'integer',
                 'exists:classes,id'
-            ],
-
-            'curriculum_id' => [
-                'nullable',
-                'integer',
-                'exists:curriculums,id'
-            ],
-
-            'school' => ['nullable', 'string', 'min:2', 'max:100'],
-            'parent' => ['nullable', 'string', 'min:2', 'max:255'],
-
-            'parent_telephone_number' => [
-                'nullable',
-                'string',
-                'max:15',
             ],
         ];
     }

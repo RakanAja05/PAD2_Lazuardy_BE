@@ -5,26 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ScheduleTutor extends Model
 {
     use HasFactory;
-    public $timestamps = false; 
+    public $timestamps = false;
 
-    protected $fillable = 
+    protected $fillable =
     [
-        'user_id',
+        'tutor_id',
         'day',
         'time',
     ];
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'tutor_id', 'id');
     }
 
-    public function scheduleTutors(): HasMany {
-        return $this->hasMany(ScheduleTutor::class);
+    public function tutor(): BelongsTo
+    {
+        return $this->belongsTo(Tutor::class, 'tutor_id', 'user_id');
     }
 }

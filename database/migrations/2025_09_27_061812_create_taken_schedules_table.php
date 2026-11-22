@@ -13,13 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         $statuses = TakenScheduleStatusEnum::list();
-        
+
         Schema::create('taken_schedules', function (Blueprint $table) use ($statuses) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete(); // user siswa
+            $table->foreignId('student_id')->constrained('students', 'user_id')->cascadeOnDelete();
             $table->foreignId('schedule_tutor_id')->constrained('schedule_tutors', 'id');
             $table->foreignId('subject_id')->constrained('subjects');
-            $table->date('date');
+            $table->timestamp('date');
+            $table->string('address');
             $table->enum('status', $statuses)->nullable();
         });
     }

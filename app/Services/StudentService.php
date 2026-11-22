@@ -14,10 +14,9 @@ class StudentService
     {
         $data = [
             'school' => $query->school,
-            'class' => $query->class->name,
-            'curriculum' => $query->curriculum->name,
+            'class' => $query->class?->name,
             'parent' => $query->parent,
-            'parent_telephone_number' => $query->parent_telephone_number
+            'parent_telephone_number' => $query->parent_telephone_number,
         ];
 
         return $data;

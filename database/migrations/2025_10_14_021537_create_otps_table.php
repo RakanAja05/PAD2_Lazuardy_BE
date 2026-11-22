@@ -18,7 +18,7 @@ return new class extends Migration
 
         Schema::create('otps', function (Blueprint $table) use ($verificationTypes, $identifierType) {
             $table->id();
-            $table->string('identifier')->index(); 
+            $table->string('identifier');
             $table->enum('identifier_type', $identifierType);
             $table->string('code'); 
             $table->enum('verification_type', $verificationTypes); 

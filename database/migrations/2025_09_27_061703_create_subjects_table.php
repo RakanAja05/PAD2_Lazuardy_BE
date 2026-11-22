@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId('curriculum_id')->constrained('curriculums');
             $table->foreignId('class_id')->constrained('classes');
-            $table->string('icon_image_url')->nullable();
+            $table->string('name');
+            $table->string('icon_image_path');
         });
     }
 

@@ -17,10 +17,10 @@ class UserService
     {
 
     }
-    
+
     public function convertAddressToArray($data)
     {
-        return 
+        return
             [
             "province" => $data["province"],
             "regency" => $data["regency"],
@@ -45,7 +45,7 @@ class UserService
             'name' => $query->name,
             'email' => $query->email,
             'telephone_number' => $query->telephone_number,
-            'profile_photo_url' => $query->profile_photo_url,
+            'profile_photo_path' => $query->profile_photo_path,
             'gender' => $query->gender,
             'date_of_birth' => $query->date_of_birth,
             'religion' => $query->religion,
@@ -74,7 +74,7 @@ class UserService
                     'description' => $tutorData['description'],
                     'qualification' => $tutorData['qualification'],
                     'learning_method' => $tutorData['learning_method'],
-                    'status' => TutorStatusEnum::VERIFY->value,
+                    'status' => TutorStatusEnum::PENDING->value,
                 ],
             );
 

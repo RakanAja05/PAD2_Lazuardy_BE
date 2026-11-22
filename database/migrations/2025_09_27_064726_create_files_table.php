@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\FileType;
 use App\Enums\FileTypeEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -20,8 +19,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('name');
             $table->enum('type', $fileTypes);
-            $table->string('path_url');
-            $table->timestamps();
+            $table->string('path');
+            $table->string('status');
         });
     }
 

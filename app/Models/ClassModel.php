@@ -10,9 +10,9 @@ class ClassModel extends Model
     use HasFactory;
 
     protected $table = 'classes';
-    public $timestamps = false; 
+    public $timestamps = false;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'level'];
 
     public function students()
     {

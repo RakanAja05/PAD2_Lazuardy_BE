@@ -50,26 +50,37 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->sendRegisterOtp($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
      * @OA\Patch(
      *     path="/api/register/verify",
      *     tags={"Auth"},
-     *     summary="Verify register OTP",
+    *     summary="Verify register OTP",
     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"email","otp"},
-     *             @OA\Property(property="email", type="string"),
-     *             @OA\Property(property="otp", type="string")
-     *         )
-     *     ),
+    *         required=true,
+    *         @OA\JsonContent(
+    *             required={"otp"},
+    *             @OA\Property(property="email", type="string"),
+    *             @OA\Property(property="temp_token", type="string"),
+    *             @OA\Property(property="otp", type="string")
+    *         )
+    *     ),
      *     @OA\Response(
      *         response=200,
      *         description="OTP verified",
-     *         @OA\JsonContent(ref="#/components/schemas/StandardSuccess")
+    *         @OA\JsonContent(
+    *             allOf={
+    *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
+    *                 @OA\Schema(
+    *                     @OA\Property(property="data", type="object",
+    *                         @OA\Property(property="identifier", type="string"),
+    *                         @OA\Property(property="temp_token", type="string")
+    *                     )
+    *                 )
+    *             }
+    *         )
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -82,7 +93,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->verifyRegisterOtp($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -117,7 +128,118 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->resendRegisterOtp($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
+    }
+
+    /**
+     * @OA@Post(
+     *     path="/api/register/parent",
+     *     tags={"Auth"},
+     *     summary="Send parent register OTP",
+    *     @OA@RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password","password_confirmation"},
+     *             @OA\Property(property="email", type="string"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="password_confirmation", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="OTP sent",
+     *         @OA\JsonContent(
+     *             allOf={
+     *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="data", type="object",
+     *                         @OA\Property(property="otp", type="string"),
+     *                         @OA\Property(property="temp_token", type="string")
+     *                     )
+     *                 )
+     *             }
+     *         )
+     *     )
+     * )
+     */
+    public function sendParentRegisterOtp(Request $request)
+    {
+        $result = $this->authControllerService->sendParentRegisterOtp($request);
+
+        return $this->respond($result);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/register/parent/child",
+     *     tags={"Auth"},
+     *     summary="Send child email OTP for parent registration",
+    *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"temp_token","child_email"},
+     *             @OA\Property(property="temp_token", type="string"),
+     *             @OA\Property(property="child_email", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OTP sent",
+     *         @OA\JsonContent(
+     *             allOf={
+     *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="data", type="object",
+     *                         @OA\Property(property="otp", type="string")
+     *                     )
+     *                 )
+     *             }
+     *         )
+     *     )
+     * )
+     */
+    public function sendParentChildOtp(Request $request)
+    {
+        $result = $this->authControllerService->sendParentChildOtp($request);
+
+        return $this->respond($result);
+    }
+
+    /**
+     * @OA\Patch(
+     *     path="/api/register/parent/child/verify",
+     *     tags={"Auth"},
+     *     summary="Verify child email OTP and create parent",
+    *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"temp_token","child_email","otp"},
+     *             @OA\Property(property="temp_token", type="string"),
+     *             @OA\Property(property="child_email", type="string"),
+     *             @OA\Property(property="otp", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Parent registered",
+     *         @OA\JsonContent(
+     *             allOf={
+     *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="data", type="object",
+     *                         @OA\Property(property="token", type="string")
+     *                     )
+     *                 )
+     *             }
+     *         )
+     *     )
+     * )
+     */
+    public function verifyParentChildOtp(Request $request)
+    {
+        $result = $this->authControllerService->verifyParentChildOtp($request);
+
+        return $this->respond($result);
     }
 
     /**
@@ -131,7 +253,7 @@ class AuthController extends Controller
     *             @OA\MediaType(
     *                 mediaType="application/json",
     *                 @OA\Schema(
-    *                     required={"email","password","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude"},
+    *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","class_id"},
     *                     @OA\Property(property="email", type="string"),
     *                     @OA\Property(property="password", type="string"),
     *                     @OA\Property(property="password_confirmation", type="string"),
@@ -144,20 +266,16 @@ class AuthController extends Controller
     *                     @OA\Property(property="district", type="string"),
     *                     @OA\Property(property="subdistrict", type="string"),
     *                     @OA\Property(property="street", type="string"),
-    *                     @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *                     @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
     *                     @OA\Property(property="latitude", type="number"),
     *                     @OA\Property(property="longitude", type="number"),
-    *                     @OA\Property(property="class_id", type="integer"),
-    *                     @OA\Property(property="curriculum_id", type="integer"),
-    *                     @OA\Property(property="school", type="string"),
-    *                     @OA\Property(property="parent", type="string"),
-    *                     @OA\Property(property="parent_telephone_number", type="string")
+    *                     @OA\Property(property="class_id", type="integer")
     *                 )
     *             ),
     *             @OA\MediaType(
     *                 mediaType="multipart/form-data",
     *                 @OA\Schema(
-    *                     required={"email","password","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude"},
+    *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","class_id"},
     *                     @OA\Property(property="email", type="string"),
     *                     @OA\Property(property="password", type="string"),
     *                     @OA\Property(property="password_confirmation", type="string"),
@@ -171,14 +289,10 @@ class AuthController extends Controller
     *                     @OA\Property(property="district", type="string"),
     *                     @OA\Property(property="subdistrict", type="string"),
     *                     @OA\Property(property="street", type="string"),
-    *                     @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *                     @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
     *                     @OA\Property(property="latitude", type="number"),
     *                     @OA\Property(property="longitude", type="number"),
-    *                     @OA\Property(property="class_id", type="integer"),
-    *                     @OA\Property(property="curriculum_id", type="integer"),
-    *                     @OA\Property(property="school", type="string"),
-    *                     @OA\Property(property="parent", type="string"),
-    *                     @OA\Property(property="parent_telephone_number", type="string")
+    *                     @OA\Property(property="class_id", type="integer")
     *                 )
     *             )
     *         }
@@ -203,7 +317,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->storeStudentRegister($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -217,7 +331,7 @@ class AuthController extends Controller
      *             @OA\MediaType(
      *                 mediaType="application/json",
      *                 @OA\Schema(
-     *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","bank","rekening"},
+    *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","bank_code","account_number"},
      *                     @OA\Property(property="email", type="string"),
      *                     @OA\Property(property="password", type="string"),
      *                     @OA\Property(property="password_confirmation", type="string"),
@@ -230,17 +344,19 @@ class AuthController extends Controller
      *                     @OA\Property(property="district", type="string"),
      *                     @OA\Property(property="subdistrict", type="string"),
      *                     @OA\Property(property="street", type="string"),
-    *                     @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *                     @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
      *                     @OA\Property(property="latitude", type="number"),
      *                     @OA\Property(property="longitude", type="number"),
-     *                     @OA\Property(property="bank", type="string"),
-     *                     @OA\Property(property="rekening", type="string")
+    *                     @OA\Property(property="bank_code", type="string"),
+    *                     @OA\Property(property="account_number", type="string"),
+    *                     @OA\Property(property="bank", type="string", deprecated=true, description="Legacy alias of bank_code"),
+    *                     @OA\Property(property="rekening", type="string", deprecated=true, description="Legacy alias of account_number")
      *                 )
      *             ),
      *             @OA\MediaType(
      *                 mediaType="multipart/form-data",
      *                 @OA\Schema(
-     *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","bank","rekening"},
+    *                     required={"email","password","password_confirmation","name","gender","date_of_birth","telephone_number","province","regency","district","subdistrict","street","latitude","longitude","bank_code","account_number"},
      *                     @OA\Property(property="email", type="string"),
      *                     @OA\Property(property="password", type="string"),
      *                     @OA\Property(property="password_confirmation", type="string"),
@@ -254,11 +370,13 @@ class AuthController extends Controller
      *                     @OA\Property(property="district", type="string"),
      *                     @OA\Property(property="subdistrict", type="string"),
      *                     @OA\Property(property="street", type="string"),
-    *                     @OA\Property(property="religion", type="string", enum={"islam","kristen","katolik","hindu","buddha","konghucu"}),
+    *                     @OA\Property(property="religion", type="string", enum={"not set","islam","kristen","katolik","hindu","buddha","konghucu"}),
      *                     @OA\Property(property="latitude", type="number"),
      *                     @OA\Property(property="longitude", type="number"),
-     *                     @OA\Property(property="bank", type="string"),
-     *                     @OA\Property(property="rekening", type="string")
+    *                     @OA\Property(property="bank_code", type="string"),
+    *                     @OA\Property(property="account_number", type="string"),
+    *                     @OA\Property(property="bank", type="string", deprecated=true, description="Legacy alias of bank_code"),
+    *                     @OA\Property(property="rekening", type="string", deprecated=true, description="Legacy alias of account_number")
      *                 )
      *             )
      *         }
@@ -283,7 +401,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->storeTutorRegister($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -319,43 +437,7 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->forgotPassword($request);
 
-        return response()->json($result->payload, $result->code);
-    }
-
-    /**
-     * @OA\Patch(
-     *     path="/api/forgot-password/verify",
-     *     tags={"Auth"},
-     *     summary="Verify forgot password OTP",
-    *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"otp_code","temp_token"},
-     *             @OA\Property(property="otp_code", type="string"),
-     *             @OA\Property(property="temp_token", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="OTP verified",
-     *         @OA\JsonContent(
-     *             allOf={
-     *                 @OA\Schema(ref="#/components/schemas/StandardSuccess"),
-     *                 @OA\Schema(
-     *                     @OA\Property(property="data", type="object",
-     *                         @OA\Property(property="token", type="string")
-     *                     )
-     *                 )
-     *             }
-     *         )
-     *     )
-     * )
-     */
-    public function verifyForgotPassword(VerifyOtpRequest $request)
-    {
-        $result = $this->authControllerService->verifyForgotPassword($request);
-
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -383,6 +465,6 @@ class AuthController extends Controller
     {
         $result = $this->authControllerService->resetPassword($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

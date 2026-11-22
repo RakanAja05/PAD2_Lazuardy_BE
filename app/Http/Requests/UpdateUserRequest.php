@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\Gender;
 use App\Enums\GenderEnum;
+use App\Enums\ReligionEnum;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -15,7 +15,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $userToUpdate = $this->route('user'); 
+        $userToUpdate = $this->route('user');
 
         if (!$userToUpdate instanceof User) {
             return false;
@@ -33,54 +33,52 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
+
             'name' => ['required', 'string', 'min:2', 'max:255'],
             'gender' => ['required', new Enum(GenderEnum::class)],
 
             'date_of_birth' => [
-                'required', 
-                'date', 
-                'date_format:Y-m-d', 
+                'required',
+                'date',
+                'date_format:Y-m-d',
                 'before_or_equal:today'
             ],
-            
+
             'telephone_number' => [
-                'required', 
-                'string', 
+                'required',
+                'string',
                 'max:15',
                 // 'regex:/^(\+62|0)\d{9,15}$/',
             ],
-            
-            'profile_photo_url' => [
+
+            'profile_photo_path' => [
                 'nullable',
-                'url',
+                'string',
                 // 'regex:/^(http(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-.\/?%&=]*)?\.(jpg|jpeg|png|gif|webp)$/i',
             ],
 
             'religion' => [
                 'required',
-                'string',
-                'min:2',
-                'max:30'
+                new Enum(ReligionEnum::class),
             ],
-            
+
             'province' => ['required', 'string', 'min:2', 'max:255'],
             'city' => ['required', 'string', 'min:2', 'max:255'],
             'subdistrict' => ['required', 'string', 'min:2', 'max:255'],
             'street' => ['required', 'string', 'min:2', 'max:255'],
-            
+
             'latitude' => [
-                'required', 
-                'numeric', 
-                'between:-90,90', 
+                'required',
+                'numeric',
+                'between:-90,90',
                 // 'regex:/^-?\d{1,2}\.\d{8}$/',
             ],
 
             'longitude' => [
-                'required', 
-                'numeric', 
-                'between:-180,180', 
-                // 'regex:/^-?\d{1,3}\.\d{8}$/', 
+                'required',
+                'numeric',
+                'between:-180,180',
+                // 'regex:/^-?\d{1,3}\.\d{8}$/',
             ],
         ];
     }

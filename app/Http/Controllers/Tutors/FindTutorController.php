@@ -33,7 +33,7 @@ class FindTutorController extends Controller
     {
         $result = $this->findTutorService->search($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -50,6 +50,6 @@ class FindTutorController extends Controller
     {
         $result = $this->findTutorService->show($request, $id);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\GenderEnum;
 use App\Enums\ReligionEnum;
 use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,16 +30,16 @@ class User extends Authenticatable
         'password',
         'role',
         'telephone_number',
+        'telephone_verified_at',
         'google_id',
         'facebook_id',
-        'profile_photo_url',
+        'profile_photo_path',
         'date_of_birth',
         'gender',
         'religion',
         'home_address',
         'latitude',
         'longitude',
-        'platform',
     ];
 
     /**
@@ -65,7 +66,8 @@ class User extends Authenticatable
             'date_of_birth' => 'date',
             'role' => RoleEnum::class,
             'religion' => ReligionEnum::class,
-            'rekening' => 'string'
+            'gender' => GenderEnum::class,
+            'telephone_verified_at' => 'datetime',
         ];
     }
 
@@ -81,25 +83,28 @@ class User extends Authenticatable
 
     public function schedules(): HasMany
     {
-        return $this->hasMany(ScheduleTutor::class);
+        return $this->hasMany(ScheduleTutor::class, 'tutor_id', 'id');
     }
 
     public function takenSchedules(): HasMany
     {
-        return $this->hasMany(TakenSchedule::class);
+        return $this->hasMany(TakenSchedule::class, 'student_id', 'id');
     }
 
-    public function subjects(): BelongsToMany {
-        return $this->belongsToMany(Subject::class, 'tutor_subjects', 'user_id', 'subject_id');
+    public function subjects(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Subject::class,
+            'tutor_subjects',
+            'tutor_id',
+            'subject_id',
+            'id',
+            'id'
+        );
     }
 
     public function files(): HasMany {
         return $this->hasMany(File::class);
-    }
-
-    public function payments(): HasMany
-    {
-        return $this->hasMany(Payment::class);
     }
 
     public function orders(): HasMany
@@ -107,24 +112,14 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public function studentPackageTutors(): HasMany
+    public function reviewStudents(): HasMany
     {
-        return $this->hasMany(StudentPackage::class, 'tutor_user_id');
+        return $this->hasMany(Review::class, 'student_id', 'id');
     }
 
-    public function studentPackageStudents(): HasMany
+    public function reviewTutors(): HasMany
     {
-        return $this->hasMany(StudentPackage::class, 'student_user_id');
-    }
-
-    public function reviewStudents():HasMany
-    {
-        return $this->hasMany(Review::class, 'from_user_id');
-    }
-
-    public function reviewTutors():HasMany
-    {
-        return $this->hasMany(Review::class, 'to_user_id');
+        return $this->hasMany(Review::class, 'tutor_id', 'id');
     }
 
     public function scopeGetUserByEmail($query, $email)

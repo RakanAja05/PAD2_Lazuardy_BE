@@ -1,18 +1,22 @@
 <?php
 
-use App\Http\Controllers\Students\ProfileController;
 use App\Http\Controllers\Students\ReviewController;
+use App\Http\Controllers\Students\StudentRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:student')->group(function () {
-        Route::get('/student/profile', [ProfileController::class, 'showStudentProfile']);
-        Route::get('/student/profile/edit', [ProfileController::class, 'showStudentProfile']);
-        Route::patch('/student/profile', [ProfileController::class, 'updateStudentProfile']);
+        Route::prefix('student')->group(function () {
+            Route::get('/review', [ReviewController::class, 'index']);
+            Route::get('/review/{tutorId}', [ReviewController::class, 'show'])->whereNumber('tutorId');
+            Route::post('/review', [ReviewController::class, 'storeOrUpdate']);
+            Route::patch('/review', [ReviewController::class, 'storeOrUpdate']);
 
-        Route::get('/student/review', [ReviewController::class, 'index']);
-        Route::get('/student/review/{tutor_id}', [ReviewController::class, 'show']);
-        Route::post('/student/review', [ReviewController::class, 'storeOrUpdate']);
-        Route::patch('/student/review', [ReviewController::class, 'storeOrUpdate']);
+            Route::get('/request', [StudentRequestController::class, 'index']);
+            Route::post('/request', [StudentRequestController::class, 'store']);
+            Route::delete('/request/{id}', [StudentRequestController::class, 'cancel'])->whereNumber('id');
+        });
+
+        Route::patch('/reviews/{id}', [ReviewController::class, 'update'])->whereNumber('id');
     });
 });

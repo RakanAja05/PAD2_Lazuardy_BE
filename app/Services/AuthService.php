@@ -4,17 +4,21 @@ namespace App\Services;
 
 use App\Enums\OtpIdentifierEnum;
 use App\Enums\OtpTypeEnum;
+use App\Enums\ReligionEnum;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 
 class AuthService
 {
     public function registerUser(array $data)
     {
         $data['email_verified_at'] = now();
+        if (empty($data['religion'])) {
+            $data['religion'] = ReligionEnum::NOT_SET;
+        }
         DB::beginTransaction();
         try {
             $user = User::create($data);
@@ -35,7 +39,7 @@ class AuthService
     {
         $temp_token = Str::random(15);
         Cache::put('registration:pending:' . $temp_token, $data, 1800);
-        
+
         return [
             'temp_token' => $temp_token,
             'email' => $data['email']
@@ -56,9 +60,9 @@ class AuthService
         DB::beginTransaction();
         try {
             $otpService->checkOtp(
-                $otpCode, 
-                $cache_data['email'], 
-                OtpIdentifierEnum::EMAIL->value, 
+                $otpCode,
+                $cache_data['email'],
+                OtpIdentifierEnum::EMAIL->value,
                 OtpTypeEnum::REGISTER->value
             );
             $resultUser = $this->registerUser($cache_data);
@@ -85,8 +89,8 @@ class AuthService
 
         $otpService = new OtpService;
         $result = $otpService->resendOtp(
-            $cache_data['email'], 
-            OtpIdentifierEnum::EMAIL->value, 
+            $cache_data['email'],
+            OtpIdentifierEnum::EMAIL->value,
             OtpTypeEnum::REGISTER->value
         );
 

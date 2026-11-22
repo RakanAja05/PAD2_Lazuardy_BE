@@ -25,7 +25,7 @@ class StudentDashboardController extends Controller
     {
         $result = $this->studentDashboardService->index($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -41,7 +41,7 @@ class StudentDashboardController extends Controller
     {
         $result = $this->studentDashboardService->getRecommendedTutors($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 
     /**
@@ -57,6 +57,6 @@ class StudentDashboardController extends Controller
     {
         $result = $this->studentDashboardService->summary($request);
 
-        return response()->json($result->payload, $result->code);
+        return $this->respond($result);
     }
 }
